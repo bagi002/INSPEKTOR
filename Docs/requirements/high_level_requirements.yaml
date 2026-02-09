@@ -282,3 +282,13 @@
     Aplikacija je namjenjena samo za desktop uredjaje i nije optimizovana za mobilne uredjaje
     Korisnicki interfejs treba biti dizajniran sa fokusom na desktop korisnike, sa vecim elementima i vise prostora za prikaz informacija
     Nije potrebno implementirati responsivni dizajn ili prilagoditi aplikaciju za mobilne uredjaje
+
+- id: REQ-029
+  name: Prozor za kreiranje slucaja
+  status: Draft
+  description: >
+    Kada krenne u kreiranje slucaja, korisnik prvo popuni ime slucajja i njegov opis
+    Zatim ce biti preusmjeren na prozor gdje ce kreirati sucaj 
+    Koji izgleda manje vise kao prozor za resavanje slucajja site stavke menija su iste kao i kod resavanja slucaja ali sa opcijom za kreiranje novih dokumenata, osoba i dosijea i dodavanje istih na vremensku liniju
+    Nakon sto ima slucaj u kreiranju moci ce sa pocetne stranice d amu pristupi i nastavi editovanje 
+    Sve dok ga ne ne objavi i tek tada ce ga ostali korisnici vidjeti i rijesvati
