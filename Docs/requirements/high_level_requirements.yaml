@@ -24,7 +24,7 @@
 
 - id: REQ-003
   name: Stil aplikacije
-  status: In Review
+  status: In Progress
   description: >
     Aplikacija treba da ima ozbilajn formalni policiski  stil sa modernim dizajnom
     Korisnicki interfejs treba biti jednostavan i intuitivan, sa jasnim navigacionim elementima
@@ -32,7 +32,7 @@
     Boje koje se korist esu bijela siva svijetlo plava sa akcentomu tamno plavom i crvenom bojom
 - id: REQ-004
   name: Pocetna stranica za ne ulogovane korisnike
-  status: In Review
+  status: Finished
   description: >
     Treba da sadrzi osnovne informacije o aplikaciji, njenu svrhu i funkcionalnosti
     Treba da prestavi sto bolej aplikaciju u reklamnu svrhu
@@ -53,7 +53,7 @@
 
 - id: REQ-006
   name: Meni
-  status: In Review
+  status: In Progress
   description: >
     Meni treba d a bude u vidu lijevog side bara sa opcijama menija priakzaom profila za ulogovanog korisnika
     U ne ulogovanom stanju treba da sadrzi opcije za pocetnu stranicu, registraciju i prijavu
@@ -277,7 +277,7 @@
 
 - id: REQ-028
   name: Aplikacija je samo za desktop
-  status: In Review
+  status: In Progress
   description: >
     Aplikacija je namjenjena samo za desktop uredjaje i nije optimizovana za mobilne uredjaje
     Korisnicki interfejs treba biti dizajniran sa fokusom na desktop korisnike, sa vecim elementima i vise prostora za prikaz informacija

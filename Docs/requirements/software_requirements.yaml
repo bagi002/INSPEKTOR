@@ -3,7 +3,7 @@
 
 - id: REQ-SW-002
   name: Landing stranica za neulogovane korisnike
-  status: In Review
+  status: Finished
   refines: REQ-004
   description: >
     Implementirati React stranicu za neulogovane korisnike koja sadrzi uvodni hero
@@ -12,7 +12,7 @@
 
 - id: REQ-SW-003
   name: Vizuelni stil javne pocetne stranice
-  status: In Review
+  status: Finished
   refines: REQ-003
   description: >
     Definisati i primeniti konzistentan vizuelni stil javne pocetne stranice sa
@@ -21,7 +21,7 @@
 
 - id: REQ-SW-004
   name: Meni za neulogovane korisnike
-  status: In Review
+  status: Finished
   refines: REQ-006
   description: >
     Implementirati meni za neulogovano stanje kroz levi sidebar sa stavkama Pocetna,
@@ -30,7 +30,7 @@
 
 - id: REQ-SW-005
   name: Desktop-only prikaz javne pocetne stranice
-  status: In Review
+  status: Finished
   refines: REQ-028
   description: >
     Implementirati desktop-only pravilo za javnu pocetnu stranicu: primarni interfejs
