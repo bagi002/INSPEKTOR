@@ -3,7 +3,7 @@
 
 - id: REQ-001
   name: Tehnologije u aplikaciji
-  status: Draft
+  status: In Progress
   description: >
     Web aplikacija ce koristiti sledeće tehnologije:
     - Frontend: React.js
@@ -72,14 +72,14 @@
 
 - id: REQ-008
   name: Registracija korisnika
-  status: Draft
+  status: Finished
   description: >
     Treba da sadrzi formu za registraciju korisnika sa poljima za ime, prezime, email adresu i lozinku
     Treba da validira unos korisnika i prikazuje odgovarajuće poruke o greškama, kao što su neispravan format email adrese, prekratka lozinka ili već postojeći email
     
 - id: REQ-009
   name: Prijava korisnika
-  status: Draft
+  status: Finished
   description: >
     Treba da sadrzi formu za prijavu korisnika sa poljima za email adresu i lozinku
     Treba da validira unos korisnika i prikazuje odgovarajuće poruke o greškama, kao što su neispravan format email adrese, prekratka lozinka ili nepostojeći nalog

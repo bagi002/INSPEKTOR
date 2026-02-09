@@ -1,24 +1,46 @@
 @startuml Block Diagram
-title Block Diagram - Javna Pocetna Stranica
+title Block Diagram - Frontend + Backend Auth Sistem
 
 package "Frontend" {
   [App Shell]
   [Desktop Policy Gate]
-  [Public Landing Module]
-  [Sidebar Navigation]
-  [Informativne Sekcije]
-  [CTA Akcije]
+  [Public Auth Pages]
+  [Public Sidebar]
+  [Auth API Client]
+  [Session Storage]
   [Desktop Warning View]
   [Theme Tokens]
-  [Auth Route Placeholders]
 }
 
+package "Backend (Node.js + Express)" {
+  [Express App]
+  [Auth Routes]
+  [Auth Service]
+  [JWT Token Service]
+  [User Repository]
+  [SQLite Module]
+  [Migration Runner]
+  [Health Route]
+}
+
+database "SQLite Database" as Db
+
 [App Shell] --> [Desktop Policy Gate]
-[Desktop Policy Gate] --> [Public Landing Module]
+[Desktop Policy Gate] --> [Public Auth Pages]
 [Desktop Policy Gate] --> [Desktop Warning View]
-[Public Landing Module] --> [Sidebar Navigation]
-[Public Landing Module] --> [Informativne Sekcije]
-[Public Landing Module] --> [CTA Akcije]
-[Public Landing Module] --> [Theme Tokens]
-[CTA Akcije] --> [Auth Route Placeholders]
+[Public Auth Pages] --> [Public Sidebar]
+[Public Auth Pages] --> [Auth API Client]
+[Public Auth Pages] --> [Theme Tokens]
+[Auth API Client] --> [Session Storage]
+
+[Auth API Client] --> [Express App]
+[Express App] --> [Auth Routes]
+[Express App] --> [Health Route]
+[Auth Routes] --> [Auth Service]
+[Auth Service] --> [JWT Token Service]
+[Auth Service] --> [User Repository]
+[User Repository] --> [SQLite Module]
+[SQLite Module] --> Db
+[Migration Runner] --> Db
+[Health Route] --> [SQLite Module]
 @enduml

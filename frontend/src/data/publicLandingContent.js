@@ -1,5 +1,5 @@
 export const menuItems = [
-  { label: "Pocetna", href: "#pocetna" },
+  { label: "Pocetna", href: "/" },
   { label: "Registracija", href: "/registracija" },
   { label: "Prijava", href: "/prijava" },
 ];

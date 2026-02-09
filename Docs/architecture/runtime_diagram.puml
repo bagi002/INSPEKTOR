@@ -1,32 +1,71 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Neulogovani Korisnik
+title Runtime Diagram - Login/Register sa Backendom i SQLite bazom
 
 actor "Neulogovani korisnik" as Guest
 participant "Frontend Router" as Router
 participant "DesktopGate" as Gate
-participant "LandingPage" as Landing
-participant "SidebarMenu" as Menu
+participant "RegistrationPage" as Registration
+participant "LoginPage" as Login
+participant "Auth API Client" as ApiClient
+participant "Express Auth API" as AuthApi
+participant "Auth Service" as AuthService
+database "SQLite users tabela" as UsersStore
+database "LocalStorage (session)" as SessionStore
 participant "Desktop Notice View" as Notice
-participant "Auth stranice" as Auth
 
-Guest -> Router: Otvara /
+Guest -> Router: Otvara /registracija
 Router -> Gate: Provera sirine viewport-a
 
 alt Desktop sirina
-  Gate -> Landing: Render javne pocetne stranice
-  Landing -> Menu: Prikaz stavki (Pocetna, Registracija, Prijava)
-  Landing --> Guest: Hero + funkcionalnosti + CTA
+  Gate -> Registration: Render registracione forme
+  Guest -> Registration: Unos podataka i submit
+  Registration -> ApiClient: POST /api/auth/register
+  ApiClient -> AuthApi: HTTP zahtev
+  AuthApi -> AuthService: validate + register
+  AuthService -> UsersStore: Provera email + upis korisnika
+
+  alt Neispravan unos ili vec postojeci email
+    AuthService --> AuthApi: 4xx + validacione greske
+    AuthApi --> ApiClient: JSON greska
+    ApiClient --> Registration: Polja sa greskama
+    Registration --> Guest: Prikaz poruka o greskama
+  else Ispravan unos
+    AuthService --> AuthApi: 201 + user payload
+    AuthApi --> ApiClient: JSON uspeh
+    ApiClient --> Registration: Potvrda registracije
+    Registration --> Guest: Poruka o uspehu i link ka prijavi
+  end
 else Manja sirina od desktop praga
   Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
   Notice --> Guest: Prikaz ogranicenog ekrana
 end
 
-Guest -> Menu: Klik na Registracija
-Menu -> Router: Navigacija na /registracija
-Router -> Auth: Render registracione stranice
+Guest -> Router: Otvara /prijava
+Router -> Gate: Provera sirine viewport-a
 
-Guest -> Menu: Klik na Prijava
-Menu -> Router: Navigacija na /prijava
-Router -> Auth: Render stranice za prijavu
+alt Desktop sirina
+  Gate -> Login: Render prijavne forme
+  Guest -> Login: Unos kredencijala i submit
+  Login -> ApiClient: POST /api/auth/login
+  ApiClient -> AuthApi: HTTP zahtev
+  AuthApi -> AuthService: validate + login
+  AuthService -> UsersStore: Provera korisnika i lozinke
+
+  alt Neispravni podaci
+    AuthService --> AuthApi: 401/400 greska
+    AuthApi --> ApiClient: JSON greska
+    ApiClient --> Login: Poruke o greskama
+    Login --> Guest: Prikaz poruke o gresci
+  else Uspesna prijava
+    AuthService --> AuthApi: JWT token + user payload
+    AuthApi --> ApiClient: JSON uspeh
+    ApiClient -> SessionStore: Upis tokena i korisnickih podataka
+    ApiClient --> Login: Potvrda uspesne prijave
+    Login --> Guest: Potvrda uspesne prijave
+  end
+else Manja sirina od desktop praga
+  Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
+  Notice --> Guest: Prikaz ogranicenog ekrana
+end
 
 @enduml

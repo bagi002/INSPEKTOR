@@ -239,3 +239,8 @@ temp/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Runtime SQLite files
+Instances/*.sqlite
+Instances/*.sqlite-shm
+Instances/*.sqlite-wal

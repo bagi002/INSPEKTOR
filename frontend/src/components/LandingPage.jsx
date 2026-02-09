@@ -1,35 +1,14 @@
 import {
   featureCards,
-  menuItems,
   processSteps,
 } from "../data/publicLandingContent";
+import PublicSidebar from "./PublicSidebar";
+import { PUBLIC_ROUTES } from "../utils/routes";
 
 function LandingPage() {
   return (
     <div className="app-shell" id="pocetna">
-      <aside className="left-sidebar reveal">
-        <div className="brand-block">
-          <p className="brand-kicker">INSPEKTOR</p>
-          <h1>Platforma za istrazne slucajeve i takticko razmisljanje</h1>
-        </div>
-
-        <nav aria-label="Javni meni">
-          <ul className="menu-list">
-            {menuItems.map((item) => (
-              <li key={item.label}>
-                <a href={item.href}>{item.label}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="sidebar-note">
-          <p>
-            U neulogovanom rezimu dostupne su kljucne informacije i direktan
-            ulaz ka registraciji i prijavi.
-          </p>
-        </div>
-      </aside>
+      <PublicSidebar activePath={PUBLIC_ROUTES.HOME} />
 
       <main className="content">
         <section className="hero card reveal delay-1">
@@ -41,10 +20,10 @@ function LandingPage() {
             zakljuccima.
           </p>
           <div className="cta-row">
-            <a className="btn btn-primary" href="/registracija">
+            <a className="btn btn-primary" href={PUBLIC_ROUTES.REGISTRATION}>
               Registruj se
             </a>
-            <a className="btn btn-secondary" href="/prijava">
+            <a className="btn btn-secondary" href={PUBLIC_ROUTES.LOGIN}>
               Prijavi se
             </a>
           </div>
@@ -78,10 +57,10 @@ function LandingPage() {
             prostora za dokumenta, vremensku liniju i paralelnu analizu tragova.
           </p>
           <div className="cta-row">
-            <a className="btn btn-primary" href="/registracija">
+            <a className="btn btn-primary" href={PUBLIC_ROUTES.REGISTRATION}>
               Otvori registraciju
             </a>
-            <a className="btn btn-secondary" href="/prijava">
+            <a className="btn btn-secondary" href={PUBLIC_ROUTES.LOGIN}>
               Otvori prijavu
             </a>
           </div>

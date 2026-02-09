@@ -1,36 +1,73 @@
 # INSPEKTOR
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
-Trenutno je implementirana javna pocetna stranica za neulogovane korisnike sa menijem i CTA
-akcijama za registraciju i prijavu.
+Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, sa povezanim backend auth API-jem i SQLite bazom.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
 - Frontend: React + Vite
+- Backend: Node.js + Express
+- Baza podataka: SQLite
+- Auth: JWT + bcrypt hash lozinki
 - Dokumentacija: YAML requirements + PlantUML dijagrami
-- Backend: rezervisan folder (`backend/`) za naredne faze
 
 ## Struktura projekta
-- `frontend/` - React aplikacija (javna pocetna stranica)
-- `backend/` - buduce backend komponente
+- `frontend/` - React aplikacija (landing + auth stranice)
+- `backend/` - Express backend (`/api/auth`, `/api/health`) i SQLite pristup
+- `Instances/` - runtime podaci (npr. SQLite fajl baze)
 - `Docs/requirements/` - high-level i softverski requirements
 - `Docs/architecture/` - runtime, class i block PUML dijagrami
 - `Automation/` - alati za izgradnju dokumentacije (`docs_builder.py`)
 
-## Pokretanje projekta (frontend)
+## Pokretanje projekta (frontend + backend)
+1. `./setup.sh`
+2. `./start.sh`
+3. Frontend: `http://localhost:5173`
+4. Backend health: `http://localhost:3001/api/health`
+
+## Pokretanje preko skripti (root)
+1. `./setup.sh` - priprema okruzenje, instalira backend + frontend zavisnosti, kreira `backend/.env` (ako ne postoji) i inicijalizuje bazu
+2. `./start.sh` - pokrece backend (`3001`) i frontend (`5173`)
+
+## Pokretanje pojedinacno
+Backend:
+1. `cd backend`
+2. `npm install`
+3. `npm run db:init`
+4. `npm run dev`
+
+Frontend:
 1. `cd frontend`
 2. `npm install`
 3. `npm run dev`
-4. Otvori adresu koju ispisuje Vite (standardno `http://localhost:5173`)
-
-## Pokretanje preko skripti (root)
-1. `./setup.sh` - priprema Python okruzenja i instalira frontend zavisnosti
-2. `./start.sh` - pokrece frontend aplikaciju na `http://localhost:5173`
 
 ## Build i preview (frontend)
 1. `cd frontend`
 2. `npm run build`
 3. `npm run preview`
+
+## Koriscenje auth stranica
+- Pocetna: `http://localhost:5173/`
+- Registracija: `http://localhost:5173/registracija`
+- Prijava: `http://localhost:5173/prijava`
+
+Tok koriscenja:
+1. Otvori `/registracija` i kreiraj nalog.
+2. Nakon uspesne registracije otvori `/prijava`.
+3. Prijavi se istim podacima.
+
+Napomena:
+- Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
+- Pri uspesnoj prijavi backend vraca JWT token koji se cuva u `localStorage` na klijentu.
+- Vite proxy prosledjuje `"/api/*"` zahteve ka backend-u (`http://localhost:3001`).
+
+## Backend API (auth)
+- `POST /api/auth/register`
+  - body: `{ "firstName": "...", "lastName": "...", "email": "...", "password": "..." }`
+- `POST /api/auth/login`
+  - body: `{ "email": "...", "password": "..." }`
+- `GET /api/health`
+  - provera dostupnosti API-ja i baze
 
 ## Dokumentacija requirements i arhitekture
 1. `cd Automation`
@@ -39,9 +76,19 @@ Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekran
 4. Otvori `Docs/build/index.html`
 
 ## Trenutno implementirano
-- Javna stranica za neulogovane korisnike:
+- Javne stranice za neulogovane korisnike:
   - levi meni (`Pocetna`, `Registracija`, `Prijava`)
   - desktop-only pristup (za manje ekrane se prikazuje informativna poruka)
   - hero sekcija sa opisom svrhe aplikacije
   - pregled kljucnih funkcionalnosti
   - CTA sekcija za registraciju/prijavu
+- Registracija (`/registracija`):
+  - forma sa poljima ime, prezime, email, lozinka i potvrda lozinke
+  - validacije za email format, duzinu lozinke i postojeci nalog
+- Prijava (`/prijava`):
+  - validacije kredencijala i poruke greske za neispravan unos
+  - backend autentifikacija i cuvanje JWT tokena sesije u browseru
+- Backend auth:
+  - modularna Express struktura (routes/controller/service/repository)
+  - SQLite migracije i maintenance podesavanja
+  - endpointi za registraciju, prijavu i health proveru

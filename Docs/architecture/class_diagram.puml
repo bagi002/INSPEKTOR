@@ -1,7 +1,8 @@
 @startuml Class Diagram
-title Class Diagram - Public Landing Page
+title Class Diagram - Full Auth Stack
 
 class App {
+  +resolveRoute(pathname): ReactNode
   +render()
 }
 
@@ -13,43 +14,111 @@ class DesktopGate {
 
 class LandingPage {
   +renderHero()
-  +renderPurpose()
   +renderFeatureCards()
+  +renderProcess()
   +renderCTA()
+}
+
+class RegistrationPage {
+  +formData
+  +errors
+  +handleSubmit()
+  +render()
+}
+
+class LoginPage {
+  +formData
+  +errors
+  +sessionInfo
+  +handleSubmit()
+  +render()
+}
+
+class AuthApiClient {
+  +registerUser(payload)
+  +loginUser(payload)
+  -validateRegistrationInput(payload)
+  -validateLoginInput(payload)
+}
+
+class AuthPageLayout {
+  +activePath: string
+  +render()
+}
+
+class PublicSidebar {
+  +activePath: string
+  +render()
+}
+
+class ExpressApp {
+  +mountRoutes()
+}
+
+class AuthRoutes {
+  +POST /register
+  +POST /login
+}
+
+class AuthController {
+  +registerController(req, res)
+  +loginController(req, res)
+}
+
+class AuthService {
+  +registerUser(payload)
+  +loginUser(payload)
+  -createAccessToken(user)
+}
+
+class AuthRepository {
+  +findUserByEmail(email)
+  +createUser(userData)
+}
+
+class DatabaseModule {
+  +initializeDatabase()
+  +getDatabase()
+  +applyMigrations()
+}
+
+class SQLiteDatabase {
+  +users
 }
 
 class DesktopNotice {
   +render()
 }
 
-class SidebarMenu {
-  +items: string[]
-  +render()
-}
-
-class FeatureCard {
-  +title: string
-  +description: string
-  +render()
-}
-
-class CTASection {
-  +onRegisterClick()
-  +onLoginClick()
-}
-
 class ThemeTokens {
-  +surfaceLight
-  +surfaceGray
+  +surfaceCard
   +accentBlueDark
   +accentRed
 }
 
 App --> DesktopGate
 DesktopGate --> LandingPage
+DesktopGate --> RegistrationPage
+DesktopGate --> LoginPage
 DesktopGate --> DesktopNotice
-LandingPage *-- SidebarMenu
-LandingPage *-- FeatureCard
-LandingPage *-- CTASection
+
+LandingPage *-- PublicSidebar
+RegistrationPage *-- AuthPageLayout
+LoginPage *-- AuthPageLayout
+AuthPageLayout *-- PublicSidebar
+
+RegistrationPage ..> AuthApiClient
+LoginPage ..> AuthApiClient
+
 LandingPage ..> ThemeTokens
+RegistrationPage ..> ThemeTokens
+LoginPage ..> ThemeTokens
+
+AuthApiClient ..> ExpressApp
+ExpressApp --> AuthRoutes
+AuthRoutes --> AuthController
+AuthController --> AuthService
+AuthService --> AuthRepository
+AuthRepository --> DatabaseModule
+DatabaseModule --> SQLiteDatabase
 @enduml

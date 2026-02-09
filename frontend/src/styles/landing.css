@@ -1,0 +1,63 @@
+.hero {
+  background:
+    linear-gradient(165deg, rgba(217, 232, 251, 0.62), rgba(255, 255, 255, 0.96)),
+    #ffffff;
+}
+
+.hero h2 {
+  margin: 0.32rem 0 0.72rem;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.14;
+  color: #142943;
+}
+
+.hero p {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--ink-muted);
+  line-height: 1.52;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.82rem;
+}
+
+.feature-card {
+  padding: 1rem;
+  border-radius: 13px;
+  border: 1px solid #cfdaea;
+  background: linear-gradient(170deg, #f8fbff 0%, #edf4fc 100%);
+}
+
+.feature-card h4 {
+  margin: 0;
+  font-size: 1.03rem;
+  color: #18375c;
+}
+
+.feature-card p {
+  margin: 0.46rem 0 0;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+.timeline {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.62rem;
+}
+
+.timeline li {
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.cta-panel {
+  border-color: #b9cce3;
+  background:
+    linear-gradient(160deg, rgba(223, 236, 252, 0.68), rgba(254, 245, 246, 0.6)),
+    var(--surface-card);
+}

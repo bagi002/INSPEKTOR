@@ -1,0 +1,38 @@
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: reveal 520ms ease forwards;
+}
+
+.delay-1 {
+  animation-delay: 110ms;
+}
+
+.delay-2 {
+  animation-delay: 180ms;
+}
+
+.delay-3 {
+  animation-delay: 250ms;
+}
+
+.delay-4 {
+  animation-delay: 320ms;
+}
+
+@keyframes reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .btn,
+  .menu-link {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}

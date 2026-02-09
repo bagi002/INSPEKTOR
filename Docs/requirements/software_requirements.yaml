@@ -36,3 +36,66 @@
     Implementirati desktop-only pravilo za javnu pocetnu stranicu: primarni interfejs
     se prikazuje samo na desktop sirinama, dok se na manjim ekranima prikazuje poruka
     da aplikacija trenutno podrzava samo desktop uredjaje.
+
+- id: REQ-SW-006
+  name: Registraciona stranica sa validacijom
+  status: Finished
+  refines: REQ-008
+  description: >
+    Implementirati stranicu `/registracija` sa formom koja sadrzi polja za ime,
+    prezime, email, lozinku i potvrdu lozinke. Potrebno je validirati neispravan email,
+    prekratku lozinku i vec postojeci nalog, uz prikaz jasnih poruka o greskama.
+
+- id: REQ-SW-007
+  name: Stranica za prijavu i sesija korisnika
+  status: Finished
+  refines: REQ-009
+  description: >
+    Implementirati stranicu `/prijava` sa validacijom email adrese i lozinke, proverom
+    postojanja naloga i autentifikacijom korisnika preko backend API-ja. Nakon
+    uspesne prijave potrebno je preuzeti JWT token sa servera i cuvati ga u lokalnom
+    storage-u kao klijentsku sesiju.
+
+- id: REQ-SW-008
+  name: Javna navigacija ka auth stranicama
+  status: In Progress
+  refines: REQ-006
+  description: >
+    Obezbediti da javni meni i CTA akcije sa landing stranice vode na rute
+    `/registracija` i `/prijava`, uz konzistentan prikaz levog sidebara na svim
+    javnim i auth stranicama.
+
+- id: REQ-SW-009
+  name: Organizovana backend arhitektura
+  status: In Progress
+  refines: REQ-001
+  description: >
+    Implementirati Node.js + Express backend sa jasnom strukturom po slojevima
+    (config, db, modules, middleware, utils), kako bi odrzavanje i dalje sirenje
+    sistema bilo konzistentno i predvidivo.
+
+- id: REQ-SW-010
+  name: SQLite baza i odrzavanje podataka
+  status: Finished
+  refines: REQ-001
+  description: >
+    Uvesti SQLite bazu podataka sa inicijalizacionim migracijama, indeksima i
+    maintenance podesavanjima (WAL, foreign_keys) radi stabilnog cuvanja korisnickih
+    naloga i pouzdanog rada auth funkcionalnosti.
+
+- id: REQ-SW-011
+  name: Backend endpoint za registraciju
+  status: Finished
+  refines: REQ-008
+  description: >
+    Implementirati `POST /api/auth/register` endpoint koji validira ulazne podatke,
+    proverava jedinstvenost email adrese, hesira lozinku i upisuje korisnika u SQLite
+    bazu uz standardizovan JSON odgovor.
+
+- id: REQ-SW-012
+  name: Backend endpoint za prijavu i JWT
+  status: Finished
+  refines: REQ-009
+  description: >
+    Implementirati `POST /api/auth/login` endpoint koji proverava kredencijale korisnika,
+    vraca validacionu gresku za neispravan unos i generise JWT token pri uspesnoj prijavi.
