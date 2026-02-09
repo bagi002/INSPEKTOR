@@ -1,7 +1,7 @@
 # INSPEKTOR
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
-Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, kao i pocetna stranica za ulogovane korisnike sa posebnim menijem.
+Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, kao i ulogovana pocetna koja prikazuje stvarne slucajeve iz SQLite baze.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
@@ -13,7 +13,7 @@ Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekran
 
 ## Struktura projekta
 - `frontend/` - React aplikacija (landing + auth stranice)
-- `backend/` - Express backend (`/api/auth`, `/api/health`) i SQLite pristup
+- `backend/` - Express backend (`/api/auth`, `/api/cases`, `/api/health`) i SQLite pristup
 - `Instances/` - runtime podaci (npr. SQLite fajl baze)
 - `Docs/requirements/` - high-level i softverski requirements
 - `Docs/architecture/` - runtime, class i block PUML dijagrami
@@ -60,14 +60,25 @@ Tok koriscenja:
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
+- Slucajevi i povezani podaci (osobe, dokumenti, timeline, korisnicki napredak) cuvaju se u SQLite `case_*` tabelama.
 - Pri uspesnoj prijavi backend vraca JWT token koji se cuva u `localStorage` na klijentu.
 - Vite proxy prosledjuje `"/api/*"` zahteve ka backend-u (`http://localhost:3001`).
 
-## Backend API (auth)
+## Backend API
 - `POST /api/auth/register`
   - body: `{ "firstName": "...", "lastName": "...", "email": "...", "password": "..." }`
 - `POST /api/auth/login`
   - body: `{ "email": "...", "password": "..." }`
+- `GET /api/cases/home` (autorizacija: `Bearer <JWT>`)
+  - vraca sekcije i statistiku za ulogovanu pocetnu (`activeCases`, `resolvedCases`, `topRatedPublicCases`, `createdCases`)
+- `POST /api/cases` (autorizacija: `Bearer <JWT>`)
+  - cuva novi slucaj sa organizovanim podacima:
+    - osnovni podaci: `title`, `description`, `publicationStatus`
+    - osobe: `people[]`
+    - dokumenti: `documents[]`
+    - timeline: `timeline[]`
+    - korisnicki napredak: `progress[]`
+  - napomena: trenutno je podrzano cuvanje napretka za autora slucaja (ulogovanog korisnika)
 - `GET /api/health`
   - provera dostupnosti API-ja i baze
 
@@ -91,11 +102,15 @@ Napomena:
   - validacije kredencijala i poruke greske za neispravan unos
   - backend autentifikacija i cuvanje JWT tokena sesije u browseru
 - Pocetna za ulogovane (`/app`):
-  - pregled aktivnih i resenih slucajeva
-  - pregled najocenjenijih javnih slucajeva
-  - pregled slucajeva koje je korisnik kreirao
+  - ucitavanje realnih slucajeva preko `GET /api/cases/home`
+  - pregled aktivnih i resenih slucajeva iz baze
+  - pregled najocenjenijih javnih slucajeva iz baze
+  - pregled slucajeva koje je korisnik kreirao (bez mock podataka)
+  - prikaz loading, greske i praznih stanja
   - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Profil`, `Odjava`)
 - Backend auth:
   - modularna Express struktura (routes/controller/service/repository)
   - SQLite migracije i maintenance podesavanja
-  - endpointi za registraciju, prijavu i health proveru
+- Backend slucajevi:
+  - SQLite model za `cases`, `case_people`, `case_documents`, `case_timeline_items`, `case_user_progress`
+  - JWT-zasticeni endpointi za cuvanje slucaja i prikaz ulogovane pocetne

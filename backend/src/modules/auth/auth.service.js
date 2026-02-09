@@ -1,8 +1,7 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { env } from "../../config/env.js";
 import { HttpError } from "../../utils/httpError.js";
 import { createUser, findUserByEmail } from "./auth.repository.js";
+import { createAccessToken } from "./auth.token.js";
 import {
   validateLoginPayload,
   validateRegistrationPayload,
@@ -18,19 +17,6 @@ function sanitizeUser(user) {
     email: user.email,
     createdAt: user.createdAt,
   };
-}
-
-function createAccessToken(user) {
-  return jwt.sign(
-    {
-      sub: String(user.id),
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    },
-    env.jwtSecret,
-    { expiresIn: env.jwtExpiresIn }
-  );
 }
 
 function throwValidationIfNeeded(errors) {

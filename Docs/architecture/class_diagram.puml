@@ -1,29 +1,16 @@
 @startuml Class Diagram
-title Class Diagram - Auth + Ulogovani Home
+title Class Diagram - Auth + Cases Home Data
 
 class App {
   +resolveRoute(pathname): ReactNode
   +isLoggedIn(): boolean
+  +handleLogout(): void
   +render()
 }
 
 class DesktopGate {
   +desktopMinWidth: number
   +isDesktop(): boolean
-  +render()
-}
-
-class LandingPage {
-  +renderHero()
-  +renderFeatureCards()
-  +renderProcess()
-  +renderCTA()
-}
-
-class RegistrationPage {
-  +formData
-  +errors
-  +handleSubmit()
   +render()
 }
 
@@ -34,27 +21,18 @@ class LoginPage {
   +render()
 }
 
-class AuthApiClient {
-  +registerUser(payload)
-  +loginUser(payload)
-  -validateRegistrationInput(payload)
-  -validateLoginInput(payload)
-}
-
-class AuthPageLayout {
-  +activePath: string
-  +render()
-}
-
-class PublicSidebar {
-  +activePath: string
-  +render()
-}
-
 class LoggedHomePage {
   +user
-  +onLogout()
+  +homeData
+  +loadHomeData()
   +render()
+}
+
+class LoggedHomeData {
+  +normalizeHomeData(rawData)
+  +formatAverageRating(value)
+  +formatStatus(value)
+  +formatReviews(value)
 }
 
 class LoggedSidebar {
@@ -64,17 +42,20 @@ class LoggedSidebar {
   +render()
 }
 
-class LoggedPlaceholderPage {
-  +title
-  +description
-  +render()
+class AuthApiClient {
+  +registerUser(payload)
+  +loginUser(payload)
+}
+
+class CasesApiClient {
+  +fetchLoggedHomeCases()
+  +createCase(payload)
 }
 
 class SessionStorageService {
   +saveSession(token, user)
   +getSession()
   +clearSession()
-  +isAuthenticated()
 }
 
 class ExpressApp {
@@ -86,20 +67,47 @@ class AuthRoutes {
   +POST /login
 }
 
+class CasesRoutes {
+  +GET /home
+  +POST /
+}
+
+class AuthGuardMiddleware {
+  +requireAuth(req, res, next)
+}
+
 class AuthController {
   +registerController(req, res)
   +loginController(req, res)
 }
 
+class CasesController {
+  +getLoggedHomeOverviewController(req, res)
+  +createCaseController(req, res)
+}
+
 class AuthService {
   +registerUser(payload)
   +loginUser(payload)
-  -createAccessToken(user)
+}
+
+class CasesService {
+  +getLoggedHomeOverview(userId)
+  +createCase(payload, userId)
+}
+
+class CasesValidation {
+  +validateCreateCasePayload(payload)
 }
 
 class AuthRepository {
   +findUserByEmail(email)
   +createUser(userData)
+}
+
+class CasesRepository {
+  +createCaseWithDetails(payload)
+  +getHomeOverviewRows(userId)
 }
 
 class DatabaseModule {
@@ -110,49 +118,38 @@ class DatabaseModule {
 
 class SQLiteDatabase {
   +users
-}
-
-class DesktopNotice {
-  +render()
-}
-
-class ThemeTokens {
-  +surfaceCard
-  +accentBlueDark
-  +accentRed
+  +cases
+  +case_people
+  +case_documents
+  +case_timeline_items
+  +case_user_progress
 }
 
 App --> DesktopGate
-DesktopGate --> LandingPage
-DesktopGate --> RegistrationPage
 DesktopGate --> LoginPage
 DesktopGate --> LoggedHomePage
-DesktopGate --> LoggedPlaceholderPage
-DesktopGate --> DesktopNotice
-
-LandingPage *-- PublicSidebar
-RegistrationPage *-- AuthPageLayout
-LoginPage *-- AuthPageLayout
-AuthPageLayout *-- PublicSidebar
 LoggedHomePage *-- LoggedSidebar
-LoggedPlaceholderPage *-- LoggedSidebar
+LoggedHomePage ..> LoggedHomeData
 
-RegistrationPage ..> AuthApiClient
-LoginPage ..> AuthApiClient
 App ..> SessionStorageService
+LoginPage ..> AuthApiClient
+LoggedHomePage ..> CasesApiClient
 AuthApiClient ..> SessionStorageService
-
-LandingPage ..> ThemeTokens
-RegistrationPage ..> ThemeTokens
-LoginPage ..> ThemeTokens
-LoggedHomePage ..> ThemeTokens
-LoggedPlaceholderPage ..> ThemeTokens
+CasesApiClient ..> SessionStorageService
 
 AuthApiClient ..> ExpressApp
+CasesApiClient ..> ExpressApp
 ExpressApp --> AuthRoutes
+ExpressApp --> CasesRoutes
+CasesRoutes --> AuthGuardMiddleware
 AuthRoutes --> AuthController
+CasesRoutes --> CasesController
 AuthController --> AuthService
+CasesController --> CasesService
+CasesService --> CasesValidation
 AuthService --> AuthRepository
+CasesService --> CasesRepository
 AuthRepository --> DatabaseModule
+CasesRepository --> DatabaseModule
 DatabaseModule --> SQLiteDatabase
 @enduml

@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Javni i Ulogovani Interfejs
+title Block Diagram - Ulogovana pocetna sa realnim slucajevima
 
 package "Frontend" {
   [App Shell]
@@ -8,22 +8,26 @@ package "Frontend" {
   [Protected Route Guard]
   [Public Auth Pages]
   [Logged Home Page]
-  [Logged Placeholder Pages]
-  [Public Sidebar]
+  [Logged Home Data Helpers]
   [Logged Sidebar]
   [Auth API Client]
+  [Cases API Client]
   [Session Storage]
   [Logout Action]
   [Desktop Warning View]
-  [Theme Tokens]
 }
 
 package "Backend (Node.js + Express)" {
   [Express App]
   [Auth Routes]
+  [Cases Routes]
+  [Auth Guard Middleware]
   [Auth Service]
+  [Cases Service]
+  [Cases Validation]
   [JWT Token Service]
   [User Repository]
+  [Cases Repository]
   [SQLite Module]
   [Migration Runner]
   [Health Route]
@@ -37,26 +41,30 @@ database "SQLite Database" as Db
 [Route Resolver] --> [Protected Route Guard]
 [Route Resolver] --> [Public Auth Pages]
 [Protected Route Guard] --> [Logged Home Page]
-[Protected Route Guard] --> [Logged Placeholder Pages]
-[Public Auth Pages] --> [Public Sidebar]
-[Logged Home Page] --> [Logged Sidebar]
-[Logged Placeholder Pages] --> [Logged Sidebar]
 [Public Auth Pages] --> [Auth API Client]
+[Logged Home Page] --> [Logged Sidebar]
+[Logged Home Page] --> [Cases API Client]
+[Logged Home Page] --> [Logged Home Data Helpers]
 [Auth API Client] --> [Session Storage]
+[Cases API Client] --> [Session Storage]
 [Logout Action] --> [Session Storage]
 [Logged Sidebar] --> [Logout Action]
 
-[Public Auth Pages] --> [Theme Tokens]
-[Logged Home Page] --> [Theme Tokens]
-[Logged Placeholder Pages] --> [Theme Tokens]
-
 [Auth API Client] --> [Express App]
+[Cases API Client] --> [Express App]
 [Express App] --> [Auth Routes]
+[Express App] --> [Cases Routes]
 [Express App] --> [Health Route]
 [Auth Routes] --> [Auth Service]
+[Cases Routes] --> [Auth Guard Middleware]
+[Cases Routes] --> [Cases Service]
+[Auth Guard Middleware] --> [JWT Token Service]
 [Auth Service] --> [JWT Token Service]
 [Auth Service] --> [User Repository]
+[Cases Service] --> [Cases Validation]
+[Cases Service] --> [Cases Repository]
 [User Repository] --> [SQLite Module]
+[Cases Repository] --> [SQLite Module]
 [SQLite Module] --> Db
 [Migration Runner] --> Db
 [Health Route] --> [SQLite Module]

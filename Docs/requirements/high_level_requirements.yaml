@@ -41,7 +41,7 @@
 
 - id: REQ-005
   name: Pocetna stranica za ulogovane korisnike
-  status: In Progress
+  status: Finished
   description: >
     Treba da sadrzi pregled slucajja koji se trenutno rijesava 
     Treba da sadrzi pregled slucaja koji su rijeseni
@@ -87,7 +87,7 @@
 
 - id: REQ-010
   name: Slucaj
-  status: Draft
+  status: In Progress
   description: >
     Svaki slucaj imea autora koji  g aje napravio svoju ocjenu i broj recenzija na osnovu kojih stoji ocjena
     naziv slucajaj i opis slucajja

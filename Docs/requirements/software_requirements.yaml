@@ -101,13 +101,13 @@
     vraca validacionu gresku za neispravan unos i generise JWT token pri uspesnoj prijavi.
 
 - id: REQ-SW-013
-  name: Pocetna stranica za ulogovanog korisnika - Mokovani podaci
+  name: Pocetna stranica za ulogovanog korisnika - Realni podaci iz baze
   status: Finished
   refines: REQ-005
   description: >
     Implementirati pocetnu stranicu za ulogovanog korisnika koja prikazuje dobrodoslicu sa imenom
-    korisnika i osnovne informacije o aplikaciji, koristeci mokovane podatke dok se ne implementira
-    backend integracija.
+    korisnika i stvarne podatke o slucajevima dobijene preko backend API-ja, bez mokovanog
+    sadrzaja u prikazu listi i statistika.
 
 - id: REQ-SW-014
   name: Meni i routing za ulogovano stanje
@@ -117,3 +117,30 @@
     Implementirati meni za ulogovane korisnike sa stavkama Pocetna, Kreiranje slucaja,
     Profil i Odjava, kao i zasticen frontend routing koji preusmerava korisnika na
     odgovarajucu pocetnu stranicu nakon uspesne prijave.
+
+- id: REQ-SW-015
+  name: Model podataka za slucaj u SQLite bazi
+  status: Finished
+  refines: REQ-010
+  description: >
+    Uvesti strukturu tabele za slucaj i povezane entitete (osobe, dokumenti, stavke vremenske
+    linije i korisnicki napredak kroz slucaj), sa stranim kljucevima, indeksima i ogranicenjima
+    integriteta radi pouzdanog cuvanja i organizacije podataka.
+
+- id: REQ-SW-016
+  name: Backend API za kreiranje i cuvanje slucaja
+  status: Finished
+  refines: REQ-010
+  description: >
+    Implementirati zasticeni backend endpoint za kreiranje slucaja koji prihvata osnovne podatke,
+    dokumente, osobe i vremensku liniju, validira payload i cuva sve povezane zapise unutar jedne
+    transakcije.
+
+- id: REQ-SW-017
+  name: Backend pregled slucajeva za ulogovanu pocetnu
+  status: Finished
+  refines: REQ-005
+  description: >
+    Implementirati zasticeni backend endpoint za prikaz ulogovane pocetne stranice koji vraca
+    stvarne sekcije slucajeva (aktivni, reseni, najbolje ocenjeni javni i kreirani slucajevi)
+    i agregirane statistike korisnika.

@@ -105,3 +105,25 @@
   font-weight: 700;
   color: #184271;
 }
+
+.empty-state {
+  margin: 0;
+  padding: 0.85rem 0.95rem;
+  border-radius: 10px;
+  border: 1px dashed #bfd0e2;
+  color: #4d6785;
+  background: #f5f9ff;
+}
+
+.error-banner {
+  margin: 0 0 0.9rem;
+  padding: 0.78rem 0.88rem;
+  border-radius: 10px;
+  border: 1px solid #d8b7bb;
+  background: #fff3f4;
+  color: #7d2a33;
+}
+
+.inline-action {
+  width: fit-content;
+}

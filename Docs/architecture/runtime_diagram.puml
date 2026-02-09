@@ -1,85 +1,72 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Ulogovani korisnik i pocetna stranica
+title Runtime Diagram - Auth + Realni slucajevi na ulogovanoj pocetnoj
 
-actor "Neulogovani korisnik" as Guest
+actor "Korisnik" as User
 participant "Frontend Router" as Router
 participant "DesktopGate" as Gate
-participant "LandingPage" as Landing
-participant "RegistrationPage" as Registration
 participant "LoginPage" as Login
 participant "App Route Guard" as Guard
 participant "LoggedHomePage" as LoggedHome
-participant "LoggedSidebar" as LoggedMenu
-participant "Auth API Client" as ApiClient
+participant "Cases API Client" as CasesClient
+participant "Auth API Client" as AuthClient
 participant "Express Auth API" as AuthApi
+participant "Express Cases API" as CasesApi
+participant "Auth Guard (JWT)" as JwtGuard
 participant "Auth Service" as AuthService
+participant "Cases Service" as CasesService
+participant "Cases Repository" as CasesRepo
 database "SQLite users tabela" as UsersStore
+database "SQLite case_* tabele" as CasesStore
 database "LocalStorage (session)" as SessionStore
 participant "Desktop Notice View" as Notice
 
-Guest -> Router: Otvara /registracija
-Router -> Gate: Provera sirine viewport-a
-
-alt Desktop sirina
-  Gate -> Registration: Render registracione forme
-  Guest -> Registration: Unos podataka i submit
-  Registration -> ApiClient: POST /api/auth/register
-  ApiClient -> AuthApi: HTTP zahtev
-  AuthApi -> AuthService: validate + register
-  AuthService -> UsersStore: Provera email + upis korisnika
-
-  alt Neispravan unos ili vec postojeci email
-    AuthService --> AuthApi: 4xx + validacione greske
-    AuthApi --> ApiClient: JSON greska
-    ApiClient --> Registration: Polja sa greskama
-    Registration --> Guest: Prikaz poruka o greskama
-  else Ispravan unos
-    AuthService --> AuthApi: 201 + user payload
-    AuthApi --> ApiClient: JSON uspeh
-    ApiClient --> Registration: Potvrda registracije
-    Registration --> Guest: Poruka o uspehu i link ka prijavi
-  end
-else Manja sirina od desktop praga
-  Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
-  Notice --> Guest: Prikaz ogranicenog ekrana
-end
-
-Guest -> Router: Otvara /prijava
+User -> Router: Otvara /prijava
 Router -> Gate: Provera sirine viewport-a
 
 alt Desktop sirina
   Gate -> Login: Render prijavne forme
-  Guest -> Login: Unos kredencijala i submit
-  Login -> ApiClient: POST /api/auth/login
-  ApiClient -> AuthApi: HTTP zahtev
+  User -> Login: Unos kredencijala i submit
+  Login -> AuthClient: POST /api/auth/login
+  AuthClient -> AuthApi: HTTP zahtev
   AuthApi -> AuthService: validate + login
   AuthService -> UsersStore: Provera korisnika i lozinke
 
   alt Neispravni podaci
     AuthService --> AuthApi: 401/400 greska
-    AuthApi --> ApiClient: JSON greska
-    ApiClient --> Login: Poruke o greskama
-    Login --> Guest: Prikaz poruke o gresci
+    AuthApi --> AuthClient: JSON greska
+    AuthClient --> Login: Poruke o greskama
+    Login --> User: Prikaz greske
   else Uspesna prijava
     AuthService --> AuthApi: JWT token + user payload
-    AuthApi --> ApiClient: JSON uspeh
-    ApiClient -> SessionStore: Upis tokena i korisnickih podataka
-    ApiClient --> Login: Potvrda uspesne prijave
+    AuthApi --> AuthClient: JSON uspeh
+    AuthClient -> SessionStore: Upis tokena i korisnika
     Login -> Router: Navigacija na /app
-    Router -> Guard: Provera da li postoji sesija
-    Guard -> LoggedHome: Render ulogovane pocetne stranice
-    LoggedHome -> LoggedMenu: Prikaz menija za ulogovane
-    LoggedHome --> Guest: Pregled aktivnih, resenih i kreiranih slucajeva
+    Router -> Guard: Provera sesije
+    Guard -> LoggedHome: Render ulogovane pocetne
+    LoggedHome -> CasesClient: GET /api/cases/home (Bearer token)
+    CasesClient -> CasesApi: HTTP zahtev
+    CasesApi -> JwtGuard: Verifikacija tokena
+
+    alt Token validan
+      JwtGuard -> CasesService: getLoggedHomeOverview(userId)
+      CasesService -> CasesRepo: upit sekcija + statistika
+      CasesRepo -> CasesStore: SELECT active/resolved/top-rated/created
+      CasesStore --> CasesRepo: realni podaci
+      CasesRepo --> CasesService: agregirani rezultati
+      CasesService --> CasesApi: response payload
+      CasesApi --> CasesClient: JSON uspeh
+      CasesClient --> LoggedHome: Render realnih slucajeva
+    else Token nije validan
+      JwtGuard --> CasesApi: 401 Unauthorized
+      CasesApi --> CasesClient: JSON greska
+      CasesClient --> LoggedHome: Pokretanje odjave
+      LoggedHome -> SessionStore: Brisanje sesije
+      LoggedHome -> Router: Navigacija na /
+    end
   end
 else Manja sirina od desktop praga
   Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
-  Notice --> Guest: Prikaz ogranicenog ekrana
+  Notice --> User: Prikaz ogranicenog ekrana
 end
-
-Guest -> LoggedMenu: Klik na Odjava
-LoggedMenu -> SessionStore: Brisanje tokena i korisnickih podataka
-LoggedMenu -> Router: Navigacija na /
-Router -> Gate: Provera viewport-a
-Gate -> Landing: Render javne pocetne stranice
 
 @enduml

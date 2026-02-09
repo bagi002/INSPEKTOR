@@ -37,10 +37,18 @@ export function getDatabase() {
 
 export async function getDatabaseHealth() {
   const database = getDatabase();
-  const row = await getOne(database, "SELECT COUNT(*) AS usersCount FROM users");
+  const row = await getOne(
+    database,
+    `
+      SELECT
+        (SELECT COUNT(*) FROM users) AS usersCount,
+        (SELECT COUNT(*) FROM cases) AS casesCount
+    `
+  );
 
   return {
     usersCount: row?.usersCount ?? 0,
+    casesCount: row?.casesCount ?? 0,
     dbPath: env.dbPath,
   };
 }
