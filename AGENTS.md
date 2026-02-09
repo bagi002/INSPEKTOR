@@ -44,6 +44,7 @@ Za svaki dobijeni prompt zahtjev, AI agent mora izvršiti sledeće korake u nave
 - **Finished**: Završeno, postavlja samo čovek.
 
 ## Bitne Napomene
+- Ti nikada ne pokreci build ili run aplikacije, to je zadatak čoveka.
 - Svaki implementirani requirement mora biti u statusu "In Review".
 - AI sme da postavlja samo "Draft" ili "In Review"; "Finished" postavlja čovek.
 - Svaki softverski requirement mora imati važeći `refines` ka high-level requirementu; bez toga je nevažeći.

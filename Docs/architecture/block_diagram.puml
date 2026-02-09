@@ -1,13 +1,19 @@
 @startuml Block Diagram
-title Block Diagram - Frontend + Backend Auth Sistem
+title Block Diagram - Javni i Ulogovani Interfejs
 
 package "Frontend" {
   [App Shell]
   [Desktop Policy Gate]
+  [Route Resolver]
+  [Protected Route Guard]
   [Public Auth Pages]
+  [Logged Home Page]
+  [Logged Placeholder Pages]
   [Public Sidebar]
+  [Logged Sidebar]
   [Auth API Client]
   [Session Storage]
+  [Logout Action]
   [Desktop Warning View]
   [Theme Tokens]
 }
@@ -26,12 +32,23 @@ package "Backend (Node.js + Express)" {
 database "SQLite Database" as Db
 
 [App Shell] --> [Desktop Policy Gate]
-[Desktop Policy Gate] --> [Public Auth Pages]
+[Desktop Policy Gate] --> [Route Resolver]
 [Desktop Policy Gate] --> [Desktop Warning View]
+[Route Resolver] --> [Protected Route Guard]
+[Route Resolver] --> [Public Auth Pages]
+[Protected Route Guard] --> [Logged Home Page]
+[Protected Route Guard] --> [Logged Placeholder Pages]
 [Public Auth Pages] --> [Public Sidebar]
+[Logged Home Page] --> [Logged Sidebar]
+[Logged Placeholder Pages] --> [Logged Sidebar]
 [Public Auth Pages] --> [Auth API Client]
-[Public Auth Pages] --> [Theme Tokens]
 [Auth API Client] --> [Session Storage]
+[Logout Action] --> [Session Storage]
+[Logged Sidebar] --> [Logout Action]
+
+[Public Auth Pages] --> [Theme Tokens]
+[Logged Home Page] --> [Theme Tokens]
+[Logged Placeholder Pages] --> [Theme Tokens]
 
 [Auth API Client] --> [Express App]
 [Express App] --> [Auth Routes]

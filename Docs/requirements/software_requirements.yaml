@@ -58,7 +58,7 @@
 
 - id: REQ-SW-008
   name: Javna navigacija ka auth stranicama
-  status: In Progress
+  status: Finished
   refines: REQ-006
   description: >
     Obezbediti da javni meni i CTA akcije sa landing stranice vode na rute
@@ -99,3 +99,21 @@
   description: >
     Implementirati `POST /api/auth/login` endpoint koji proverava kredencijale korisnika,
     vraca validacionu gresku za neispravan unos i generise JWT token pri uspesnoj prijavi.
+
+- id: REQ-SW-013
+  name: Pocetna stranica za ulogovanog korisnika - Mokovani podaci
+  status: Finished
+  refines: REQ-005
+  description: >
+    Implementirati pocetnu stranicu za ulogovanog korisnika koja prikazuje dobrodoslicu sa imenom
+    korisnika i osnovne informacije o aplikaciji, koristeci mokovane podatke dok se ne implementira
+    backend integracija.
+
+- id: REQ-SW-014
+  name: Meni i routing za ulogovano stanje
+  status: Finished
+  refines: REQ-006
+  description: >
+    Implementirati meni za ulogovane korisnike sa stavkama Pocetna, Kreiranje slucaja,
+    Profil i Odjava, kao i zasticen frontend routing koji preusmerava korisnika na
+    odgovarajucu pocetnu stranicu nakon uspesne prijave.

@@ -2,5 +2,6 @@
 @import "./styles/layout.css";
 @import "./styles/landing.css";
 @import "./styles/auth.css";
+@import "./styles/logged-home.css";
 @import "./styles/desktop-notice.css";
 @import "./styles/animations.css";

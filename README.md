@@ -1,7 +1,7 @@
 # INSPEKTOR
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
-Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, sa povezanim backend auth API-jem i SQLite bazom.
+Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, kao i pocetna stranica za ulogovane korisnike sa posebnim menijem.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
@@ -50,11 +50,13 @@ Frontend:
 - Pocetna: `http://localhost:5173/`
 - Registracija: `http://localhost:5173/registracija`
 - Prijava: `http://localhost:5173/prijava`
+- Ulogovana pocetna: `http://localhost:5173/app`
 
 Tok koriscenja:
 1. Otvori `/registracija` i kreiraj nalog.
 2. Nakon uspesne registracije otvori `/prijava`.
 3. Prijavi se istim podacima.
+4. Nakon prijave automatski se otvara ulogovana pocetna (`/app`).
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
@@ -88,6 +90,11 @@ Napomena:
 - Prijava (`/prijava`):
   - validacije kredencijala i poruke greske za neispravan unos
   - backend autentifikacija i cuvanje JWT tokena sesije u browseru
+- Pocetna za ulogovane (`/app`):
+  - pregled aktivnih i resenih slucajeva
+  - pregled najocenjenijih javnih slucajeva
+  - pregled slucajeva koje je korisnik kreirao
+  - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Profil`, `Odjava`)
 - Backend auth:
   - modularna Express struktura (routes/controller/service/repository)
   - SQLite migracije i maintenance podesavanja

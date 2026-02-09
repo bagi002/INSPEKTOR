@@ -41,7 +41,7 @@
 
 - id: REQ-005
   name: Pocetna stranica za ulogovane korisnike
-  status: Draft
+  status: In Progress
   description: >
     Treba da sadrzi pregled slucajja koji se trenutno rijesava 
     Treba da sadrzi pregled slucaja koji su rijeseni

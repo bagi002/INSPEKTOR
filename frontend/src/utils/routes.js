@@ -4,6 +4,12 @@ export const PUBLIC_ROUTES = {
   LOGIN: "/prijava",
 };
 
+export const AUTH_ROUTES = {
+  HOME: "/app",
+  CREATE_CASE: "/slucaj/novi",
+  PROFILE: "/profil",
+};
+
 export function normalizePath(pathname) {
   if (!pathname) {
     return PUBLIC_ROUTES.HOME;

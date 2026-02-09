@@ -1,24 +1,11 @@
+import { saveSession } from "./sessionStorage";
+
 const API_BASE = "/api/auth";
-const SESSION_TOKEN_STORAGE_KEY = "inspektor_session_token_v1";
-const SESSION_USER_STORAGE_KEY = "inspektor_session_user_v1";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const MIN_PASSWORD_LENGTH = 8;
 
-function isBrowser() {
-  return typeof window !== "undefined" && Boolean(window.localStorage);
-}
-
 function normalizeEmail(email) {
   return (email || "").trim().toLowerCase();
-}
-
-function saveSession(token, user) {
-  if (!isBrowser()) {
-    return;
-  }
-
-  window.localStorage.setItem(SESSION_TOKEN_STORAGE_KEY, token);
-  window.localStorage.setItem(SESSION_USER_STORAGE_KEY, JSON.stringify(user));
 }
 
 async function parseResponseBody(response) {

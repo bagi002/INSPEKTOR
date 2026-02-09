@@ -1,8 +1,9 @@
 @startuml Class Diagram
-title Class Diagram - Full Auth Stack
+title Class Diagram - Auth + Ulogovani Home
 
 class App {
   +resolveRoute(pathname): ReactNode
+  +isLoggedIn(): boolean
   +render()
 }
 
@@ -29,7 +30,6 @@ class RegistrationPage {
 class LoginPage {
   +formData
   +errors
-  +sessionInfo
   +handleSubmit()
   +render()
 }
@@ -49,6 +49,32 @@ class AuthPageLayout {
 class PublicSidebar {
   +activePath: string
   +render()
+}
+
+class LoggedHomePage {
+  +user
+  +onLogout()
+  +render()
+}
+
+class LoggedSidebar {
+  +activePath
+  +user
+  +onLogout()
+  +render()
+}
+
+class LoggedPlaceholderPage {
+  +title
+  +description
+  +render()
+}
+
+class SessionStorageService {
+  +saveSession(token, user)
+  +getSession()
+  +clearSession()
+  +isAuthenticated()
 }
 
 class ExpressApp {
@@ -100,19 +126,27 @@ App --> DesktopGate
 DesktopGate --> LandingPage
 DesktopGate --> RegistrationPage
 DesktopGate --> LoginPage
+DesktopGate --> LoggedHomePage
+DesktopGate --> LoggedPlaceholderPage
 DesktopGate --> DesktopNotice
 
 LandingPage *-- PublicSidebar
 RegistrationPage *-- AuthPageLayout
 LoginPage *-- AuthPageLayout
 AuthPageLayout *-- PublicSidebar
+LoggedHomePage *-- LoggedSidebar
+LoggedPlaceholderPage *-- LoggedSidebar
 
 RegistrationPage ..> AuthApiClient
 LoginPage ..> AuthApiClient
+App ..> SessionStorageService
+AuthApiClient ..> SessionStorageService
 
 LandingPage ..> ThemeTokens
 RegistrationPage ..> ThemeTokens
 LoginPage ..> ThemeTokens
+LoggedHomePage ..> ThemeTokens
+LoggedPlaceholderPage ..> ThemeTokens
 
 AuthApiClient ..> ExpressApp
 ExpressApp --> AuthRoutes

@@ -2,19 +2,63 @@ import "./styles.css";
 import DesktopGate from "./components/DesktopGate";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
+import LoggedHomePage from "./components/LoggedHomePage";
+import LoggedPlaceholderPage from "./components/LoggedPlaceholderPage";
 import RegistrationPage from "./components/RegistrationPage";
-import { PUBLIC_ROUTES, normalizePath } from "./utils/routes";
+import { clearSession, getSession } from "./services/sessionStorage";
+import { AUTH_ROUTES, PUBLIC_ROUTES, normalizePath } from "./utils/routes";
+
+const PRIVATE_ROUTES = [
+  AUTH_ROUTES.HOME,
+  AUTH_ROUTES.CREATE_CASE,
+  AUTH_ROUTES.PROFILE,
+];
 
 function App() {
   const currentPath = normalizePath(
     typeof window === "undefined" ? PUBLIC_ROUTES.HOME : window.location.pathname
   );
+  const session = getSession();
+  const isLoggedIn = Boolean(session?.token && session?.user);
+
+  function handleLogout() {
+    clearSession();
+    if (typeof window !== "undefined") {
+      window.location.href = PUBLIC_ROUTES.HOME;
+    }
+  }
 
   let activePage = <LandingPage />;
-  if (currentPath === PUBLIC_ROUTES.LOGIN) {
-    activePage = <LoginPage />;
-  } else if (currentPath === PUBLIC_ROUTES.REGISTRATION) {
-    activePage = <RegistrationPage />;
+  if (!isLoggedIn) {
+    if (currentPath === PUBLIC_ROUTES.LOGIN || PRIVATE_ROUTES.includes(currentPath)) {
+      activePage = <LoginPage />;
+    } else if (currentPath === PUBLIC_ROUTES.REGISTRATION) {
+      activePage = <RegistrationPage />;
+    }
+  } else {
+    if (currentPath === AUTH_ROUTES.CREATE_CASE) {
+      activePage = (
+        <LoggedPlaceholderPage
+          title="Kreiranje novog slucaja"
+          description="Ovde ce biti forma za kreiranje kompletnog istraznog scenarija."
+          activePath={AUTH_ROUTES.CREATE_CASE}
+          user={session.user}
+          onLogout={handleLogout}
+        />
+      );
+    } else if (currentPath === AUTH_ROUTES.PROFILE) {
+      activePage = (
+        <LoggedPlaceholderPage
+          title="Profil korisnika"
+          description="Ovde ce biti prikaz profila i aktivnosti ulogovanog korisnika."
+          activePath={AUTH_ROUTES.PROFILE}
+          user={session.user}
+          onLogout={handleLogout}
+        />
+      );
+    } else {
+      activePage = <LoggedHomePage user={session.user} onLogout={handleLogout} />;
+    }
   }
 
   return (

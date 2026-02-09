@@ -1,11 +1,15 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Login/Register sa Backendom i SQLite bazom
+title Runtime Diagram - Ulogovani korisnik i pocetna stranica
 
 actor "Neulogovani korisnik" as Guest
 participant "Frontend Router" as Router
 participant "DesktopGate" as Gate
+participant "LandingPage" as Landing
 participant "RegistrationPage" as Registration
 participant "LoginPage" as Login
+participant "App Route Guard" as Guard
+participant "LoggedHomePage" as LoggedHome
+participant "LoggedSidebar" as LoggedMenu
 participant "Auth API Client" as ApiClient
 participant "Express Auth API" as AuthApi
 participant "Auth Service" as AuthService
@@ -61,11 +65,21 @@ alt Desktop sirina
     AuthApi --> ApiClient: JSON uspeh
     ApiClient -> SessionStore: Upis tokena i korisnickih podataka
     ApiClient --> Login: Potvrda uspesne prijave
-    Login --> Guest: Potvrda uspesne prijave
+    Login -> Router: Navigacija na /app
+    Router -> Guard: Provera da li postoji sesija
+    Guard -> LoggedHome: Render ulogovane pocetne stranice
+    LoggedHome -> LoggedMenu: Prikaz menija za ulogovane
+    LoggedHome --> Guest: Pregled aktivnih, resenih i kreiranih slucajeva
   end
 else Manja sirina od desktop praga
   Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
   Notice --> Guest: Prikaz ogranicenog ekrana
 end
+
+Guest -> LoggedMenu: Klik na Odjava
+LoggedMenu -> SessionStore: Brisanje tokena i korisnickih podataka
+LoggedMenu -> Router: Navigacija na /
+Router -> Gate: Provera viewport-a
+Gate -> Landing: Render javne pocetne stranice
 
 @enduml

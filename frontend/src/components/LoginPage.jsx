@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AuthPageLayout from "./AuthPageLayout";
 import { loginUser } from "../services/authStorage";
-import { PUBLIC_ROUTES } from "../utils/routes";
+import { AUTH_ROUTES, PUBLIC_ROUTES } from "../utils/routes";
 
 const initialFormState = {
   email: "",
@@ -11,7 +11,6 @@ const initialFormState = {
 function LoginPage() {
   const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState({});
-  const [sessionInfo, setSessionInfo] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleChange(event) {
@@ -22,7 +21,6 @@ function LoginPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setSessionInfo(null);
     setErrors({});
     setIsSubmitting(true);
 
@@ -34,11 +32,9 @@ function LoginPage() {
     }
 
     setErrors({});
-    setFormData((previous) => ({ ...previous, password: "" }));
-    setSessionInfo({
-      fullName: `${result.user.firstName} ${result.user.lastName}`,
-      tokenPreview: `${result.token.slice(0, 34)}...`,
-    });
+    if (typeof window !== "undefined") {
+      window.location.href = AUTH_ROUTES.HOME;
+    }
   }
 
   return (
@@ -92,15 +88,6 @@ function LoginPage() {
         </div>
 
         {errors.general ? <p className="form-feedback-error">{errors.general}</p> : null}
-        {sessionInfo ? (
-          <div className="form-success form-success-panel">
-            <p>
-              Uspesna prijava korisnika <strong>{sessionInfo.fullName}</strong>.
-            </p>
-            <p>Kreiran token sesije: {sessionInfo.tokenPreview}</p>
-            <a href={PUBLIC_ROUTES.HOME}>Nazad na pocetnu</a>
-          </div>
-        ) : null}
       </form>
     </AuthPageLayout>
   );
