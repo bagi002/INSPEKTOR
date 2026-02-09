@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import LoggedCaseSection from "./LoggedCaseSection";
 import LoggedSidebar from "./LoggedSidebar";
 import {
   EMPTY_HOME_DATA,
@@ -8,26 +9,12 @@ import {
   normalizeHomeData,
 } from "./loggedHomeData";
 import { fetchLoggedHomeCases } from "../services/casesApi";
-import { AUTH_ROUTES } from "../utils/routes";
-
-function renderSimpleCaseCards(items, renderDetails, emptyMessage) {
-  if (items.length === 0) {
-    return <p className="empty-state">{emptyMessage}</p>;
-  }
-
-  return items.map((item) => (
-    <article className="case-card" key={item.id || item.title}>
-      <h4>{item.title}</h4>
-      {renderDetails(item)}
-    </article>
-  ));
-}
+import { AUTH_ROUTES, CASE_WORKSPACE_MODES, buildCaseWorkspaceRoute } from "../utils/routes";
 
 function LoggedHomePage({ user, onLogout }) {
   const [homeData, setHomeData] = useState(EMPTY_HOME_DATA);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-
   const quickStats = useMemo(
     () => [
       { label: "Aktivni slucajevi", value: String(homeData.summary.activeCount) },
@@ -40,7 +27,10 @@ function LoggedHomePage({ user, onLogout }) {
     ],
     [homeData.summary]
   );
-
+  const draftCreationCases = useMemo(
+    () => homeData.sections.createdCases.filter((item) => item.publicationStatus === "draft"),
+    [homeData.sections.createdCases]
+  );
   const loadHomeData = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage("");
@@ -117,69 +107,85 @@ function LoggedHomePage({ user, onLogout }) {
               </div>
             </section>
 
-            <section className="card reveal delay-2">
-              <h3>Slucajevi koje trenutno resavas</h3>
-              <div className="case-grid">
-                {renderSimpleCaseCards(
-                  homeData.sections.activeCases,
-                  (item) => (
-                    <>
-                      <p className="case-meta">Faza istrage: {item.progressPercent || 0}%</p>
-                      <p>{item.description}</p>
-                    </>
-                  ),
-                  "Trenutno nemas aktivnih slucajeva."
-                )}
-              </div>
-            </section>
+            <LoggedCaseSection
+              title="Slucajevi koje trenutno resavas"
+              items={homeData.sections.activeCases}
+              emptyMessage="Trenutno nemas aktivnih slucajeva."
+              renderDetails={(item) => (
+                <>
+                  <p className="case-meta">Faza istrage: {item.progressPercent || 0}%</p>
+                  <p>{item.description}</p>
+                  <a
+                    className="btn btn-secondary inline-action case-inline-link"
+                    href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}
+                  >
+                    Nastavi resavanje
+                  </a>
+                </>
+              )}
+            />
 
-            <section className="card reveal delay-3">
-              <h3>Reseni slucajevi</h3>
-              <div className="case-grid case-grid-compact">
-                {renderSimpleCaseCards(
-                  homeData.sections.resolvedCases,
-                  (item) => (
-                    <p>
-                      Ocena: <strong>{formatAverageRating(item.rating)}</strong> |{" "}
-                      {formatReviews(item.reviews)}
-                    </p>
-                  ),
-                  "Jos nemas resene slucajeve."
-                )}
-              </div>
-            </section>
+            <LoggedCaseSection
+              title="Reseni slucajevi"
+              items={homeData.sections.resolvedCases}
+              gridClassName="case-grid case-grid-compact"
+              delayClass="delay-3"
+              emptyMessage="Jos nemas resene slucajeve."
+              renderDetails={(item) => (
+                <p>
+                  Ocena: <strong>{formatAverageRating(item.rating)}</strong> |{" "}
+                  {formatReviews(item.reviews)}
+                </p>
+              )}
+            />
 
-            <section className="card reveal delay-3">
-              <h3>Najocenjeniji javni slucajevi</h3>
-              <div className="case-grid case-grid-compact">
-                {renderSimpleCaseCards(
-                  homeData.sections.topRatedPublicCases,
-                  (item) => (
-                    <p>
-                      Ocena: <strong>{formatAverageRating(item.rating)}</strong> | Autor:{" "}
-                      {item.author}
-                    </p>
-                  ),
-                  "Nema javnih slucajeva za prikaz."
-                )}
-              </div>
-            </section>
+            <LoggedCaseSection
+              title="Slucajevi u fazi kreiranja"
+              items={draftCreationCases}
+              gridClassName="case-grid case-grid-compact"
+              delayClass="delay-3"
+              emptyMessage="Trenutno nemas slucajeve u fazi kreiranja."
+              renderDetails={(item) => (
+                <>
+                  <p>
+                    Status: <strong>{formatStatus(item.publicationStatus)}</strong>
+                  </p>
+                  <a
+                    className="btn btn-secondary inline-action case-inline-link"
+                    href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.CREATE)}
+                  >
+                    Nastavi kreiranje
+                  </a>
+                </>
+              )}
+            />
 
-            <section className="card reveal delay-4">
-              <h3>Slucajevi koje si kreirao</h3>
-              <div className="case-grid case-grid-compact">
-                {renderSimpleCaseCards(
-                  homeData.sections.createdCases,
-                  (item) => (
-                    <p>
-                      Status: <strong>{formatStatus(item.publicationStatus)}</strong> | Ocena:{" "}
-                      {formatAverageRating(item.rating)} ({formatReviews(item.reviews)})
-                    </p>
-                  ),
-                  "Jos nemas kreirane slucajeve."
-                )}
-              </div>
-            </section>
+            <LoggedCaseSection
+              title="Najocenjeniji javni slucajevi"
+              items={homeData.sections.topRatedPublicCases}
+              gridClassName="case-grid case-grid-compact"
+              delayClass="delay-3"
+              emptyMessage="Nema javnih slucajeva za prikaz."
+              renderDetails={(item) => (
+                <p>
+                  Ocena: <strong>{formatAverageRating(item.rating)}</strong> | Autor: {item.author}
+                </p>
+              )}
+            />
+
+            <LoggedCaseSection
+              title="Slucajevi koje si kreirao"
+              items={homeData.sections.createdCases}
+              gridClassName="case-grid case-grid-compact"
+              delayClass="delay-4"
+              emptyMessage="Jos nemas kreirane slucajeve."
+              renderDetails={(item) => (
+                <p>
+                  Status: <strong>{formatStatus(item.publicationStatus)}</strong> | Ocena:{" "}
+                  {formatAverageRating(item.rating)} ({formatReviews(item.reviews)})
+                </p>
+              )}
+            />
           </>
         ) : null}
       </main>

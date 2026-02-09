@@ -1,4 +1,6 @@
 import "./styles.css";
+import CaseWorkspacePage from "./components/CaseWorkspacePage";
+import CreateCasePage from "./components/CreateCasePage";
 import DesktopGate from "./components/DesktopGate";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
@@ -6,7 +8,12 @@ import LoggedHomePage from "./components/LoggedHomePage";
 import LoggedPlaceholderPage from "./components/LoggedPlaceholderPage";
 import RegistrationPage from "./components/RegistrationPage";
 import { clearSession, getSession } from "./services/sessionStorage";
-import { AUTH_ROUTES, PUBLIC_ROUTES, normalizePath } from "./utils/routes";
+import {
+  AUTH_ROUTES,
+  PUBLIC_ROUTES,
+  normalizePath,
+  parseCaseWorkspacePath,
+} from "./utils/routes";
 
 const PRIVATE_ROUTES = [
   AUTH_ROUTES.HOME,
@@ -18,6 +25,8 @@ function App() {
   const currentPath = normalizePath(
     typeof window === "undefined" ? PUBLIC_ROUTES.HOME : window.location.pathname
   );
+  const workspacePath = parseCaseWorkspacePath(currentPath);
+  const isPrivatePath = PRIVATE_ROUTES.includes(currentPath) || Boolean(workspacePath);
   const session = getSession();
   const isLoggedIn = Boolean(session?.token && session?.user);
 
@@ -30,22 +39,24 @@ function App() {
 
   let activePage = <LandingPage />;
   if (!isLoggedIn) {
-    if (currentPath === PUBLIC_ROUTES.LOGIN || PRIVATE_ROUTES.includes(currentPath)) {
+    if (currentPath === PUBLIC_ROUTES.LOGIN || isPrivatePath) {
       activePage = <LoginPage />;
     } else if (currentPath === PUBLIC_ROUTES.REGISTRATION) {
       activePage = <RegistrationPage />;
     }
   } else {
-    if (currentPath === AUTH_ROUTES.CREATE_CASE) {
+    if (workspacePath) {
       activePage = (
-        <LoggedPlaceholderPage
-          title="Kreiranje novog slucaja"
-          description="Ovde ce biti forma za kreiranje kompletnog istraznog scenarija."
-          activePath={AUTH_ROUTES.CREATE_CASE}
+        <CaseWorkspacePage
           user={session.user}
           onLogout={handleLogout}
+          caseId={workspacePath.caseId}
+          mode={workspacePath.mode}
+          activeTabSlug={workspacePath.tabSlug}
         />
       );
+    } else if (currentPath === AUTH_ROUTES.CREATE_CASE) {
+      activePage = <CreateCasePage user={session.user} onLogout={handleLogout} />;
     } else if (currentPath === AUTH_ROUTES.PROFILE) {
       activePage = (
         <LoggedPlaceholderPage

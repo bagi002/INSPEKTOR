@@ -41,7 +41,7 @@
 
 - id: REQ-005
   name: Pocetna stranica za ulogovane korisnike
-  status: Finished
+  status: In Review
   description: >
     Treba da sadrzi pregled slucajja koji se trenutno rijesava 
     Treba da sadrzi pregled slucaja koji su rijeseni
@@ -53,7 +53,7 @@
 
 - id: REQ-006
   name: Meni
-  status: In Progress
+  status: In Review
   description: >
     Meni treba d a bude u vidu lijevog side bara sa opcijama menija priakzaom profila za ulogovanog korisnika
     U ne ulogovanom stanju treba da sadrzi opcije za pocetnu stranicu, registraciju i prijavu
@@ -118,7 +118,7 @@
 
 - id: REQ-012
   name: Izgled prozora za slucaj
-  status: Draft
+  status: In Review
   description: >
     U meniju ce se nakon sto korisnik udje u slucaj pojaviti pored opcije za izlazak iz slucajja i 
     Pocetna ( cini osnovne informacije o slucaju kao sto su naziv, opis, ocjena, broj recenzija i autor)
@@ -192,7 +192,7 @@
 
 - id: REQ-019
   name: Kreiranje slucaja
-  status: Draft
+  status: In Review
   description: >
     Treba da sadrzi formu za kreiranje novog slucajja koji ukljucuje kreiranje osoba 
     kreiranje svih dosijea za te osobe
@@ -269,7 +269,7 @@
 
 - id: REQ-027
   name: Objavljivanje slucajja 
-  status: Draft
+  status: In Review
   description: >
     Nakon sto kretor zavrsi uredjivanje slucajja moze da ga objavi i tek tada ce ga ostali korisnici vidjeti i rijesvati
     Takdoej kreator za vrijemme kreiranja slucajja mzoe preci u mod za pregled d avidi kkao ce izgledati u pregledu za korisnika 
@@ -285,7 +285,7 @@
 
 - id: REQ-029
   name: Prozor za kreiranje slucaja
-  status: Draft
+  status: In Review
   description: >
     Kada krenne u kreiranje slucaja, korisnik prvo popuni ime slucajja i njegov opis
     Zatim ce biti preusmjeren na prozor gdje ce kreirati sucaj 

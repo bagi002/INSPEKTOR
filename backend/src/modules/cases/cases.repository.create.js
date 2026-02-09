@@ -30,6 +30,34 @@ export async function findCaseById(caseId) {
   return mapCaseRow(row);
 }
 
+export async function findCaseByIdForAuthor(caseId, authorUserId) {
+  const database = getDatabase();
+  const row = await getOne(
+    database,
+    `
+      SELECT
+        c.id,
+        c.author_user_id,
+        u.first_name AS author_first_name,
+        u.last_name AS author_last_name,
+        c.title,
+        c.description,
+        c.publication_status,
+        c.average_rating,
+        c.rating_count,
+        c.created_at,
+        c.updated_at
+      FROM cases c
+      INNER JOIN users u ON u.id = c.author_user_id
+      WHERE c.id = ? AND c.author_user_id = ?
+      LIMIT 1
+    `,
+    [caseId, authorUserId]
+  );
+
+  return mapCaseRow(row);
+}
+
 export async function createCaseWithDetails({
   authorUserId,
   title,

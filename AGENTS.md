@@ -18,7 +18,7 @@ Za svaki dobijeni prompt zahtjev, AI agent mora izvršiti sledeće korake u nave
 7. **Opisi pokretanja i načini korišćenja kao i osnovne informacije o projektu u README.md fajlu u root folderu projekta se uvek moraju nalaziti**
 8. **Azurirati sh skripte u root folderu projekta**: Ako je potrebno, ažurirati sh skripte koje se nalaze u root folderu projekta kako bi se osiguralo da su sve funkcionalnosti pravilno pokrenute i integrisane.
 9. **Svaki fajl sa kodom koji je veci od 200 linija treba podjeliti u vise manjih fajlova ako je moguce**: Održavati modularnost koda i izbjegavati velike fajlove koji su teški za održavanje.
-10. **Azuriraj status svih relevantnih requirements**: Nakon implementacije, ažurirati status svih relevantnih requirements na "In Review" i obavestiti čoveka da pregleda implementaciju.
+10. **Azuriraj status svih relevantnih requirements**: Nakon implementacije, ažurirati status svih relevantnih requirements na "In Review" i obavestiti čoveka da pregleda implementaciju High-Level i Softverskih Requirements.
 
 ## Očekivana Folder Struktura Projekta
 - `.vscode/`: Podešavanja za VS Code.

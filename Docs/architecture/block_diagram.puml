@@ -1,15 +1,22 @@
 @startuml Block Diagram
-title Block Diagram - Ulogovana pocetna sa realnim slucajevima
+title Block Diagram - Jedinstveni case workspace tabovi + publish dugme
 
 package "Frontend" {
   [App Shell]
   [Desktop Policy Gate]
   [Route Resolver]
   [Protected Route Guard]
+  [Route Utils]
   [Public Auth Pages]
   [Logged Home Page]
+  [Logged Case Section]
   [Logged Home Data Helpers]
   [Logged Sidebar]
+  [Create Case Start Page]
+  [Case Workspace Page]
+  [Shared Case Sidebar]
+  [Case Workspace Tabs]
+  [Publish Action Button]
   [Auth API Client]
   [Cases API Client]
   [Session Storage]
@@ -40,15 +47,33 @@ database "SQLite Database" as Db
 [Desktop Policy Gate] --> [Desktop Warning View]
 [Route Resolver] --> [Protected Route Guard]
 [Route Resolver] --> [Public Auth Pages]
+[Route Resolver] --> [Route Utils]
 [Protected Route Guard] --> [Logged Home Page]
+[Protected Route Guard] --> [Create Case Start Page]
+[Protected Route Guard] --> [Case Workspace Page]
 [Public Auth Pages] --> [Auth API Client]
+
 [Logged Home Page] --> [Logged Sidebar]
+[Logged Home Page] --> [Logged Case Section]
 [Logged Home Page] --> [Cases API Client]
 [Logged Home Page] --> [Logged Home Data Helpers]
+
+[Create Case Start Page] --> [Shared Case Sidebar]
+[Create Case Start Page] --> [Cases API Client]
+[Case Workspace Page] --> [Shared Case Sidebar]
+[Case Workspace Page] --> [Case Workspace Tabs]
+[Case Workspace Page] --> [Cases API Client]
+[Shared Case Sidebar] --> [Case Workspace Tabs]
+[Shared Case Sidebar] --> [Route Utils]
+[Shared Case Sidebar] --> [Publish Action Button]
+[Publish Action Button] --> [Case Workspace Page]
+
 [Auth API Client] --> [Session Storage]
 [Cases API Client] --> [Session Storage]
+[Cases API Client] --> [Route Utils]
 [Logout Action] --> [Session Storage]
 [Logged Sidebar] --> [Logout Action]
+[Shared Case Sidebar] --> [Logout Action]
 
 [Auth API Client] --> [Express App]
 [Cases API Client] --> [Express App]

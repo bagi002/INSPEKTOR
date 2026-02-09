@@ -66,6 +66,12 @@
   color: #123863;
 }
 
+.menu-link.is-disabled {
+  opacity: 0.55;
+  pointer-events: none;
+  transform: none;
+}
+
 .sidebar-note {
   padding: 1rem;
   border-radius: 12px;

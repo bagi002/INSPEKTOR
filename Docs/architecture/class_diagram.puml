@@ -1,11 +1,18 @@
 @startuml Class Diagram
-title Class Diagram - Auth + Cases Home Data
+title Class Diagram - Workspace tabovi + publish dugme u kreiranju
 
 class App {
   +resolveRoute(pathname): ReactNode
   +isLoggedIn(): boolean
   +handleLogout(): void
   +render()
+}
+
+class RouteUtils {
+  +normalizePath(pathname)
+  +buildCaseWorkspaceRoute(caseId, mode, tab)
+  +buildCaseCreatorRoute(caseId)
+  +parseCaseWorkspacePath(pathname)
 }
 
 class DesktopGate {
@@ -28,6 +35,13 @@ class LoggedHomePage {
   +render()
 }
 
+class LoggedCaseSection {
+  +title
+  +items
+  +renderDetails()
+  +render()
+}
+
 class LoggedHomeData {
   +normalizeHomeData(rawData)
   +formatAverageRating(value)
@@ -42,6 +56,39 @@ class LoggedSidebar {
   +render()
 }
 
+class CreateCasePage {
+  +formData
+  +formErrors
+  +isSubmitting
+  +handleCreateCase()
+  +render()
+}
+
+class CaseWorkspacePage {
+  +caseId
+  +mode
+  +activeTabSlug
+  +loadCaseData()
+  +render()
+}
+
+class CreateCaseSidebar {
+  +mode
+  +caseId
+  +activeTabSlug
+  +publishDisabled
+  +publishStatusMessage
+  +onPublish()
+  +onLogout()
+  +render()
+}
+
+class CaseWorkspaceTabs {
+  +CASE_WORKSPACE_TABS
+  +DEFAULT_CASE_WORKSPACE_TAB
+  +findCaseWorkspaceTab(tabSlug)
+}
+
 class AuthApiClient {
   +registerUser(payload)
   +loginUser(payload)
@@ -50,6 +97,7 @@ class AuthApiClient {
 class CasesApiClient {
   +fetchLoggedHomeCases()
   +createCase(payload)
+  +fetchCreatorCase(caseId)
 }
 
 class SessionStorageService {
@@ -70,6 +118,7 @@ class AuthRoutes {
 class CasesRoutes {
   +GET /home
   +POST /
+  +GET /:caseId/creator
 }
 
 class AuthGuardMiddleware {
@@ -84,6 +133,7 @@ class AuthController {
 class CasesController {
   +getLoggedHomeOverviewController(req, res)
   +createCaseController(req, res)
+  +getCreatorCaseController(req, res)
 }
 
 class AuthService {
@@ -94,6 +144,7 @@ class AuthService {
 class CasesService {
   +getLoggedHomeOverview(userId)
   +createCase(payload, userId)
+  +getCreatorCase(caseId, userId)
 }
 
 class CasesValidation {
@@ -108,6 +159,7 @@ class AuthRepository {
 class CasesRepository {
   +createCaseWithDetails(payload)
   +getHomeOverviewRows(userId)
+  +findCaseByIdForAuthor(caseId, userId)
 }
 
 class DatabaseModule {
@@ -125,17 +177,29 @@ class SQLiteDatabase {
   +case_user_progress
 }
 
+App --> RouteUtils
 App --> DesktopGate
 DesktopGate --> LoginPage
 DesktopGate --> LoggedHomePage
+DesktopGate --> CreateCasePage
+DesktopGate --> CaseWorkspacePage
 LoggedHomePage *-- LoggedSidebar
+LoggedHomePage *-- LoggedCaseSection
 LoggedHomePage ..> LoggedHomeData
+CreateCasePage *-- CreateCaseSidebar
+CaseWorkspacePage *-- CreateCaseSidebar
+CaseWorkspacePage ..> CaseWorkspaceTabs
 
 App ..> SessionStorageService
 LoginPage ..> AuthApiClient
 LoggedHomePage ..> CasesApiClient
+CreateCasePage ..> CasesApiClient
+CaseWorkspacePage ..> CasesApiClient
 AuthApiClient ..> SessionStorageService
 CasesApiClient ..> SessionStorageService
+CasesApiClient ..> RouteUtils
+CreateCaseSidebar ..> CaseWorkspaceTabs
+CreateCaseSidebar ..> RouteUtils
 
 AuthApiClient ..> ExpressApp
 CasesApiClient ..> ExpressApp

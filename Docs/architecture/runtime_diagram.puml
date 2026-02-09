@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Auth + Realni slucajevi na ulogovanoj pocetnoj
+title Runtime Diagram - Jedinstveni tabovi za kreiranje i resavanje slucaja
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -7,6 +7,9 @@ participant "DesktopGate" as Gate
 participant "LoginPage" as Login
 participant "App Route Guard" as Guard
 participant "LoggedHomePage" as LoggedHome
+participant "CreateCasePage (/slucaj/novi)" as CreateCaseStart
+participant "CaseWorkspacePage" as Workspace
+participant "CreateCaseSidebar (shared tabs)" as WorkspaceSidebar
 participant "Cases API Client" as CasesClient
 participant "Auth API Client" as AuthClient
 participant "Express Auth API" as AuthApi
@@ -21,7 +24,7 @@ database "LocalStorage (session)" as SessionStore
 participant "Desktop Notice View" as Notice
 
 User -> Router: Otvara /prijava
-Router -> Gate: Provera sirine viewport-a
+Router -> Gate: Provera desktop pravila
 
 alt Desktop sirina
   Gate -> Login: Render prijavne forme
@@ -30,40 +33,85 @@ alt Desktop sirina
   AuthClient -> AuthApi: HTTP zahtev
   AuthApi -> AuthService: validate + login
   AuthService -> UsersStore: Provera korisnika i lozinke
+  AuthService --> AuthApi: JWT token + user payload
+  AuthApi --> AuthClient: JSON uspeh
+  AuthClient -> SessionStore: Upis tokena i korisnika
 
-  alt Neispravni podaci
-    AuthService --> AuthApi: 401/400 greska
-    AuthApi --> AuthClient: JSON greska
-    AuthClient --> Login: Poruke o greskama
-    Login --> User: Prikaz greske
-  else Uspesna prijava
-    AuthService --> AuthApi: JWT token + user payload
-    AuthApi --> AuthClient: JSON uspeh
-    AuthClient -> SessionStore: Upis tokena i korisnika
-    Login -> Router: Navigacija na /app
-    Router -> Guard: Provera sesije
-    Guard -> LoggedHome: Render ulogovane pocetne
-    LoggedHome -> CasesClient: GET /api/cases/home (Bearer token)
-    CasesClient -> CasesApi: HTTP zahtev
-    CasesApi -> JwtGuard: Verifikacija tokena
+  Login -> Router: Navigacija na /app
+  Router -> Guard: Provera sesije
+  Guard -> LoggedHome: Render ulogovane pocetne
 
-    alt Token validan
-      JwtGuard -> CasesService: getLoggedHomeOverview(userId)
-      CasesService -> CasesRepo: upit sekcija + statistika
-      CasesRepo -> CasesStore: SELECT active/resolved/top-rated/created
-      CasesStore --> CasesRepo: realni podaci
-      CasesRepo --> CasesService: agregirani rezultati
-      CasesService --> CasesApi: response payload
-      CasesApi --> CasesClient: JSON uspeh
-      CasesClient --> LoggedHome: Render realnih slucajeva
-    else Token nije validan
-      JwtGuard --> CasesApi: 401 Unauthorized
-      CasesApi --> CasesClient: JSON greska
-      CasesClient --> LoggedHome: Pokretanje odjave
-      LoggedHome -> SessionStore: Brisanje sesije
-      LoggedHome -> Router: Navigacija na /
-    end
-  end
+  LoggedHome -> CasesClient: GET /api/cases/home
+  CasesClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> CasesService: getLoggedHomeOverview(userId)
+  CasesService -> CasesRepo: upit sekcija + statistika
+  CasesRepo -> CasesStore: SELECT active/resolved/top-rated/created
+  CasesStore --> CasesRepo: podaci
+  CasesRepo --> CasesService: agregirani rezultati
+  CasesService --> CasesApi: response payload
+  CasesApi --> CasesClient: JSON uspeh
+  CasesClient --> LoggedHome: Render kartica + akcije
+
+  User -> LoggedHome: Klik "Kreiraj novi slucaj"
+  LoggedHome -> Router: /slucaj/novi
+  Router -> Guard: Provera sesije
+  Guard -> CreateCaseStart: Forma naziv + opis
+
+  User -> CreateCaseStart: Klik "Kreiraj slucaj"
+  CreateCaseStart -> CasesClient: POST /api/cases (draft)
+  CasesClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> CasesService: createCase(payload, userId)
+  CasesService -> CasesRepo: createCaseWithDetails(...)
+  CasesRepo -> CasesStore: INSERT case + povezani zapisi
+  CasesStore --> CasesRepo: novi caseId
+  CasesRepo --> CasesService: case row
+  CasesService --> CasesApi: 201 response
+  CasesApi --> CasesClient: id slucaja
+
+  CreateCaseStart -> Router: /slucaj/{caseId}/kreiranje/vremenska-linija
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Render tab stranice (kreiranje)
+  Workspace -> CasesClient: GET /api/cases/{caseId}/creator
+  CasesClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> CasesService: getCreatorCase(caseId, userId)
+  CasesService -> CasesRepo: findCaseByIdForAuthor(caseId, userId)
+  CasesRepo -> CasesStore: SELECT slucaj po id + author_user_id
+  CasesStore --> CasesRepo: case row
+  CasesRepo --> CasesService: case row
+  CasesService --> CasesApi: response payload
+  CasesApi --> CasesClient: JSON uspeh
+  CasesClient --> Workspace: Podaci slucaja + aktivni tab
+
+  User -> WorkspaceSidebar: Klik tab "Dokumenti"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/dokumenti
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Render prazne stranice za tab
+
+  User -> WorkspaceSidebar: Klik tab "Izjave"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/izjave
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Render prazne stranice za tab
+
+  User -> WorkspaceSidebar: Klik tab "Kviz"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/kviz
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Render prazne stranice za tab
+
+  User -> WorkspaceSidebar: Klik dugme "Objavi slucaj"
+  WorkspaceSidebar --> Workspace: Aktivira publish akciju bez navigacije na novu stranicu
+
+  User -> LoggedHome: Klik "Nastavi resavanje" na aktivnom slucaju
+  LoggedHome -> Router: /slucaj/{caseId}/resavanje/vremenska-linija
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Render tab stranice (resavanje)
+
+  User -> WorkspaceSidebar: Klik tab "Saslusanja"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/resavanje/saslusanja
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Isti tab meni, drugi mod prikaza
 else Manja sirina od desktop praga
   Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
   Notice --> User: Prikaz ogranicenog ekrana

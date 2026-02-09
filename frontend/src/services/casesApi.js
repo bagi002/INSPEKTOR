@@ -110,3 +110,43 @@ export async function createCase(payload) {
     };
   }
 }
+
+export async function fetchCreatorCase(caseId) {
+  const authorizationHeader = buildAuthorizationHeader();
+  if (!authorizationHeader) {
+    return {
+      ok: false,
+      unauthorized: true,
+      message: "Sesija nije aktivna. Prijavi se ponovo.",
+    };
+  }
+
+  try {
+    const response = await fetch(`${CASES_API_BASE}/${caseId}/creator`, {
+      method: "GET",
+      headers: {
+        Authorization: authorizationHeader,
+      },
+    });
+    const payload = await parseResponseBody(response);
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        unauthorized: response.status === 401,
+        message: resolveMessage(payload, "Ucitavanje slucaja nije uspelo."),
+      };
+    }
+
+    return {
+      ok: true,
+      data: payload?.data || null,
+    };
+  } catch {
+    return {
+      ok: false,
+      unauthorized: false,
+      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+    };
+  }
+}

@@ -102,21 +102,23 @@
 
 - id: REQ-SW-013
   name: Pocetna stranica za ulogovanog korisnika - Realni podaci iz baze
-  status: Finished
+  status: In Review
   refines: REQ-005
   description: >
     Implementirati pocetnu stranicu za ulogovanog korisnika koja prikazuje dobrodoslicu sa imenom
     korisnika i stvarne podatke o slucajevima dobijene preko backend API-ja, bez mokovanog
-    sadrzaja u prikazu listi i statistika.
+    sadrzaja u prikazu listi i statistika, ukljucujuci i eksplicitan prikaz slucajeva u fazi
+    kreiranja sa akcijom za nastavak uredjivanja.
 
 - id: REQ-SW-014
   name: Meni i routing za ulogovano stanje
-  status: Finished
+  status: In Review
   refines: REQ-006
   description: >
     Implementirati meni za ulogovane korisnike sa stavkama Pocetna, Kreiranje slucaja,
     Profil i Odjava, kao i zasticen frontend routing koji preusmerava korisnika na
-    odgovarajucu pocetnu stranicu nakon uspesne prijave.
+    odgovarajucu pocetnu stranicu nakon uspesne prijave i podrzava ulazak u tabove
+    rezima resavanja i kreiranja slucaja.
 
 - id: REQ-SW-015
   name: Model podataka za slucaj u SQLite bazi
@@ -129,7 +131,7 @@
 
 - id: REQ-SW-016
   name: Backend API za kreiranje i cuvanje slucaja
-  status: Finished
+  status: In Review
   refines: REQ-010
   description: >
     Implementirati zasticeni backend endpoint za kreiranje slucaja koji prihvata osnovne podatke,
@@ -138,9 +140,69 @@
 
 - id: REQ-SW-017
   name: Backend pregled slucajeva za ulogovanu pocetnu
-  status: Finished
+  status: In Review
   refines: REQ-005
   description: >
     Implementirati zasticeni backend endpoint za prikaz ulogovane pocetne stranice koji vraca
     stvarne sekcije slucajeva (aktivni, reseni, najbolje ocenjeni javni i kreirani slucajevi)
     i agregirane statistike korisnika.
+
+- id: REQ-SW-018
+  name: Pocetna forma za zapocinjanje kreiranja slucaja
+  status: In Review
+  refines: REQ-019
+  description: >
+    Implementirati frontend formu na ruti `/slucaj/novi` sa obaveznim poljima za naziv i opis
+    slucaja, koja poziva backend kreiranje draft slucaja i nakon uspesnog cuvanja automatski
+    preusmerava korisnika na creatorski mod tog konkretnog slucaja i prvi tab workspace-a.
+
+- id: REQ-SW-019
+  name: Kosturni prikaz prozora za kreiranje slucaja
+  status: In Review
+  refines: REQ-029
+  description: >
+    Implementirati skeleton prikaz prozora creatorskog moda na ruti `/slucaj/:id/kreiranje`
+    sa odvojenim podstranicama/tabovima za vremensku liniju, osobe i dosijee, dokumente,
+    izjave, saslusanja i kviz, bez implementacije konkretnih editora u ovoj fazi.
+
+- id: REQ-SW-020
+  name: Meni za rezim kreiranja slucaja
+  status: In Review
+  refines: REQ-029
+  description: >
+    Implementirati levi meni tokom kreiranja slucaja koji prikazuje tabove sekcija procesa
+    (vremenska linija, osobe i dosijei, dokumenti, izjave, saslusanja, kviz), uz jasnu opciju
+    za povratak na ulogovanu pocetnu i odjavu korisnika.
+
+- id: REQ-SW-021
+  name: Backend endpoint za creatorski prikaz pojedinacnog slucaja
+  status: In Review
+  refines: REQ-029
+  description: >
+    Implementirati JWT-zasticeni endpoint `GET /api/cases/:caseId/creator` koji vraca podatke
+    slucaja samo autoru tog slucaja, uz validaciju identifikatora i kontrolu pristupa.
+
+- id: REQ-SW-022
+  name: Routing za creatorski mod po identifikatoru slucaja
+  status: In Review
+  refines: REQ-029
+  description: >
+    Implementirati frontend podrsku za dinamicke rute po identifikatoru slucaja za oba moda
+    (`/slucaj/:id/kreiranje/:tab` i `/slucaj/:id/resavanje/:tab`), sa ucitavanjem draft slucaja
+    u creatorskom modu i prikazom odgovarajuce prazne stranice za trazeni tab.
+
+- id: REQ-SW-023
+  name: Ujednacen set tabova za kreiranje i resavanje slucaja
+  status: In Review
+  refines: REQ-012
+  description: >
+    Obezbediti da prozor slucaja koristi isti set tabova menija u oba moda (kreiranje i
+    resavanje), pri cemu svaki tab otvara posebnu stranicu u odgovarajucem modu.
+
+- id: REQ-SW-024
+  name: Dugme za objavu u rezimu kreiranja
+  status: In Review
+  refines: REQ-027
+  description: >
+    Obezbediti da opcija `Objavi slucaj` stoji u meniju rezima kreiranja kao posebno dugme
+    bez navigacije na novu stranicu/tab, dok se puna logika potvrde i backend objave ne uvedu.

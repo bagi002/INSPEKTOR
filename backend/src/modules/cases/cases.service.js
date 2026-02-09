@@ -1,5 +1,9 @@
 import { HttpError } from "../../utils/httpError.js";
-import { createCaseWithDetails, getHomeOverviewRows } from "./cases.repository.js";
+import {
+  createCaseWithDetails,
+  findCaseByIdForAuthor,
+  getHomeOverviewRows,
+} from "./cases.repository.js";
 import { validateCreateCasePayload } from "./cases.validation.js";
 
 function throwValidationIfNeeded(errors) {
@@ -44,6 +48,21 @@ function ensureAuthorProgress(progress, authorUserId) {
     },
     ...progress,
   ];
+}
+
+function parseCaseId(caseIdInput) {
+  const normalizedValue =
+    typeof caseIdInput === "string" ? caseIdInput.trim() : String(caseIdInput ?? "");
+  if (!/^\d+$/.test(normalizedValue)) {
+    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+  }
+
+  const caseId = Number.parseInt(normalizedValue, 10);
+  if (!Number.isInteger(caseId) || caseId <= 0) {
+    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+  }
+
+  return caseId;
 }
 
 export async function createCase(payload, authorUserId) {
@@ -96,4 +115,15 @@ export async function getLoggedHomeOverview(userId) {
       createdCases: rows.createdCases,
     },
   };
+}
+
+export async function getCreatorCase(caseIdInput, userId) {
+  const caseId = parseCaseId(caseIdInput);
+  const caseRow = await findCaseByIdForAuthor(caseId, userId);
+
+  if (!caseRow) {
+    throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+  }
+
+  return caseRow;
 }

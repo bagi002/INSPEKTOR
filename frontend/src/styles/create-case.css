@@ -1,0 +1,140 @@
+.app-shell-create-case .content {
+  align-content: start;
+}
+
+.create-case-sidebar .brand-block h1 {
+  font-size: 1.5rem;
+}
+
+.create-case-note-panel {
+  border-style: solid;
+}
+
+.create-case-publish-panel {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.create-case-publish-btn {
+  width: 100%;
+}
+
+.create-case-publish-btn:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.create-case-publish-status {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #4f6782;
+  line-height: 1.45;
+}
+
+.create-case-active-title {
+  margin: 0 0 0.5rem;
+  font-weight: 800;
+  color: #173a61;
+}
+
+.create-case-exit-link {
+  font-weight: 800;
+}
+
+.create-case-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.create-case-field {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: #1d3a5d;
+}
+
+.create-case-input,
+.create-case-textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #bacde3;
+  background: #f7fbff;
+  color: #173254;
+  padding: 0.78rem 0.9rem;
+}
+
+.create-case-input:focus,
+.create-case-textarea:focus {
+  outline: none;
+  border-color: #4673ab;
+  box-shadow: 0 0 0 3px rgba(70, 115, 171, 0.22);
+}
+
+.create-case-textarea {
+  resize: vertical;
+  min-height: 132px;
+  line-height: 1.5;
+}
+
+.create-case-error {
+  font-size: 0.88rem;
+  color: #952c39;
+}
+
+.create-case-summary {
+  margin: 0;
+  color: var(--ink-muted);
+  line-height: 1.52;
+}
+
+.create-case-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.create-case-skeleton-card {
+  display: grid;
+  gap: 0.62rem;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #c4d5e8;
+  background: linear-gradient(165deg, #f7fbff, #edf4fc);
+}
+
+.create-case-skeleton-card h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #16375e;
+}
+
+.create-case-skeleton-card p {
+  margin: 0;
+  color: var(--ink-muted);
+  line-height: 1.46;
+}
+
+.create-case-skeleton-tag {
+  width: fit-content;
+  padding: 0.26rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid #c7a4ab;
+  background: #fbecee;
+  color: #8f2b37;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.create-case-disabled-btn {
+  margin-top: 0.2rem;
+  color: #173a61;
+  background: linear-gradient(150deg, #d9e7f8, #e8f1fc);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.create-case-disabled-btn:hover {
+  transform: none;
+}

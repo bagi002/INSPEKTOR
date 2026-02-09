@@ -51,12 +51,18 @@ Frontend:
 - Registracija: `http://localhost:5173/registracija`
 - Prijava: `http://localhost:5173/prijava`
 - Ulogovana pocetna: `http://localhost:5173/app`
+- Kreiranje slucaja (start): `http://localhost:5173/slucaj/novi`
+- Workspace tab (kreiranje): `http://localhost:5173/slucaj/:id/kreiranje/:tab`
+- Workspace tab (resavanje): `http://localhost:5173/slucaj/:id/resavanje/:tab`
 
 Tok koriscenja:
 1. Otvori `/registracija` i kreiraj nalog.
 2. Nakon uspesne registracije otvori `/prijava`.
 3. Prijavi se istim podacima.
 4. Nakon prijave automatski se otvara ulogovana pocetna (`/app`).
+5. Klikni na `Kreiraj novi slucaj`, unesi naziv i opis, pa potvrdi kreiranje.
+6. Nakon uspesnog cuvanja draft-a aplikacija automatski otvara prvi tab u creatorskom modu:
+   `/slucaj/:id/kreiranje/vremenska-linija`.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
@@ -79,6 +85,8 @@ Napomena:
     - timeline: `timeline[]`
     - korisnicki napredak: `progress[]`
   - napomena: trenutno je podrzano cuvanje napretka za autora slucaja (ulogovanog korisnika)
+- `GET /api/cases/:caseId/creator` (autorizacija: `Bearer <JWT>`)
+  - vraca slucaj za creatorski mod samo ako je ulogovani korisnik autor tog slucaja
 - `GET /api/health`
   - provera dostupnosti API-ja i baze
 
@@ -104,10 +112,36 @@ Napomena:
 - Pocetna za ulogovane (`/app`):
   - ucitavanje realnih slucajeva preko `GET /api/cases/home`
   - pregled aktivnih i resenih slucajeva iz baze
+  - akcija `Nastavi resavanje` za aktivne slucajeve
+  - pregled slucajeva u fazi kreiranja sa akcijom `Nastavi kreiranje`
   - pregled najocenjenijih javnih slucajeva iz baze
   - pregled slucajeva koje je korisnik kreirao (bez mock podataka)
   - prikaz loading, greske i praznih stanja
   - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Profil`, `Odjava`)
+- Kreiranje slucaja (`/slucaj/novi`):
+  - forma za unos naziva i opisa slucaja kao pocetni korak
+  - nakon submit-a cuva draft slucaj preko backend API-ja
+  - posle cuvanja automatski preusmerava na `/slucaj/:id/kreiranje/vremenska-linija`
+- Case workspace tabovi:
+  - rezim kreiranja: `/slucaj/:id/kreiranje/:tab`
+  - rezim resavanja: `/slucaj/:id/resavanje/:tab`
+  - isti skup tabova postoji u oba moda:
+    - `vremenska-linija`
+    - `osobe-i-dosijei`
+    - `dokumenti`
+    - `izjave`
+    - `saslusanja`
+    - `kviz`
+- Opcija objave:
+  - u meniju rezima kreiranja postoji `Objavi slucaj` kao dugme
+  - dugme ne vodi na novu rutu/stranicu
+  - trenutno prikazuje placeholder status poruku (bez pune backend logike objave)
+- Creatorski workspace:
+  - ucitava draft slucaj preko `GET /api/cases/:caseId/creator`
+  - prikazuje osnovne podatke slucaja i prazne tab stranice za dalji rad
+- Resavacki workspace:
+  - koristi isti set tabova i istu navigacionu strukturu kao creatorski workspace
+  - trenutno su tab stranice implementirane kao placeholder (prazan prikaz)
 - Backend auth:
   - modularna Express struktura (routes/controller/service/repository)
   - SQLite migracije i maintenance podesavanja

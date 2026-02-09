@@ -127,3 +127,7 @@
 .inline-action {
   width: fit-content;
 }
+
+.case-inline-link {
+  margin-top: 0.65rem;
+}
