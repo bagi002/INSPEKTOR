@@ -1,17 +1,34 @@
 #!/bin/bash
+set -euo pipefail
 
-echo "Setting up project environment..."
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+AUTO_DIR="$ROOT_DIR/Automation"
+FRONTEND_DIR="$ROOT_DIR/frontend"
 
-# Create virtual environment if requested
-# python3 -m venv venv
+echo "Setting up INSPEKTOR environment..."
 
-# Activate virtual environment
-# source venv/bin/activate
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "ERROR: python3 is not installed."
+  exit 1
+fi
 
-# Install Python dependencies
-# pip install -r requirements.txt
+if ! command -v npm >/dev/null 2>&1; then
+  echo "ERROR: npm is not installed."
+  exit 1
+fi
 
-# Install Node.js dependencies
-# npm install
+if [ -x "$AUTO_DIR/bootstrap_envs.sh" ]; then
+  echo "[1/2] Preparing Python environments (venv + docs_venv)..."
+  "$AUTO_DIR/bootstrap_envs.sh"
+else
+  echo "WARNING: $AUTO_DIR/bootstrap_envs.sh not found or not executable. Skipping Python environment setup."
+fi
 
-echo "Setup complete!"
+if [ -f "$FRONTEND_DIR/package.json" ]; then
+  echo "[2/2] Installing frontend dependencies..."
+  (cd "$FRONTEND_DIR" && npm install)
+else
+  echo "WARNING: frontend/package.json not found. Skipping frontend npm install."
+fi
+
+echo "Setup complete."

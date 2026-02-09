@@ -1,3 +1,24 @@
 @startuml Block Diagram
-'TODO: Add block diagram
+title Block Diagram - Javna Pocetna Stranica
+
+package "Frontend" {
+  [App Shell]
+  [Desktop Policy Gate]
+  [Public Landing Module]
+  [Sidebar Navigation]
+  [Informativne Sekcije]
+  [CTA Akcije]
+  [Desktop Warning View]
+  [Theme Tokens]
+  [Auth Route Placeholders]
+}
+
+[App Shell] --> [Desktop Policy Gate]
+[Desktop Policy Gate] --> [Public Landing Module]
+[Desktop Policy Gate] --> [Desktop Warning View]
+[Public Landing Module] --> [Sidebar Navigation]
+[Public Landing Module] --> [Informativne Sekcije]
+[Public Landing Module] --> [CTA Akcije]
+[Public Landing Module] --> [Theme Tokens]
+[CTA Akcije] --> [Auth Route Placeholders]
 @enduml

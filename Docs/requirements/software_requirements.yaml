@@ -1,9 +1,38 @@
 # Software Requirements
 # Ovaj fajl sadrži softverske requirements koje piše AI agent.
 
-- id: REQ-SW-001
-  name: Osnovne funkcionalnosti komponenti
-  status: Draft
-  refines: REQ-001
+- id: REQ-SW-002
+  name: Landing stranica za neulogovane korisnike
+  status: In Review
+  refines: REQ-004
   description: >
-    Implementirati osnovnu funkcionalnost za izabrane komponente (npr. API-je, servise).
+    Implementirati React stranicu za neulogovane korisnike koja sadrzi uvodni hero
+    segment, pregled svrhe aplikacije, osnovne funkcionalnosti i jasno istaknute CTA
+    akcije za registraciju i prijavu.
+
+- id: REQ-SW-003
+  name: Vizuelni stil javne pocetne stranice
+  status: In Review
+  refines: REQ-003
+  description: >
+    Definisati i primeniti konzistentan vizuelni stil javne pocetne stranice sa
+    dominacijom bele, sive i svetloplave boje, uz akcente tamnoplave i crvene boje.
+    Interfejs mora zadrzati profesionalan i jasan policijski identitet.
+
+- id: REQ-SW-004
+  name: Meni za neulogovane korisnike
+  status: In Review
+  refines: REQ-006
+  description: >
+    Implementirati meni za neulogovano stanje kroz levi sidebar sa stavkama Pocetna,
+    Registracija i Prijava, uz prikaz odgovarajucih poziva na akciju unutar landing
+    stranice.
+
+- id: REQ-SW-005
+  name: Desktop-only prikaz javne pocetne stranice
+  status: In Review
+  refines: REQ-028
+  description: >
+    Implementirati desktop-only pravilo za javnu pocetnu stranicu: primarni interfejs
+    se prikazuje samo na desktop sirinama, dok se na manjim ekranima prikazuje poruka
+    da aplikacija trenutno podrzava samo desktop uredjaje.

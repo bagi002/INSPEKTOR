@@ -2,7 +2,283 @@
 # Ovaj fajl sadrži high-level requirements koje pišu ljudi.
 
 - id: REQ-001
-  name: Osnovno postavljanje aplikacije
+  name: Tehnologije u aplikaciji
   status: Draft
   description: >
-    Postaviti osnovnu strukturu projekta sa izabranim komponentama.
+    Web aplikacija ce koristiti sledeće tehnologije:
+    - Frontend: React.js
+    - Backend: Node.js sa Express frameworkom
+    - Baza podataka: LiteSQL
+    - Autentifikacija: JWT (JSON Web Tokens)
+    - Hosting: Localno okruženje (localhost)
+
+- id: REQ-002
+  name: Funkcionalnosti aplikacije uopsteno
+  status: Draft
+  description: >
+    Apllikacija je namjenjena za vise korisnika tj igraca
+    Svaki korisnik ce iamti svoj nalog i moci ce da kreira ili rijesava ne rijesenne slucaje 
+    Svaki igrac ce moci viditi sve slucajeve koji su objavili ostali korisnici i moci ce da ih rijesava
+    Svaki slucaj se sastoji od vise dokumenata koji se otkrivaju vremneskom linijom jedan po jedan
+    Dokumenti su podjeljeni u vise kategorija i svaki treba da ima ozbiljan polickiski stil
+
+- id: REQ-003
+  name: Stil aplikacije
+  status: In Review
+  description: >
+    Aplikacija treba da ima ozbilajn formalni policiski  stil sa modernim dizajnom
+    Korisnicki interfejs treba biti jednostavan i intuitivan, sa jasnim navigacionim elementima
+    Boje i tipografija treba da budu konzistentni i profesionalni, sa naglaskom na čitljivost i funkcionalnost
+    Boje koje se korist esu bijela siva svijetlo plava sa akcentomu tamno plavom i crvenom bojom
+- id: REQ-004
+  name: Pocetna stranica za ne ulogovane korisnike
+  status: In Review
+  description: >
+    Treba da sadrzi osnovne informacije o aplikaciji, njenu svrhu i funkcionalnosti
+    Treba da prestavi sto bolej aplikaciju u reklamnu svrhu
+    Treba da sadrzi poziv na akciju (CTA) za registraciju ili prijavu
+    Treba da sadrzi vizuelne elemente koji privlace paznju i motivisu korisnike da se registruju ili prijave
+
+- id: REQ-005
+  name: Pocetna stranica za ulogovane korisnike
+  status: Draft
+  description: >
+    Treba da sadrzi pregled slucajja koji se trenutno rijesava 
+    Treba da sadrzi pregled slucaja koji su rijeseni
+    Treba da sadrzi pregled slucaja koji su objavljeni od strane drugih korisnika i to sortiranih po ocjeni
+    Treba da ima pregled slucajeva koji su do tada kreirani od strane korisnika
+    Treba da sadrzi opciju za kreiranje novog slucaja
+    Treba da sadrzi opciju za pregled profila korisnika i njegovih aktivnosti
+    Treba da sadrzi opciju za odjavu korisnika
+
+- id: REQ-006
+  name: Meni
+  status: In Review
+  description: >
+    Meni treba d a bude u vidu lijevog side bara sa opcijama menija priakzaom profila za ulogovanog korisnika
+    U ne ulogovanom stanju treba da sadrzi opcije za pocetnu stranicu, registraciju i prijavu
+    U ulogovanom stanju treba da sadrzi opcije za pocetnu stranicu, kreiranje slucaja, pregled profila i odjavu
+    Kada se korisnik nalazi u slucaju iamce sadrzaj definisan u nekom drugom requirementsu
+
+- id: REQ-007
+  name: Profil korisnika
+  status: Draft
+  description: >
+    Profil korisnika treba da sadrzi osnovne informacije o korisniku, kao sto su ime, prezime, email adresa i datum registracije
+    Treba da sadrzi pregled aktivnosti korisnika, kao sto su kreirani slucajevi, rijeseni slucajevi i ocjene koje je korisnik dao drugim slucajevima
+    Treba da sadrzi opciju za izmjenu osnovnih informacija o korisniku, kao sto su ime, prezime i email adresa
+    Treba da sadrzi opciju za promjenu lozinke korisnika
+    Treba da sadrzi opciju za brisanje naloga korisnika
+
+- id: REQ-008
+  name: Registracija korisnika
+  status: Draft
+  description: >
+    Treba da sadrzi formu za registraciju korisnika sa poljima za ime, prezime, email adresu i lozinku
+    Treba da validira unos korisnika i prikazuje odgovarajuće poruke o greškama, kao što su neispravan format email adrese, prekratka lozinka ili već postojeći email
+    
+- id: REQ-009
+  name: Prijava korisnika
+  status: Draft
+  description: >
+    Treba da sadrzi formu za prijavu korisnika sa poljima za email adresu i lozinku
+    Treba da validira unos korisnika i prikazuje odgovarajuće poruke o greškama, kao što su neispravan format email adrese, prekratka lozinka ili nepostojeći nalog
+    Treba da koristi JWT (JSON Web Tokens) za autentifikaciju korisnika i održavanje sesije
+
+- id: REQ-010
+  name: Slucaj
+  status: Draft
+  description: >
+    Svaki slucaj imea autora koji  g aje napravio svoju ocjenu i broj recenzija na osnovu kojih stoji ocjena
+    naziv slucajaj i opis slucajja
+    Slucaj se sastoji od vise dokumenata koji se otkrivaju vremenskom linijom jedan po jedan
+    takodje slucaj cine i osoneb koje ucestvuju u njemu i to su:
+    - Osumnjiceni
+    - Zrtve
+    - Svjedoci
+    U startu nije jasno sem za zrtve ko je osumljiceni ko je svjedok a ko krivac
+    Postoje sleddece vrste dokumenata u slucaju:
+    - Policijski izvjestaj
+    - Forenzicki nalaz
+    - Dosije
+    - Izjava svjedoka
+    - Izjava osumnjicenog
+    - Izjava zrtve
+    Takodje slucaj cine i ispitivanja koja se mogu raditi sa svimmosobamam u slucaju i to su:
+    Sve ove stvari cine slucaj i treba da budu prikazane na vremenskoj liniji i da se otkrivaju jedan po jedan kako korisnik napreduje kroz slucaj
+    kada se jednom otkljucaju bice dostupne u odgovarajucoj sekciji
+
+- id: REQ-011
+  name: Ocjena
+  status: Draft
+  description: >  
+    Svaki slucaj ima ocjenu koja se formira na osnovu ocjena koje su dali korisnici koji su rijesili slucaj
+    Ocjena se formira na osnovu prosjeka svih ocjena koje su dali korisnici koji su rijesili slucaj
+    Ocjena se prikazuje kao broj sa jednom decimalom i kao vizuelni prikaz sa zvjezdicama (npr. 4.5/5)
+
+- id: REQ-012
+  name: Izgled prozora za slucaj
+  status: Draft
+  description: >
+    U meniju ce se nakon sto korisnik udje u slucaj pojaviti pored opcije za izlazak iz slucajja i 
+    Pocetna ( cini osnovne informacije o slucaju kao sto su naziv, opis, ocjena, broj recenzija i autor)
+    Vremenska linija (na fin vizuelni nacin priakzuje) kojim redom su se osobe i dokumenti otkljucavali u slucaju
+    Osobe (prikazuje sve osobe koje ucestvuju u slucaju u formi lsite) sa opcijma za svaku za pregled dosijea ili za zapocinajne ispitivanja
+    Za svaku osobu moguce je viditi spiska izjava koje je dala takodej
+    Poiciski izvjestaji (prikazuje sve policijske izvjestaje koji su otkljucani u slucaju) klikom na svaki pojeidnacno se isti otvara
+    Forenzicki nalazi (prikazuje sve forenzicke nalaze koji su otkljucani u slucaju) klikom na svaki pojedinacno se isti otvara
+    Dosijei (prikazuje sve dosijee koji su otkljucani u slucaju) klikom na svaki pojedinacno se isti otvara
+    
+- id: REQ-013
+  name: Vremenska linija
+  status: Draft
+  description: >
+    Vremenska linija treba da prikazuje redoslijed otkljucavanja osoba i dokumenata u slucaju
+    Vremenska linija treba da bude vizuelno privlacna i intuitivna za koristenje u formi road mape
+    Vremenska linija treba da prikazuje dokumente koji su do tada otkljucani i osobe
+    na vremneskoj liniji redom kojim su otkljucavane
+
+- id: REQ-014
+  name: Osobe u slucaju
+  status: Draft
+  description: >
+    Osobe u slucaju treba da budu prikazane u formi liste sa osnovnim informacijama o svakoj osobi, kao sto su ime, prezime i uloga u slucaju (osumnjiceni, zrtva, svjedok)
+    Za svaku osobu treba da postoji opcija za pregled dosijea koji sadrzi sve informacije o toj osobi.
+    Za svaku osobu treba da postoji opcija za zapocinjanje ispitivanja sa tom osobom, gdje korisnik moze postavljati pitanja i dobijati odgovore.
+    Ispitivanja su moguca samo za zive osobe
+    Sam igrac dodjeljuje osobamam statuse zrtva, svjedok osumljiceni i moze ih mijenjati kako napreduje kroz slucaj i otkriva nove informacije
+
+- id: REQ-015
+  name: Dosije osobe
+  status: Draft
+  description: >
+    Dosije osobe treba da sadrzi sve informacije o toj osobi.
+    Kao sto su ime prezime mjesto stanovanja broj telefona visina 
+    Takodje i sva dijela z akoja je nekada bio osumljicen ako jeste
+    Treba da izgleda kao pravi poiciski doije sa sve slikom osobe i svim informacijama koje su poznate o njoj
+    Trebad a ima profesionalan izgled kao pravi policiski odsije
+    Treba da sadrzi pregled dokumenata koji su povezani sa tom osobom linkove na njih
+
+- id: REQ-016
+  name: Ispitivanja sa osobama
+  status: Draft
+  description: >
+    Ispitivanja sa osobama treba da budu interaktivna i da omoguce korisniku da bira pitanje i da ga postavljati
+    Sva pitanja i odgovre na ista je unapred pripremio kreator slucaja
+    Pitanja i odgovori se nalaze u formi stabla korisnik u svakom momentu mzoe da bira pitanje na koje dobiaj fiksan odgovore
+    Ispitivanja iamju formu stabla gdje nakon svakog izabranog pitanja pojave se druge opcije za pitanja i tako pitanja koja
+    izaberete mogu uticati na to sta ce korisnik ssaznati\
+    IZgled ispitivanja treba da izgleda kao chatinterfesj sa porukama
+
+- id: REQ-017
+  name: Izjave svjedoka, osumnjicenog i zrtve
+  status: Draft
+  description: >
+    Veze se za konkretnu osbu koaj ga je dala
+    Treba da ima nslov
+    i sadrzaj u formi Izjave
+    Datum i mjesto zijave
+    I sva drug arelevantna polja tako da izgleda kao prava policiska izjava bitan je taj formalni stil pri priakzu da izgleda kao prava
+
+- id: REQ-018
+  name: Policijski izvjestaji, forenzicki nalazi
+  status: Draft
+  description: >
+    Treba da sadrze sve neophodne informacije koje su potrebne da se razumije njihov sadrzaj
+    Treba da imaju profesionalan izgled kao pravi policiski izvjestaji i forenzicki nalazi
+    Treba da imaju naslov i sadrzaj koji je unapred pripremio kreator slucaja
+    Treba da imaju datum i mjesto nastanka
+    Treba da imaju linkove na osobe koje su povezane sa njima
+
+- id: REQ-019
+  name: Kreiranje slucaja
+  status: Draft
+  description: >
+    Treba da sadrzi formu za kreiranje novog slucajja koji ukljucuje kreiranje osoba 
+    kreiranje svih dosijea za te osobe
+    kreiranje svih dokumenata koji cine slucaj
+    kreiranje vremenske linije i redoslijeda otkljucavanja osoba i dokumenata
+    Takoje treba da sdrzi informacije o tome ko su krivci u slucaju i ko su zrtve i svjedoci
+
+- id: REQ-020
+  name: Kreiranje sasluanja
+  status: Draft
+  description:
+    Treba da sadrzi formu za kreiranje novog sasluanja sa osobom u slucaju
+    Treba da sadrzi opciju za dodavanje pitanja i odgovora u formi stabla
+    Korisnik dodaoje pitanje i za svako pitanje odgovora
+    Pitanja zatim rasporedjuje u formu srtabla gdje se nakon svakog pitanja pojave seldece opcije za pitanje
+    U stablu s emoze moze ponavljati pitanje ali ne u sitoj grani
+    To znaci d aiako pitanje moze biti na dv amijesta u stablu ne moze se ponoviti dva puta
+    u toku ispitivanja 
+
+- id: REQ-021
+  name: Kreiranje dokumenata, Dosijea i Osoba
+  status: Draft
+  description: >
+    Treba da sadrzi formu za kreiranje novih dokumenata, dosijea i osoba u slucaju
+    Treba da sadrzi opciju za dodavanje svih relevantnih informacija o dokumentu, dosijeu ili osobi
+    Treba da ima profesionalan izgled kao pravi policiski dokumenti i dosijei
+    svaki od ovij se popunjava sto s epopunajva nazi polja za svaki tip 
+    Treba da srzi sto veci broj mogucih polja od kojih su neka obavezna dok su druga opciona
+    Kreator moze iamti opciju da doda costum podjeljeni
+
+- id: REQ-022
+  name: Kreiranje vremenske linije
+  status: Draft
+  description: >
+    Treba d asrzi formu gdje kreator sva kreianan dokument ai osobe rasporedjuje duz vremenske linije
+    Treba da ima opciju da doda dokument ili osobu na vremensku liniju
+    Treba da ima opciju da odredi redoslijed otkljucavanja osoba i dokumenata u slucaju
+    Treba da ima opciju da doda datum i vrijeme otkljucavanja svakog dokumenta i osobe u slucaju
+
+- id: REQ-023
+  name: Potvrda rijesenog slucaja
+  status: Draft
+  description: >
+    Nakon sto korisnik odredi tacne uloge za sve krivce i samo na njima stoji d a su osumljiceni
+    Tada ce se u meniju pojaviti opcija rijesi slucaj
+    Kada korisnik klikne na opciju rijesi slucaj, tada s epojavljuje kviz sa pitanjima i ponudjenim odgovorima
+    Taj kviz je kreirao kreator slucaja potrebno je iamti preko 80% tacnih odgovora da bi se slucaj smatrao rijesenim
+
+- id: REQ-024
+  name: Ocjenjivanje slucaja
+  status: Draft
+  description: >
+    Nakon sto korisnik rijesi slucaj, tada ce imati opciju da ocjeni slucaj
+    Korisnik moze dati ocjenu od 1 do 5 zvjezdica, sa mogucnoscu polovine zvjezdice (npr. 4.5)
+    Korisnik moze ostaviti i komentar uz svoju ocjenu, gdje moze izraziti svoje misljenje o slucaju i dati povratnu informaciju kreatoru slucaja
+
+- id: REQ-025
+  name: Pregled Ko je sve rijesio vas slucaj i koje ocjene i kritike ste dobili
+  status: Draft
+  description: >
+    Kreator slucaja treba da ima opciju da vidi ko je sve rijesio njegov slucaj i koje ocjene i kritike su dobili
+    Treba da ima opciju da vidi listu korisnika koji su rijesili njegov slucaj, sa njihovim ocjenama i komentarima
+    Treba da ima opciju da odgovori na komentare korisnika koji su rijesili njegov slucaj, gdje moze izraziti zahvalnost ili dati dodatne informacije o slucaju
+
+- id: REQ-026
+  name: Kviz za kraj slucaja i opis sluccaja
+  status: Draft
+  description: >
+    Opis slucajja i kviz koji ga rijesava takodje kreira kreator slucaja i treba da bude unapred pripremljen od strane kreatora slucaja
+    Opis slucaja treba da sadrzi sve relevantne informacije o slucaju, kao sto su naziv, opis, ocjena, broj recenzija i autor
+    Kviz treba da sadrzi pitanja i ponudjene odgovore koji su unapred pripremili kreatori slucaja i koji su relevantni za rijesavanje slucaja
+    Kviz treba da ima opciju za prikazivanje tacnih odgovora nakon sto korisnik zavrsi kviz, gdje korisnik moze vidjeti koje je odgovore tacno a koje nije i dobiti dodatne informacije o svakom pitanju i odgovoru pod uslovom da je slucaj rijesio ako ne rijesi ne moze viditi odgovore
+    I nastavlja sitrazivanje slucaja
+
+- id: REQ-027
+  name: Objavljivanje slucajja 
+  status: Draft
+  description: >
+    Nakon sto kretor zavrsi uredjivanje slucajja moze da ga objavi i tek tada ce ga ostali korisnici vidjeti i rijesvati
+    Takdoej kreator za vrijemme kreiranja slucajja mzoe preci u mod za pregled d avidi kkao ce izgledati u pregledu za korisnika 
+    koji ga rijesava
+
+- id: REQ-028
+  name: Aplikacija je samo za desktop
+  status: In Review
+  description: >
+    Aplikacija je namjenjena samo za desktop uredjaje i nije optimizovana za mobilne uredjaje
+    Korisnicki interfejs treba biti dizajniran sa fokusom na desktop korisnike, sa vecim elementima i vise prostora za prikaz informacija
+    Nije potrebno implementirati responsivni dizajn ili prilagoditi aplikaciju za mobilne uredjaje

@@ -1,3 +1,55 @@
 @startuml Class Diagram
-'TODO: Add class diagram
+title Class Diagram - Public Landing Page
+
+class App {
+  +render()
+}
+
+class DesktopGate {
+  +desktopMinWidth: number
+  +isDesktop(): boolean
+  +render()
+}
+
+class LandingPage {
+  +renderHero()
+  +renderPurpose()
+  +renderFeatureCards()
+  +renderCTA()
+}
+
+class DesktopNotice {
+  +render()
+}
+
+class SidebarMenu {
+  +items: string[]
+  +render()
+}
+
+class FeatureCard {
+  +title: string
+  +description: string
+  +render()
+}
+
+class CTASection {
+  +onRegisterClick()
+  +onLoginClick()
+}
+
+class ThemeTokens {
+  +surfaceLight
+  +surfaceGray
+  +accentBlueDark
+  +accentRed
+}
+
+App --> DesktopGate
+DesktopGate --> LandingPage
+DesktopGate --> DesktopNotice
+LandingPage *-- SidebarMenu
+LandingPage *-- FeatureCard
+LandingPage *-- CTASection
+LandingPage ..> ThemeTokens
 @enduml

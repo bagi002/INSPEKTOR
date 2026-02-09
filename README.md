@@ -1,28 +1,47 @@
 # INSPEKTOR
 
-Kostur README-a — popuniti čim projekat dobije konkretne specifikacije.
+INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
+Trenutno je implementirana javna pocetna stranica za neulogovane korisnike sa menijem i CTA
+akcijama za registraciju i prijavu.
+Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
-## Prvo popuni
-- Opis problema / ciljeve
-- Tehnologije i verzije (po komponenti)
-- Komande za lokalno i CI/CD pokretanje
-- Kontakti (owner, reviewer, ops)
+## Tehnologije
+- Frontend: React + Vite
+- Dokumentacija: YAML requirements + PlantUML dijagrami
+- Backend: rezervisan folder (`backend/`) za naredne faze
 
-## Mapa repozitorijuma
-- `Automation/` — alati i `docs_builder.py` (workflow u `Automation/README.md`)
-- `Docs/` — requirements i arhitektura (YAML + PUML + HTML)
-- Komponente: backend, frontend (ovde ide stvarni kod/servisi)
-- `.vscode/` — editorska podešavanja i isticanje statusa requirements
+## Struktura projekta
+- `frontend/` - React aplikacija (javna pocetna stranica)
+- `backend/` - buduce backend komponente
+- `Docs/requirements/` - high-level i softverski requirements
+- `Docs/architecture/` - runtime, class i block PUML dijagrami
+- `Automation/` - alati za izgradnju dokumentacije (`docs_builder.py`)
 
-## Brzi start (primer)
-0) Posle `git clone`: `cd Automation && ./bootstrap_envs.sh` (rekreira root `venv/` i `docs_venv/`)
-1) `./setup.sh`
-2) `cd Automation && source docs_venv/bin/activate && python3 docs_builder.py`
-3) Otvori `Docs/build/index.html`
+## Pokretanje projekta (frontend)
+1. `cd frontend`
+2. `npm install`
+3. `npm run dev`
+4. Otvori adresu koju ispisuje Vite (standardno `http://localhost:5173`)
 
-## Status dokumentacije
-- High-level: `Docs/requirements/high_level_requirements.yaml`
-- Softverski: `Docs/requirements/software_requirements.yaml` (svaki ima `refines`)
-- Dijagrami: `Docs/architecture/*.puml`
+## Pokretanje preko skripti (root)
+1. `./setup.sh` - priprema Python okruzenja i instalira frontend zavisnosti
+2. `./start.sh` - pokrece frontend aplikaciju na `http://localhost:5173`
 
-Napomena: ovaj README je kostur — zameni ga stvarnim detaljima projekta.
+## Build i preview (frontend)
+1. `cd frontend`
+2. `npm run build`
+3. `npm run preview`
+
+## Dokumentacija requirements i arhitekture
+1. `cd Automation`
+2. `source docs_venv/bin/activate`
+3. `python3 docs_builder.py`
+4. Otvori `Docs/build/index.html`
+
+## Trenutno implementirano
+- Javna stranica za neulogovane korisnike:
+  - levi meni (`Pocetna`, `Registracija`, `Prijava`)
+  - desktop-only pristup (za manje ekrane se prikazuje informativna poruka)
+  - hero sekcija sa opisom svrhe aplikacije
+  - pregled kljucnih funkcionalnosti
+  - CTA sekcija za registraciju/prijavu

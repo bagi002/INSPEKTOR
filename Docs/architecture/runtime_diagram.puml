@@ -1,16 +1,32 @@
 @startuml Runtime Diagram
-title Runtime Diagram
+title Runtime Diagram - Neulogovani Korisnik
 
-actor User
-participant Frontend
-participant Backend
-participant Database
+actor "Neulogovani korisnik" as Guest
+participant "Frontend Router" as Router
+participant "DesktopGate" as Gate
+participant "LandingPage" as Landing
+participant "SidebarMenu" as Menu
+participant "Desktop Notice View" as Notice
+participant "Auth stranice" as Auth
 
-User -> Frontend: Request
-Frontend -> Backend: API Call
-Backend -> Database: Query
-Database --> Backend: Response
-Backend --> Frontend: Data
-Frontend --> User: Display
+Guest -> Router: Otvara /
+Router -> Gate: Provera sirine viewport-a
+
+alt Desktop sirina
+  Gate -> Landing: Render javne pocetne stranice
+  Landing -> Menu: Prikaz stavki (Pocetna, Registracija, Prijava)
+  Landing --> Guest: Hero + funkcionalnosti + CTA
+else Manja sirina od desktop praga
+  Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
+  Notice --> Guest: Prikaz ogranicenog ekrana
+end
+
+Guest -> Menu: Klik na Registracija
+Menu -> Router: Navigacija na /registracija
+Router -> Auth: Render registracione stranice
+
+Guest -> Menu: Klik na Prijava
+Menu -> Router: Navigacija na /prijava
+Router -> Auth: Render stranice za prijavu
 
 @enduml
