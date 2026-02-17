@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Vremenska linija, dosijei, izjave, policijski dokumenti i saslusanja u slucaju
+title Block Diagram - Case workspace + korisnicka podrska + admin panel
 
 package "Frontend" {
   [App Shell]
@@ -10,6 +10,7 @@ package "Frontend" {
   [Public Auth Pages]
   [Logged Home Page]
   [Logged Sidebar]
+  [Support Page]
   [Create Case Start Page]
   [Case Workspace Page]
   [Shared Case Sidebar]
@@ -50,6 +51,7 @@ package "Frontend" {
   [Case People API Client]
   [Case Documents API Client]
   [Case Interrogations API Client]
+  [Support API Client]
   [Cases API Client]
   [Auth API Client]
   [Session Storage]
@@ -57,18 +59,36 @@ package "Frontend" {
   [Desktop Warning View]
 }
 
+package "Admin Frontend (port 5174)" {
+  [Admin App Shell]
+  [Admin Login View]
+  [Admin Dashboard]
+  [Admin Tickets Section]
+  [Admin Users Section]
+  [Admin Cases Section]
+  [Admin API Client]
+  [Admin Session Storage]
+}
+
 package "Backend (Node.js + Express)" {
   [Express App]
   [Auth Routes]
   [Cases Routes]
+  [Support Routes]
+  [Admin Routes]
   [Auth Guard Middleware]
+  [Admin Panel Auth Guard]
   [Auth Service]
   [Cases Service]
+  [Support Service]
+  [Admin Service]
   [Case Timeline Service]
   [Case People Service]
   [Case Documents Service]
   [Case Interrogations Service]
   [Case Solve Visibility Service]
+  [Support Validation]
+  [Admin Validation]
   [Cases Validation]
   [Case Timeline Validation]
   [Case People Validation]
@@ -83,6 +103,9 @@ package "Backend (Node.js + Express)" {
   [Case People Repository]
   [Case Documents Repository]
   [Case Interrogations Repository]
+  [Support Repository]
+  [Admin Repository]
+  [Admin Bootstrap]
   [SQLite Module]
   [Migration Runner]
   [Health Route]
@@ -93,6 +116,7 @@ database "cases + case_documents + timeline" as CasesDb
 database "case_people + dossier profiles" as PeopleDb
 database "metadata_json u case_documents" as MetadataDb
 database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
+database "support_tickets" as SupportDb
 
 [App Shell] --> [Desktop Policy Gate]
 [Desktop Policy Gate] --> [Route Resolver]
@@ -101,12 +125,15 @@ database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
 [Route Resolver] --> [Public Auth Pages]
 [Route Resolver] --> [Route Utils]
 [Protected Route Guard] --> [Logged Home Page]
+[Protected Route Guard] --> [Support Page]
 [Protected Route Guard] --> [Create Case Start Page]
 [Protected Route Guard] --> [Case Workspace Page]
 [Public Auth Pages] --> [Auth API Client]
 
 [Logged Home Page] --> [Logged Sidebar]
 [Logged Home Page] --> [Cases API Client]
+[Logged Home Page] --> [Support Page]
+[Support Page] --> [Support API Client]
 
 [Create Case Start Page] --> [Shared Case Sidebar]
 [Create Case Start Page] --> [Cases API Client]
@@ -181,9 +208,19 @@ database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
 [Case People API Client] --> [Session Storage]
 [Case Documents API Client] --> [Session Storage]
 [Case Interrogations API Client] --> [Session Storage]
+[Support API Client] --> [Session Storage]
 [Logout Action] --> [Session Storage]
 [Logged Sidebar] --> [Logout Action]
 [Shared Case Sidebar] --> [Logout Action]
+
+[Admin App Shell] --> [Admin Login View]
+[Admin App Shell] --> [Admin Dashboard]
+[Admin Login View] --> [Admin API Client]
+[Admin Dashboard] --> [Admin Tickets Section]
+[Admin Dashboard] --> [Admin Users Section]
+[Admin Dashboard] --> [Admin Cases Section]
+[Admin Dashboard] --> [Admin API Client]
+[Admin API Client] --> [Admin Session Storage]
 
 [Auth API Client] --> [Express App]
 [Cases API Client] --> [Express App]
@@ -191,9 +228,13 @@ database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
 [Case People API Client] --> [Express App]
 [Case Documents API Client] --> [Express App]
 [Case Interrogations API Client] --> [Express App]
+[Support API Client] --> [Express App]
+[Admin API Client] --> [Express App]
 
 [Express App] --> [Auth Routes]
 [Express App] --> [Cases Routes]
+[Express App] --> [Support Routes]
+[Express App] --> [Admin Routes]
 [Express App] --> [Health Route]
 
 [Auth Routes] --> [Auth Service]
@@ -203,10 +244,21 @@ database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
 [Cases Routes] --> [Case People Service]
 [Cases Routes] --> [Case Documents Service]
 [Cases Routes] --> [Case Interrogations Service]
+[Support Routes] --> [Auth Guard Middleware]
+[Support Routes] --> [Support Service]
+[Admin Routes] --> [Admin Panel Auth Guard]
+[Admin Routes] --> [Admin Service]
 
 [Auth Guard Middleware] --> [JWT Token Service]
+[Admin Panel Auth Guard] --> [JWT Token Service]
 [Auth Service] --> [JWT Token Service]
 [Auth Service] --> [User Repository]
+[Support Service] --> [Support Validation]
+[Support Service] --> [Support Repository]
+[Admin Service] --> [Admin Validation]
+[Admin Service] --> [Admin Repository]
+[Admin Service] --> [Support Repository]
+[Admin Service] --> [User Repository]
 [Cases Service] --> [Cases Validation]
 [Cases Service] --> [Cases Repository]
 [Case Timeline Service] --> [Case Timeline Validation]
@@ -237,12 +289,16 @@ database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
 [Case People Repository] --> [SQLite Module]
 [Case Documents Repository] --> [SQLite Module]
 [Case Interrogations Repository] --> [SQLite Module]
+[Support Repository] --> [SQLite Module]
+[Admin Repository] --> [SQLite Module]
+[Admin Bootstrap] --> [User Repository]
 
 [SQLite Module] --> Db
 [SQLite Module] --> CasesDb
 [SQLite Module] --> PeopleDb
 [SQLite Module] --> MetadataDb
 [SQLite Module] --> InterrogationsDb
+[SQLite Module] --> SupportDb
 [Migration Runner] --> Db
 [Health Route] --> [SQLite Module]
 @enduml

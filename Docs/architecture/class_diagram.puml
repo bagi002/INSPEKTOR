@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Case workspace dokumentacija (vremenska linija, dosijei, izjave, policijski dokumenti, saslusanja)
+title Class Diagram - Case workspace + korisnicka podrska + admin panel
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -23,6 +23,12 @@ class DesktopGate {
 
 class LoggedHomePage {
   +loadHomeData()
+  +render()
+}
+
+class SupportPage {
+  +loadTickets()
+  +handleSubmit(event)
   +render()
 }
 
@@ -260,10 +266,66 @@ class CasesApiClient {
   +fetchCreatorCase(caseId)
 }
 
+class SupportApiClient {
+  +fetchMySupportTickets()
+  +createSupportTicket(payload)
+}
+
+class AdminApiClient {
+  +loginAdmin(payload)
+  +fetchAdminOverview()
+  +fetchAdminTickets()
+  +updateAdminTicketStatus(ticketId, payload)
+  +fetchAdminUsers()
+  +updateAdminUser(userId, payload)
+  +fetchAdminCases()
+  +updateAdminCase(caseId, payload)
+}
+
 class SessionStorageService {
   +saveSession(token, user)
   +getSession()
   +clearSession()
+}
+
+class AdminSessionStorageService {
+  +saveAdminSession(token, user)
+  +loadAdminSession()
+  +clearAdminSession()
+}
+
+class AdminApp {
+  +handleLoginSuccess(data)
+  +handleLogout()
+  +render()
+}
+
+class AdminLoginView {
+  +handleSubmit(event)
+  +render()
+}
+
+class AdminDashboard {
+  +loadDashboardData()
+  +handleUpdateTicket(ticketId, payload)
+  +handleUpdateUser(userId, payload)
+  +handleUpdateCase(caseId, payload)
+  +render()
+}
+
+class AdminTicketsSection {
+  +handleSave(ticketId)
+  +render()
+}
+
+class AdminUsersSection {
+  +handleSave()
+  +render()
+}
+
+class AdminCasesSection {
+  +handleSave()
+  +render()
 }
 
 class ExpressApp {
@@ -287,6 +349,22 @@ class CasesRoutes {
   +POST /:caseId/interrogations
 }
 
+class SupportRoutes {
+  +GET /tickets/me
+  +POST /tickets
+}
+
+class AdminRoutes {
+  +POST /login
+  +GET /overview
+  +GET /tickets
+  +PATCH /tickets/:ticketId/status
+  +GET /users
+  +PATCH /users/:userId
+  +GET /cases
+  +PATCH /cases/:caseId
+}
+
 class CasesController {
   +getLoggedHomeOverviewController(req, res)
   +createCaseController(req, res)
@@ -302,6 +380,22 @@ class CasesController {
   +createCreatorCasePoliceDocumentController(req, res)
   +getCreatorCaseInterrogationsController(req, res)
   +createCreatorCaseInterrogationController(req, res)
+}
+
+class SupportController {
+  +getMySupportTicketsController(req, res)
+  +createSupportTicketController(req, res)
+}
+
+class AdminController {
+  +adminLoginController(req, res)
+  +adminOverviewController(req, res)
+  +adminTicketsController(req, res)
+  +adminUpdateTicketStatusController(req, res)
+  +adminUsersController(req, res)
+  +adminUpdateUserController(req, res)
+  +adminCasesController(req, res)
+  +adminUpdateCaseController(req, res)
 }
 
 class CasesService {
@@ -333,6 +427,22 @@ class CaseInterrogationsService {
   +createCreatorCaseInterrogation(caseId, payload, userId)
 }
 
+class SupportService {
+  +getMySupportTickets(userId)
+  +createSupportTicketForUser(payload, userId)
+}
+
+class AdminService {
+  +loginToAdminPanel(payload)
+  +getAdminOverview()
+  +getAdminTickets()
+  +patchAdminTicketStatus(ticketId, payload)
+  +listAdminUsers()
+  +patchAdminUser(userId, payload)
+  +listAdminCases()
+  +patchAdminCase(caseId, payload)
+}
+
 class CaseSolveVisibilityService {
   +normalizeCaseReadScope(scope)
   +getSolveVisibilityForUser(caseId, userId)
@@ -353,6 +463,17 @@ class CaseDocumentsValidation {
 
 class CaseInterrogationsValidation {
   +validateCreateCaseInterrogationPayload(payload)
+}
+
+class SupportValidation {
+  +validateCreateSupportTicketPayload(payload)
+}
+
+class AdminValidation {
+  +validateAdminLoginPayload(payload)
+  +validateAdminTicketStatusPayload(payload)
+  +validateAdminUserPatchPayload(payload)
+  +validateAdminCasePatchPayload(payload)
 }
 
 class CaseDocumentsTypeSpecificValidation {
@@ -400,12 +521,35 @@ class CaseInterrogationsRepository {
   +upsertCaseInterrogationForPerson(caseId, payload, userId)
 }
 
+class SupportRepository {
+  +createSupportTicket(payload)
+  +getSupportTicketsByReporterUserId(userId)
+  +getAllSupportTickets()
+  +updateSupportTicketStatus(ticketId, status, adminNote)
+}
+
+class AdminRepository {
+  +getAdminOverviewCounts()
+  +getAdminUsers()
+  +updateAdminUser(userId, updates)
+  +getAdminCases()
+  +updateAdminCase(caseId, updates)
+}
+
 UseCaseInterrogationCreateState --> CaseInterrogationCreateStateUtils
 CaseInterrogationCreateModal --> CaseInterrogationNodeBuilderSection
 CaseInterrogationNodeBuilderSection --> CaseInterrogationTreePreview
 
 class AuthGuardMiddleware {
   +requireAuth(req, res, next)
+}
+
+class AdminPanelAuthGuard {
+  +requireAdminPanelAuth(req, res, next)
+}
+
+class AdminBootstrap {
+  +ensureAdminBootstrapUser()
 }
 
 class DatabaseModule {
@@ -415,7 +559,7 @@ class DatabaseModule {
 }
 
 class SQLiteDatabase {
-  +users
+  +users(role)
   +cases
   +case_people
   +case_person_dossiers
@@ -425,6 +569,7 @@ class SQLiteDatabase {
   +case_interrogation_nodes
   +case_timeline_items
   +case_user_progress
+  +support_tickets
 }
 
 App --> RouteUtils
@@ -432,6 +577,8 @@ App --> DesktopGate
 DesktopGate --> LoggedHomePage
 DesktopGate --> CreateCasePage
 DesktopGate --> CaseWorkspacePage
+DesktopGate --> SupportPage
+App --> SupportPage
 
 CaseWorkspacePage *-- CreateCaseSidebar
 CaseWorkspacePage *-- CaseTimelineTab
@@ -477,26 +624,46 @@ CaseInterrogationsTab ..> CaseInterrogationsApiClient
 CaseWorkspacePage ..> CasesApiClient
 LoggedHomePage ..> CasesApiClient
 CreateCasePage ..> CasesApiClient
+SupportPage ..> SupportApiClient
 CasePeopleApiClient ..> SessionStorageService
 CaseTimelineApiClient ..> SessionStorageService
 CaseDocumentsApiClient ..> SessionStorageService
 CaseInterrogationsApiClient ..> SessionStorageService
 CasesApiClient ..> SessionStorageService
+SupportApiClient ..> SessionStorageService
 CasesApiClient ..> RouteUtils
+AdminApp --> AdminLoginView
+AdminApp --> AdminDashboard
+AdminDashboard *-- AdminTicketsSection
+AdminDashboard *-- AdminUsersSection
+AdminDashboard *-- AdminCasesSection
+AdminLoginView ..> AdminApiClient
+AdminDashboard ..> AdminApiClient
+AdminApiClient ..> AdminSessionStorageService
 
 CasePeopleApiClient ..> ExpressApp
 CaseTimelineApiClient ..> ExpressApp
 CaseDocumentsApiClient ..> ExpressApp
 CaseInterrogationsApiClient ..> ExpressApp
 CasesApiClient ..> ExpressApp
+SupportApiClient ..> ExpressApp
+AdminApiClient ..> ExpressApp
 ExpressApp --> CasesRoutes
+ExpressApp --> SupportRoutes
+ExpressApp --> AdminRoutes
 CasesRoutes --> AuthGuardMiddleware
 CasesRoutes --> CasesController
+SupportRoutes --> AuthGuardMiddleware
+SupportRoutes --> SupportController
+AdminRoutes --> AdminPanelAuthGuard
+AdminRoutes --> AdminController
 CasesController --> CasesService
 CasesController --> CaseTimelineService
 CasesController --> CasePeopleService
 CasesController --> CaseDocumentsService
 CasesController --> CaseInterrogationsService
+SupportController --> SupportService
+AdminController --> AdminService
 CasesService --> CasesRepository
 CaseTimelineService --> CaseTimelineValidation
 CaseTimelineService --> CasesRepository
@@ -517,6 +684,11 @@ CaseInterrogationsService --> CasesRepository
 CaseInterrogationsService --> CaseDocumentsRepository
 CaseInterrogationsService --> CaseInterrogationsRepository
 CaseInterrogationsService --> CaseSolveVisibilityService
+SupportService --> SupportValidation
+SupportService --> SupportRepository
+AdminService --> AdminValidation
+AdminService --> AdminRepository
+AdminService --> SupportRepository
 CaseSolveVisibilityService --> CaseTimelineRepository
 CaseSolveVisibilityService --> CaseProgressRepository
 CaseDocumentsRepository ..> CaseDocumentsValidationShared
@@ -526,5 +698,8 @@ CaseProgressRepository --> DatabaseModule
 CasePeopleRepository --> DatabaseModule
 CaseDocumentsRepository --> DatabaseModule
 CaseInterrogationsRepository --> DatabaseModule
+SupportRepository --> DatabaseModule
+AdminRepository --> DatabaseModule
+AdminBootstrap --> DatabaseModule
 DatabaseModule --> SQLiteDatabase
 @enduml

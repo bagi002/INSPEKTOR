@@ -1,6 +1,7 @@
 import { getMany, runQuery } from "./sqliteClient.js";
 import { CASE_PEOPLE_MIGRATIONS } from "./migrations.casePeople.js";
 import { CASE_INTERROGATIONS_MIGRATIONS } from "./migrations.interrogations.js";
+import { SUPPORT_ADMIN_MIGRATIONS, applySupportAdminColumnMigrations } from "./migrations.supportAdmin.js";
 
 const MIGRATIONS = [
   `
@@ -9,6 +10,8 @@ const MIGRATIONS = [
       first_name TEXT NOT NULL,
       last_name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
+      role TEXT NOT NULL DEFAULT 'user'
+        CHECK (role IN ('user', 'admin')),
       password_hash TEXT NOT NULL,
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -22,6 +25,7 @@ const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_users_created_at
     ON users(created_at);
   `,
+  ...SUPPORT_ADMIN_MIGRATIONS,
   `
     CREATE TABLE IF NOT EXISTS cases (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -137,18 +141,23 @@ const MIGRATIONS = [
     ON case_user_progress(user_id, progress_status);
   `,
 ];
-
 async function ensureColumnExists(database, tableName, columnName, definitionSql) {
   const rows = await getMany(database, `PRAGMA table_info(${tableName})`);
   const hasColumn = rows.some((row) => row?.name === columnName);
   if (hasColumn) {
     return;
   }
-
   await runQuery(database, `ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definitionSql}`);
 }
-
 async function applyColumnMigrations(database) {
+  await applySupportAdminColumnMigrations(database, ensureColumnExists);
+  await runQuery(
+    database,
+    `
+      CREATE INDEX IF NOT EXISTS idx_users_role
+      ON users(role);
+    `
+  );
   await ensureColumnExists(
     database,
     "case_person_dossier_profiles",
@@ -186,11 +195,9 @@ async function applyColumnMigrations(database) {
     "TEXT NOT NULL DEFAULT ''"
   );
 }
-
 export async function applyMigrations(database) {
   for (const statement of MIGRATIONS) {
     await runQuery(database, statement);
   }
-
   await applyColumnMigrations(database);
 }

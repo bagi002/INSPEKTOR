@@ -12,22 +12,24 @@ Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekran
 - Dokumentacija: YAML requirements + PlantUML dijagrami
 
 ## Struktura projekta
-- `frontend/` - React aplikacija (landing + auth stranice)
-- `backend/` - Express backend (`/api/auth`, `/api/cases`, `/api/health`) i SQLite pristup
+- `frontend/` - React aplikacija za korisnike (`landing`, auth, slucajevi, podrska)
+- `admin-frontend/` - zaseban React admin panel (port `5174`)
+- `backend/` - Express backend (`/api/auth`, `/api/cases`, `/api/support`, `/api/admin`, `/api/health`) i SQLite pristup
 - `Instances/` - runtime podaci (npr. SQLite fajl baze)
 - `Docs/requirements/` - high-level i softverski requirements
 - `Docs/architecture/` - runtime, class i block PUML dijagrami
 - `Automation/` - alati za izgradnju dokumentacije (`docs_builder.py`)
 
-## Pokretanje projekta (frontend + backend)
+## Pokretanje projekta (frontend + backend + admin panel)
 1. `./setup.sh`
 2. `./start.sh`
-3. Frontend: `http://localhost:5173`
-4. Backend health: `http://localhost:3001/api/health`
+3. Korisnicki frontend: `http://localhost:5173`
+4. Admin panel: `http://localhost:5174`
+5. Backend health: `http://localhost:3001/api/health`
 
 ## Pokretanje preko skripti (root)
-1. `./setup.sh` - priprema okruzenje, instalira backend + frontend zavisnosti, kreira `backend/.env` (ako ne postoji) i inicijalizuje bazu
-2. `./start.sh` - pokrece backend (`3001`) i frontend (`5173`)
+1. `./setup.sh` - priprema okruzenje, instalira backend + frontend + admin frontend zavisnosti, kreira `backend/.env` (ako ne postoji) i inicijalizuje bazu
+2. `./start.sh` - pokrece backend (`3001`), korisnicki frontend (`5173`) i admin frontend (`5174`)
 
 ## Pokretanje pojedinacno
 Backend:
@@ -41,6 +43,17 @@ Frontend:
 2. `npm install`
 3. `npm run dev`
 
+Admin frontend:
+1. `cd admin-frontend`
+2. `npm install`
+3. `npm run dev -- --port 5174`
+
+Backend `.env` bitne promenljive za admin:
+- `FRONTEND_ORIGINS=http://localhost:5173,http://localhost:5174`
+- `ADMIN_PANEL_PASSWORD=<lozinka-admin-panela>`
+- `ADMIN_BOOTSTRAP_EMAIL=<bootstrap-admin-email>`
+- `ADMIN_BOOTSTRAP_PASSWORD=<bootstrap-admin-lozinka>`
+
 ## Build i preview (frontend)
 1. `cd frontend`
 2. `npm run build`
@@ -51,9 +64,11 @@ Frontend:
 - Registracija: `http://localhost:5173/registracija`
 - Prijava: `http://localhost:5173/prijava`
 - Ulogovana pocetna: `http://localhost:5173/app`
+- Podrska: `http://localhost:5173/podrska`
 - Kreiranje slucaja (start): `http://localhost:5173/slucaj/novi`
 - Workspace tab (kreiranje): `http://localhost:5173/slucaj/:id/kreiranje/:tab`
 - Workspace tab (resavanje): `http://localhost:5173/slucaj/:id/resavanje/:tab`
+- Admin panel login: `http://localhost:5174`
 
 Tok koriscenja:
 1. Otvori `/registracija` i kreiraj nalog.
@@ -81,18 +96,28 @@ Tok koriscenja:
 13. U tabu `/slucaj/:id/resavanje/vremenska-linija` koristi dugme `Dalje` za postepeno
     otkljucavanje sledece stavke; lista prikazuje najnovije otkljucano na vrhu, a
     `Trenutni datum` predstavlja datum poslednje otkljucane stavke.
+14. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i verziju
+    aplikacije, i pratiti statuse svih svojih tiketa.
+15. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
+    email+lozinka naloga + lozinka admin panela (`ADMIN_PANEL_PASSWORD`).
+16. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
 - Slucajevi i povezani podaci (osobe, dokumenti, timeline, korisnicki napredak) cuvaju se u SQLite `case_*` tabelama.
+- Ticketi podrske se cuvaju u tabeli `support_tickets`.
 - Pri uspesnoj prijavi backend vraca JWT token koji se cuva u `localStorage` na klijentu.
-- Vite proxy prosledjuje `"/api/*"` zahteve ka backend-u (`http://localhost:3001`).
+- Pri prvom pokretanju backend automatski obezbedjuje bootstrap admin nalog na osnovu `.env`
+  promenljivih (`ADMIN_BOOTSTRAP_*`).
+- Vite proxy prosledjuje `"/api/*"` zahteve ka backend-u (`http://localhost:3001`) i za
+  korisnicki i za admin frontend.
 
 ## Backend API
 - `POST /api/auth/register`
   - body: `{ "firstName": "...", "lastName": "...", "email": "...", "password": "..." }`
 - `POST /api/auth/login`
   - body: `{ "email": "...", "password": "..." }`
+  - vraca korisnika sa `role` poljem (`user` ili `admin`) i JWT token sa korisnickim scope-om
 - `GET /api/cases/home` (autorizacija: `Bearer <JWT>`)
   - vraca sekcije i statistiku za ulogovanu pocetnu (`activeCases`, `resolvedCases`, `topRatedPublicCases`, `createdCases`)
 - `POST /api/cases` (autorizacija: `Bearer <JWT>`)
@@ -181,6 +206,30 @@ Napomena:
     bez ciklusa), pravilo da se isto pitanje ne moze ponoviti u istoj grani i
     pravilo da je saslusanje dozvoljeno samo za zive osobe
   - pristup je trenutno ogranicen na autora slucaja
+- `GET /api/support/tickets/me` (autorizacija: `Bearer <JWT>`)
+  - vraca sve tikete trenutno ulogovanog korisnika, ukljucujuci status i admin napomenu
+- `POST /api/support/tickets` (autorizacija: `Bearer <JWT>`)
+  - kreira novi tiket za podrsku
+  - body: `ticketType`, `title`, `description`, `appLocation`, `appVersion`
+  - status tiketa se inicijalno postavlja na `open`
+- `POST /api/admin/login`
+  - body: `{ "email": "...", "password": "...", "panelPassword": "..." }`
+  - pristup odobrava samo za korisnike sa `role=admin` i validnom lozinkom admin panela
+  - vraca admin JWT token sa `scope=admin_panel`
+- `GET /api/admin/overview` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - vraca agregirane metrike korisnika, slucajeva i tiketa
+- `GET /api/admin/tickets` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - vraca sve tikete sa podacima naloga koji ih je prijavio
+- `PATCH /api/admin/tickets/:ticketId/status` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - menja status tiketa i opcionu `adminNote`
+- `GET /api/admin/users` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - vraca sve korisnike bez `password_hash` polja
+- `PATCH /api/admin/users/:userId` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - menja korisnicke podatke (`firstName`, `lastName`, `email`, `role`)
+- `GET /api/admin/cases` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - vraca sve slucajeve sa podacima autora
+- `PATCH /api/admin/cases/:caseId` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - menja osnovna polja slucaja (`title`, `description`, `publicationStatus`, `averageRating`, `ratingCount`)
 - `GET /api/health`
   - provera dostupnosti API-ja i baze
 
@@ -211,7 +260,19 @@ Napomena:
   - pregled najocenjenijih javnih slucajeva iz baze
   - pregled slucajeva koje je korisnik kreirao (bez mock podataka)
   - prikaz loading, greske i praznih stanja
-  - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Profil`, `Odjava`)
+  - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Podrska`, `Profil`, `Odjava`)
+  - za admin korisnika dodatni link ka izdvojenom admin panelu (`http://localhost:5174`)
+- Korisnicka podrska (`/podrska`):
+  - forma za prijavu bug-a ili predloga poboljsanja (`ticketType`, `title`, `description`, `appLocation`, `appVersion`)
+  - ucitavanje i prikaz svih tiketa trenutnog korisnika sa statusima
+  - backend integracija preko `GET /api/support/tickets/me` i `POST /api/support/tickets`
+- Admin panel (`http://localhost:5174`):
+  - zaseban frontend i odvojena sesija (`admin_panel` JWT scope)
+  - login zahteva admin nalog i lozinku admin panela
+  - dashboard prikazuje aggregate metrike (`/api/admin/overview`)
+  - upravljanje ticketima (pregled svih + promena statusa i admin napomene)
+  - upravljanje korisnicima (pregled i izmena osnovnih podataka i role, bez lozinki)
+  - upravljanje slucajevima (pregled i izmena osnovnih polja)
 - Kreiranje slucaja (`/slucaj/novi`):
   - forma za unos naziva i opisa slucaja kao pocetni korak
   - nakon submit-a cuva draft slucaj preko backend API-ja

@@ -371,3 +371,44 @@
     postepeno otkljucavanje kroz dugme `Dalje`, prikaz trenutnog datuma kao datuma
     poslednje otkljucane stavke, obrnuti redosled prikaza (najnovije prvo) i prikaz
     faze istrage prema procentu otkljucanih timeline stavki.
+
+- id: REQ-SW-039
+  name: Backend model i API za korisnicke support tickete
+  status: Finished
+  refines: REQ-031
+  description: >
+    Uvesti SQLite tabelu `support_tickets` i JWT-zasticene endpointe
+    `GET /api/support/tickets/me` i `POST /api/support/tickets` za kreiranje i pregled
+    korisnickih tiketa (bug report ili predlog poboljsanja), sa statusima
+    `open`, `reviewed`, `in_progress`, `rejected`, `closed` i metapodacima
+    o lokaciji u aplikaciji, verziji aplikacije i vremenu prijave.
+
+- id: REQ-SW-040
+  name: Korisnicki panel za podrsku u glavnoj aplikaciji
+  status: Finished
+  refines: REQ-031
+  description: >
+    Implementirati novu stranicu `/podrska` u ulogovanom meniju, sa formom za prijavu
+    problema/predloga i listom svih tiketa prijavljenih od strane trenutno ulogovanog
+    korisnika, ukljucujuci prikaz trenutnog statusa svakog tiketa.
+
+- id: REQ-SW-041
+  name: Admin autentifikacija i backend API za administraciju
+  status: Finished
+  refines: REQ-032
+  description: >
+    Implementirati admin autentifikaciju preko endpointa `POST /api/admin/login`
+    (email + lozinka naloga + lozinka admin panela), admin JWT scope zastitu i
+    administratorske endpointe za pregled i izmenu korisnika, slucajeva i support tiketa
+    bez pristupa hashiranim lozinkama.
+
+- id: REQ-SW-042
+  name: Odvojen admin panel na zasebnom portu
+  status: Finished
+  refines: REQ-032
+  description: >
+    Implementirati poseban React + Vite admin frontend (`admin-frontend`) koji radi
+    na zasebnom portu `5174`, sa login stranicom i dashboard prikazom za:
+    1) pregled i promenu statusa support tiketa,
+    2) pregled i izmenu korisnickih podataka (bez lozinki),
+    3) pregled i izmenu podataka o slucajevima.

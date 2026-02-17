@@ -1,0 +1,175 @@
+:root {
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  color: #10243f;
+  background-color: #eef3fb;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #10243f;
+  background:
+    radial-gradient(circle at 9% 8%, rgba(14, 71, 140, 0.16), transparent 38%),
+    radial-gradient(circle at 90% 10%, rgba(170, 44, 58, 0.14), transparent 34%),
+    linear-gradient(150deg, #f8fbff 0%, #e9f1fc 50%, #eef4fb 100%);
+}
+.admin-shell {
+  width: min(1400px, calc(100vw - 3rem));
+  margin: 1.4rem auto 2rem;
+  display: grid;
+  gap: 1rem;
+}
+.admin-card {
+  border: 1px solid #c3d3e7;
+  border-radius: 16px;
+  padding: 1.25rem;
+  background: linear-gradient(160deg, #ffffff, #f1f7ff);
+  box-shadow: 0 14px 34px rgba(17, 65, 130, 0.13);
+}
+.admin-login-card {
+  width: min(580px, 100%);
+  margin: 2rem auto;
+}
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.admin-eyebrow {
+  margin: 0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: #194a80;
+}
+h1,
+h2,
+h3 {
+  margin-top: 0;
+  color: #16395f;
+}
+p {
+  margin: 0.45rem 0 0;
+  color: #425e80;
+}
+.admin-form,
+.admin-inline-editor {
+  display: grid;
+  gap: 0.72rem;
+}
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 700;
+  color: #173b63;
+}
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid #bdd0e6;
+  border-radius: 10px;
+  padding: 0.62rem 0.7rem;
+  color: #183e68;
+  background: #f8fbff;
+}
+textarea {
+  resize: vertical;
+}
+.admin-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.admin-btn {
+  border: 1px solid #8eaed5;
+  border-radius: 10px;
+  min-height: 40px;
+  padding: 0 0.95rem;
+  cursor: pointer;
+  color: #15385f;
+  background: #e9f2fd;
+  font-weight: 700;
+}
+.admin-btn-primary {
+  border-color: #1f528e;
+  background: linear-gradient(135deg, #144379, #255e9c);
+  color: #f7fbff;
+}
+.admin-btn-danger {
+  border-color: #9f3646;
+  background: linear-gradient(135deg, #9d2f40, #bf4352);
+  color: #fff8f8;
+}
+.admin-feedback {
+  margin-top: 0.55rem;
+  color: #7d2432;
+  font-weight: 700;
+}
+.admin-error {
+  color: #872230;
+  font-size: 0.9rem;
+}
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+.admin-stat {
+  padding: 0.7rem;
+  border-radius: 11px;
+  border: 1px solid #bfd0e7;
+  background: linear-gradient(160deg, #f8fbff, #edf4fd);
+}
+.admin-stat span {
+  display: block;
+  font-size: 0.86rem;
+  color: #536b87;
+}
+.admin-stat strong {
+  font-size: 1.28rem;
+  color: #11355c;
+}
+.admin-ticket-list {
+  display: grid;
+  gap: 0.72rem;
+}
+.admin-ticket-item {
+  border: 1px solid #c6d7ea;
+  border-radius: 12px;
+  padding: 0.82rem;
+  background: linear-gradient(170deg, #f9fbff, #edf4fc);
+}
+.admin-meta {
+  font-size: 0.93rem;
+}
+.admin-table-wrap {
+  overflow-x: auto;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  border-bottom: 1px solid #d1ddea;
+  padding: 0.54rem 0.46rem;
+  color: #27486d;
+}
+.admin-table th {
+  color: #173b65;
+  font-size: 0.92rem;
+}

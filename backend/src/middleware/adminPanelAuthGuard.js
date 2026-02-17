@@ -14,35 +14,29 @@ function parseBearerToken(authorizationHeader) {
   return token;
 }
 
-export function requireAuth(req, res, next) {
+export function requireAdminPanelAuth(req, res, next) {
   const token = parseBearerToken(req.headers?.authorization);
   if (!token) {
-    next(new HttpError(401, "Nedostaje autorizacioni token."));
+    next(new HttpError(401, "Nedostaje admin autorizacioni token."));
     return;
   }
 
   try {
     const payload = verifyAccessToken(token);
     const userId = Number.parseInt(payload?.sub, 10);
-    const role = typeof payload?.role === "string" ? payload.role : "user";
-    const scope = typeof payload?.scope === "string" ? payload.scope : "user";
+    const scope = typeof payload?.scope === "string" ? payload.scope : "";
+    const role = typeof payload?.role === "string" ? payload.role : "";
 
     if (!Number.isInteger(userId) || userId <= 0) {
       throw new HttpError(401, "Token nije validan.");
     }
-    if (scope !== "user") {
-      throw new HttpError(401, "Token nema dozvolu za korisnicki API.");
-    }
-    if (role !== "user" && role !== "admin") {
-      throw new HttpError(401, "Token nije validan.");
+    if (scope !== "admin_panel" || role !== "admin") {
+      throw new HttpError(403, "Pristup admin panelu nije dozvoljen.");
     }
 
-    req.auth = {
+    req.adminAuth = {
       userId,
       email: typeof payload?.email === "string" ? payload.email : null,
-      firstName: typeof payload?.firstName === "string" ? payload.firstName : null,
-      lastName: typeof payload?.lastName === "string" ? payload.lastName : null,
-      role,
     };
     next();
   } catch (error) {
@@ -51,6 +45,6 @@ export function requireAuth(req, res, next) {
       return;
     }
 
-    next(new HttpError(401, "Token nije validan ili je istekao."));
+    next(new HttpError(401, "Admin token nije validan ili je istekao."));
   }
 }

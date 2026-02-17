@@ -1,13 +1,23 @@
 import { AUTH_ROUTES, normalizePath } from "../utils/routes";
 
-const LOGGED_MENU_ITEMS = [
-  { label: "Pocetna", href: AUTH_ROUTES.HOME },
-  { label: "Kreiranje slucaja", href: AUTH_ROUTES.CREATE_CASE },
-  { label: "Profil", href: AUTH_ROUTES.PROFILE },
-];
+const ADMIN_PANEL_URL = "http://localhost:5174";
 
 function LoggedSidebar({ activePath, user, onLogout }) {
   const normalizedActivePath = normalizePath(activePath);
+  const menuItems = [
+    { label: "Pocetna", href: AUTH_ROUTES.HOME },
+    { label: "Kreiranje slucaja", href: AUTH_ROUTES.CREATE_CASE },
+    { label: "Podrska", href: AUTH_ROUTES.SUPPORT },
+    { label: "Profil", href: AUTH_ROUTES.PROFILE },
+  ];
+
+  if (user?.role === "admin") {
+    menuItems.push({
+      label: "Admin panel",
+      href: ADMIN_PANEL_URL,
+      external: true,
+    });
+  }
 
   return (
     <aside className="left-sidebar reveal">
@@ -23,13 +33,19 @@ function LoggedSidebar({ activePath, user, onLogout }) {
 
       <nav aria-label="Meni za ulogovanog korisnika">
         <ul className="menu-list">
-          {LOGGED_MENU_ITEMS.map((item) => {
-            const isActive = normalizePath(item.href) === normalizedActivePath;
+          {menuItems.map((item) => {
+            const isActive =
+              !item.external && normalizePath(item.href) === normalizedActivePath;
             const className = `menu-link${isActive ? " is-active" : ""}`;
 
             return (
               <li key={item.label}>
-                <a className={className} href={item.href}>
+                <a
+                  className={className}
+                  href={item.href}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noreferrer noopener" : undefined}
+                >
                   {item.label}
                 </a>
               </li>

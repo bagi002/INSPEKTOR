@@ -7,6 +7,7 @@ import LoginPage from "./components/LoginPage";
 import LoggedHomePage from "./components/LoggedHomePage";
 import LoggedPlaceholderPage from "./components/LoggedPlaceholderPage";
 import RegistrationPage from "./components/RegistrationPage";
+import SupportPage from "./components/SupportPage";
 import { clearSession, getSession } from "./services/sessionStorage";
 import {
   AUTH_ROUTES,
@@ -19,6 +20,7 @@ const PRIVATE_ROUTES = [
   AUTH_ROUTES.HOME,
   AUTH_ROUTES.CREATE_CASE,
   AUTH_ROUTES.PROFILE,
+  AUTH_ROUTES.SUPPORT,
 ];
 
 function App() {
@@ -67,6 +69,8 @@ function App() {
           onLogout={handleLogout}
         />
       );
+    } else if (currentPath === AUTH_ROUTES.SUPPORT) {
+      activePage = <SupportPage user={session.user} onLogout={handleLogout} />;
     } else {
       activePage = <LoggedHomePage user={session.user} onLogout={handleLogout} />;
     }

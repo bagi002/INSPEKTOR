@@ -302,7 +302,7 @@
 
 - id: REQ-031
   name: Stranica za podrsku
-  status: Draft
+  status: Finished
   description: >
     Nova stavka menija koja vodi na stranicu za podrsku
     Na ovoj stranici se nalzi forma za kreirnje tickets za prijavu buga ili prijedloga za poboljsanje aplikacije
@@ -313,11 +313,10 @@
 
 - id: REQ-032
   name: Admin panel
-  status: Draft
+  status: Finished
   description: >
     Treba da postoji admin panel koji je dostupan samo adminima aplikacije
     Treba d abude na drugom portu od glavne aplikacije
     KAda se admin prvi put tu prijavi unjece lozinku polje ce je unostii svaki put 
     Na panelu trbea d amoze da s e vidi i uredjuje sve u bazi podatak sem lzoinka 
     KAo i d abude pregled ticketsa koje su korisnici kreirali i opcija za promjenu njihovog statusa
-

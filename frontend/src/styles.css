@@ -3,6 +3,7 @@
 @import "./styles/landing.css";
 @import "./styles/auth.css";
 @import "./styles/logged-home.css";
+@import "./styles/support.css";
 @import "./styles/create-case.css";
 @import "./styles/case-timeline.css";
 @import "./styles/case-people.css";

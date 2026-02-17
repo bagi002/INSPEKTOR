@@ -8,6 +8,7 @@ export const AUTH_ROUTES = {
   HOME: "/app",
   CREATE_CASE: "/slucaj/novi",
   PROFILE: "/profil",
+  SUPPORT: "/podrska",
 };
 
 export const CASE_WORKSPACE_MODES = {
