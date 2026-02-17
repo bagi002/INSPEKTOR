@@ -89,8 +89,8 @@ function CreateCaseSidebar({
         {caseTitle ? <p className="create-case-active-title">Aktivni slucaj: {caseTitle}</p> : null}
         <p>
           Svi tabovi su isti u rezimu kreiranja i rezimu resavanja. Tab "Osobe i dosijei"
-          je aktivan za unos i pregled, kao i tabovi "Dokumenti" i "Izjave". Ostali tabovi su
-          trenutno pripremljeni kao placeholder.
+          je aktivan za unos i pregled, kao i tabovi "Dokumenti", "Izjave" i "Saslusanja".
+          Ostali tabovi su trenutno pripremljeni kao placeholder.
         </p>
       </section>
 

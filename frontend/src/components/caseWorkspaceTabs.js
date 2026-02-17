@@ -27,7 +27,7 @@ export const CASE_WORKSPACE_TABS = [
     slug: "saslusanja",
     label: "Saslusanja",
     description:
-      "Prazna stranica za kreiranje i pregled stabala pitanja i odgovora za saslusanja.",
+      "Kreiranje saslusanja po osobi i pokretanje razgovora kroz chat pregled unapred definisanog stabla pitanja i odgovora.",
   },
   {
     slug: "kviz",

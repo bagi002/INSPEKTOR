@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Kreiranje i pregled dosijea, izjava i policijskih dokumenata
+title Runtime Diagram - Kreiranje i pregled dosijea, izjava, policijskih dokumenata i saslusanja
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -13,9 +13,11 @@ participant "CreateCaseSidebar" as WorkspaceSidebar
 participant "CasePeopleTab" as PeopleTab
 participant "CaseStatementsTab" as StatementsTab
 participant "CasePoliceDocumentsTab" as DocsTab
+participant "CaseInterrogationsTab" as InterrogationsTab
 participant "Cases API Client" as CasesClient
 participant "Case People API Client" as PeopleClient
 participant "Case Documents API Client" as DocumentsClient
+participant "Case Interrogations API Client" as InterrogationsClient
 participant "Auth API Client" as AuthClient
 participant "Express Auth API" as AuthApi
 participant "Express Cases API" as CasesApi
@@ -23,13 +25,16 @@ participant "Auth Guard (JWT)" as JwtGuard
 participant "Cases Service" as CasesService
 participant "Case People Service" as PeopleService
 participant "Case Documents Service" as DocumentsService
+participant "Case Interrogations Service" as InterrogationsService
 participant "Cases Repository" as CasesRepo
 participant "Case People Repository" as PeopleRepo
 participant "Case Documents Repository" as DocumentsRepo
+participant "Case Interrogations Repository" as InterrogationsRepo
 database "SQLite users" as UsersStore
 database "SQLite cases/timeline/progress" as CasesStore
 database "SQLite people + dossiers" as PeopleStore
 database "SQLite case_documents(metadata_json)" as DocumentsStore
+database "SQLite case_interrogations + nodes" as InterrogationsStore
 database "LocalStorage (session)" as SessionStore
 participant "Desktop Notice View" as Notice
 
@@ -144,6 +149,27 @@ alt Desktop sirina
   DocsTab -> DocumentsClient: GET /api/cases/{caseId}/police-documents (ako je dokument)
   DocumentsClient --> Workspace: Ucitanje + auto-otvaranje preview modala po documentId
 
+  User -> PeopleTab: U dosijeu klik "Saslusaj osobu"
+  PeopleTab -> Router: /slucaj/{caseId}/resavanje/saslusanja?interrogationPersonId={personId}
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Otvara tab saslusanja u rezimu pregleda
+  Workspace -> InterrogationsTab: Prosledjuje caseId i mode
+  InterrogationsTab -> InterrogationsClient: GET /api/cases/{caseId}/interrogations
+  InterrogationsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> InterrogationsService: getCreatorCaseInterrogations(caseId, userId)
+  InterrogationsService -> CasesRepo: Provera autorstva slucaja
+  InterrogationsService -> InterrogationsRepo: SELECT saslusanja + cvorovi
+  InterrogationsRepo -> InterrogationsStore: SELECT case_interrogations + case_interrogation_nodes
+  InterrogationsStore --> InterrogationsRepo: lista saslusanja i stabla
+  InterrogationsService -> DocumentsRepo: getCasePeopleDirectoryByCaseId(caseId)
+  DocumentsRepo -> PeopleStore: SELECT osobe + status zivosti
+  PeopleStore --> DocumentsRepo: direktorijum osoba
+  InterrogationsRepo --> InterrogationsService: mapirana saslusanja
+  InterrogationsService --> CasesApi: response payload
+  CasesApi --> InterrogationsClient: JSON uspeh
+  InterrogationsClient --> InterrogationsTab: Auto-otvaranje chat modala po personId
+
   User -> StatementsTab: U formalnom prikazu klik na povezanu osobu
   StatementsTab -> Router: /slucaj/{caseId}/kreiranje/osobe-i-dosijei?personId={id}
   Router -> Guard: Provera sesije
@@ -214,6 +240,39 @@ alt Desktop sirina
   DocumentsService --> CasesApi: 201 response
   CasesApi --> DocumentsClient: JSON uspeh
   DocumentsClient --> DocsTab: Osvjezenje liste + formalni preview dokumenta
+
+  User -> WorkspaceSidebar: Klik tab "Saslusanja"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/saslusanja
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Render taba saslusanja
+  Workspace -> InterrogationsTab: Prosledjuje caseId i mode
+  InterrogationsTab -> InterrogationsClient: GET /api/cases/{caseId}/interrogations
+  InterrogationsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> InterrogationsService: getCreatorCaseInterrogations(caseId, userId)
+  InterrogationsService -> InterrogationsRepo: getCaseInterrogationsByCaseId(caseId)
+  InterrogationsRepo -> InterrogationsStore: SELECT saslusanja + cvorovi
+  InterrogationsStore --> InterrogationsRepo: lista saslusanja
+  InterrogationsService --> CasesApi: response payload
+  CasesApi --> InterrogationsClient: JSON uspeh
+  InterrogationsClient --> InterrogationsTab: Lista saslusanja + izbor osobe
+
+  User -> InterrogationsTab: Kreira saslusanje po osobi (vizuelni tree builder)
+  InterrogationsTab -> InterrogationsTab: Dodavanje pitanja / reuse postojeceg pitanja po granama
+  InterrogationsTab -> InterrogationsClient: POST /api/cases/{caseId}/interrogations
+  InterrogationsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> InterrogationsService: createCreatorCaseInterrogation(caseId, payload, userId)
+  InterrogationsService -> DocumentsRepo: getCasePeopleDirectoryByCaseId(caseId)
+  InterrogationsService -> InterrogationsRepo: upsertCaseInterrogationForPerson(caseId, payload, userId)
+  InterrogationsRepo -> InterrogationsStore: UPSERT case_interrogations + INSERT case_interrogation_nodes(question_reference_key)
+  InterrogationsStore --> InterrogationsRepo: interrogationId + stablo
+  InterrogationsRepo --> InterrogationsService: sacuvano saslusanje
+  InterrogationsService --> CasesApi: 201 response
+  CasesApi --> InterrogationsClient: JSON uspeh
+  InterrogationsClient --> InterrogationsTab: Osvjezenje + otvaranje chat modala
+  User -> InterrogationsTab: Dolazi do kraja grane i bira "Zakljuci saslusanje"
+  InterrogationsTab --> User: Chat oznacava razgovor kao zakljucen
 
   User -> LoggedHome: Klik "Nastavi resavanje"
   LoggedHome -> Router: /slucaj/{caseId}/resavanje/izjave

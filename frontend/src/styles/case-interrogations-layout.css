@@ -1,0 +1,143 @@
+.case-interrogations-overview {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.case-interrogations-hero-card {
+  border: 1px solid #a9bed5;
+}
+
+.case-interrogations-hero-card.is-create {
+  background: linear-gradient(150deg, #f8fcff 0%, #e2eef9 100%);
+}
+
+.case-interrogations-hero-card.is-solve {
+  background: linear-gradient(150deg, #f8fbff 0%, #ecf2f8 100%);
+}
+
+.case-interrogations-hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.case-interrogations-primary-action {
+  min-width: 190px;
+}
+
+.case-interrogations-stat-grid {
+  margin-top: 0.85rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.case-interrogations-stat-card {
+  border: 1px solid #b9cade;
+  border-radius: 10px;
+  background: #f9fcff;
+  padding: 0.5rem 0.6rem;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.case-interrogations-stat-card strong {
+  color: #173c64;
+  font-size: 1.15rem;
+}
+
+.case-interrogations-stat-card span {
+  color: #486581;
+  font-size: 0.78rem;
+}
+
+.case-interrogations-toolbar-card {
+  border: 1px solid #bfd0e3;
+  background: #f7fbff;
+}
+
+.case-interrogations-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 0.65rem;
+}
+
+.case-interrogations-start-btn {
+  min-width: 260px;
+}
+
+.case-interrogations-note {
+  margin: 0.55rem 0 0;
+  color: #4f6782;
+}
+
+.case-interrogations-directory-card {
+  border: 1px solid #b8cade;
+  background: linear-gradient(176deg, #fafdff, #edf4fb);
+}
+
+.case-interrogations-directory-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.58rem;
+}
+
+.case-interrogations-directory-row {
+  width: 100%;
+  border: 1px solid #b8cade;
+  border-radius: 12px;
+  background: linear-gradient(165deg, #ffffff, #f4f9ff);
+  color: #17365a;
+  padding: 0.85rem;
+  text-align: left;
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 0.8rem;
+  align-items: center;
+  cursor: pointer;
+}
+
+.case-interrogations-directory-row:hover {
+  border-color: #7f9fbe;
+  background: linear-gradient(170deg, #f7fbff, #e9f3ff);
+}
+
+.case-interrogations-directory-main,
+.case-interrogations-directory-meta {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.case-interrogations-directory-main small,
+.case-interrogations-directory-meta small {
+  color: #4f6782;
+  font-size: 0.81rem;
+}
+
+.case-interrogations-directory-action {
+  border: 1px solid #b5c7da;
+  border-radius: 999px;
+  background: #f7fbff;
+  color: #224d79;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.35rem 0.7rem;
+  white-space: nowrap;
+}
+
+.case-interrogation-empty {
+  margin: 0;
+  color: #56708e;
+  line-height: 1.5;
+}
+
+@media (max-width: 980px) {
+  .case-interrogations-toolbar,
+  .case-interrogations-directory-row {
+    grid-template-columns: 1fr;
+  }
+}

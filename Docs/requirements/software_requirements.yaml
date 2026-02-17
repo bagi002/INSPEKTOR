@@ -158,12 +158,14 @@
 
 - id: REQ-SW-019
   name: Kosturni prikaz prozora za kreiranje slucaja
-  status: Finished
+  status: In Review
   refines: REQ-029
   description: >
     Implementirati skeleton prikaz prozora creatorskog moda na ruti `/slucaj/:id/kreiranje`
     sa odvojenim podstranicama/tabovima za vremensku liniju, osobe i dosijee, dokumente,
-    izjave, saslusanja i kviz, bez implementacije konkretnih editora u ovoj fazi.
+    izjave, saslusanja i kviz, pri cemu tabovi `osobe-i-dosijei`, `dokumenti`, `izjave`
+    i `saslusanja` imaju funkcionalne workflow-e, dok su `vremenska-linija` i `kviz`
+    trenutno placeholder prikazi.
 
 - id: REQ-SW-020
   name: Meni za rezim kreiranja slucaja
@@ -220,7 +222,7 @@
 
 - id: REQ-SW-026
   name: Tab osobe i dosijei - kreiranje i pregled
-  status: Finished
+  status: In Review
   refines: REQ-014
   description: >
     Implementirati funkcionalan tab `osobe-i-dosijei` u case workspace-u koji na glavnom
@@ -228,7 +230,8 @@
     i pregled detaljnog formalnog dosijea obavljaju kroz iskacuce prozore (modale), uz
     padajuce liste za sva pogodna polja i posebno prilagodjen uvodni prikaz taba za
     creatorski i rezim resavanja, kao i sekciju povezanih dokumenata/izjava sa direktnim
-    linkovima ka konkretnim stavkama.
+    linkovima ka konkretnim stavkama, uz akciju `Saslusaj osobu` koja iz dosijea otvara
+    tab saslusanja u rezimu pregleda za konkretnu osobu.
 
 - id: REQ-SW-027
   name: Backend API za izjave u slucaju
@@ -290,3 +293,44 @@
     Obezbediti dvosmerne linkove izmedju dosijea osobe i dokumentacije slucaja:
     iz dosijea ka svim povezanim izjavama i policijskim/forenzickim dokumentima, kao i
     iz formalnog prikaza izjave/dokumenta ka dosijeima svih povezanih osoba.
+
+- id: REQ-SW-033
+  name: Backend model i API za saslusanja po osobi
+  status: In Review
+  refines: REQ-020
+  description: >
+    Implementirati SQLite model za saslusanja (`case_interrogations` i
+    `case_interrogation_nodes`) i JWT-zasticene endpointe
+    `GET /api/cases/:caseId/interrogations` i `POST /api/cases/:caseId/interrogations`
+    koji cuvaju i vracaju stablo pitanja/odgovora po osobi uz validaciju strukture stabla,
+    ukljucujuci `questionReferenceKey` mehanizam za ponovno koriscenje pitanja i pravilo da
+    isto pitanje ne moze biti ponovljeno u istoj grani saslusanja.
+
+- id: REQ-SW-034
+  name: Creatorski editor saslusanja po osobi
+  status: In Review
+  refines: REQ-020
+  description: >
+    Implementirati creatorski workflow u tabu `saslusanja` koji omogucava izbor osobe,
+    kreiranje/azuriranje saslusanja kroz unos stabla pitanja i odgovora i cuvanje
+    saslusanja vezanog za konkretnu osobu, uz vizuelni prikaz stabla tokom kreiranja i
+    opciju da se pitanje ponovi na vise mesta u razlicitim granama toka.
+
+- id: REQ-SW-035
+  name: Pokretanje saslusanja kroz chat modal
+  status: In Review
+  refines: REQ-016
+  description: >
+    Implementirati pregled i pokretanje saslusanja kroz zaseban chat modal u kome
+    korisnik bira pitanje, dobija pripadajuci odgovor i nastavlja kroz sledece grane
+    unapred pripremljenog stabla, uz unapredjeni chat-prikaz i akciju `Zakljuci saslusanje`
+    koja postaje dostupna kada se dodje do kraja izabrane grane.
+
+- id: REQ-SW-036
+  name: Navigacija iz dosijea ka saslusanju osobe
+  status: In Review
+  refines: REQ-015
+  description: >
+    Obezbediti da iz svakog dosijea postoji akcija `Saslusaj osobu` koja otvara
+    tab `saslusanja` u rezimu pregleda i automatski pokusava da pokrene saslusanje
+    za izabranu osobu.

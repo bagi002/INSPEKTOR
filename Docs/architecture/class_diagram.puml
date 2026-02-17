@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Case workspace dokumentacija (dosijei, izjave, policijski dokumenti)
+title Class Diagram - Case workspace dokumentacija (dosijei, izjave, policijski dokumenti, saslusanja)
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -71,6 +71,10 @@ class CasePoliceDocumentsTab {
   +render()
 }
 
+class CaseInterrogationsTab {
+  +render()
+}
+
 class CaseDocumentsTab {
   +category
   +loadDocuments()
@@ -86,6 +90,24 @@ class UseCaseDocumentsTabState {
   +handleRelatedPersonToggle()
   +openCreateModal()
   +openPreviewModal(documentId)
+}
+
+class UseCaseInterrogationsTabState {
+  +state
+  +loadInterrogations()
+  +openChatModal(interrogationId)
+}
+
+class UseCaseInterrogationCreateState {
+  +formData
+  +handleAddNode()
+  +handleCreateInterrogation(event)
+}
+
+class CaseInterrogationCreateStateUtils {
+  +buildNodeFromDraft(nodes, nodeDraft)
+  +collectInterrogationNodesForRemoval(nodes, rootNodeKey)
+  +validateInterrogationFormBeforeSubmit(formData)
 }
 
 class UseCaseDocumentFormState {
@@ -138,6 +160,35 @@ class CaseDocumentModal {
   +render()
 }
 
+class CaseInterrogationCreateModal {
+  +formData
+  +onSubmit()
+  +render()
+}
+
+class CaseInterrogationNodeBuilderSection {
+  +nodes
+  +onAddNode()
+  +render()
+}
+
+class CaseInterrogationTreePreview {
+  +nodes
+  +render()
+}
+
+class CaseInterrogationChatModal {
+  +interrogation
+  +handleQuestionPick(node)
+  +handleConclude()
+  +render()
+}
+
+class CaseInterrogationsHelpers {
+  +buildNextNodeKey(nodes)
+  +buildInterrogationChildrenMap(nodes)
+}
+
 class CasePeopleApiClient {
   +fetchCasePeople(caseId)
   +createCasePerson(caseId, payload)
@@ -148,6 +199,11 @@ class CaseDocumentsApiClient {
   +createCaseStatement(caseId, payload)
   +fetchCasePoliceDocuments(caseId)
   +createCasePoliceDocument(caseId, payload)
+}
+
+class CaseInterrogationsApiClient {
+  +fetchCaseInterrogations(caseId)
+  +createCaseInterrogation(caseId, payload)
 }
 
 class CasesApiClient {
@@ -176,6 +232,8 @@ class CasesRoutes {
   +POST /:caseId/statements
   +GET /:caseId/police-documents
   +POST /:caseId/police-documents
+  +GET /:caseId/interrogations
+  +POST /:caseId/interrogations
 }
 
 class CasesController {
@@ -188,6 +246,8 @@ class CasesController {
   +createCreatorCaseStatementController(req, res)
   +getCreatorCasePoliceDocumentsController(req, res)
   +createCreatorCasePoliceDocumentController(req, res)
+  +getCreatorCaseInterrogationsController(req, res)
+  +createCreatorCaseInterrogationController(req, res)
 }
 
 class CasesService {
@@ -208,6 +268,11 @@ class CaseDocumentsService {
   +createCreatorCasePoliceDocument(caseId, payload, userId)
 }
 
+class CaseInterrogationsService {
+  +getCreatorCaseInterrogations(caseId, userId)
+  +createCreatorCaseInterrogation(caseId, payload, userId)
+}
+
 class CasePeopleValidation {
   +validateCreateCasePersonPayload(payload)
 }
@@ -215,6 +280,10 @@ class CasePeopleValidation {
 class CaseDocumentsValidation {
   +validateCreateCaseStatementPayload(payload)
   +validateCreateCasePoliceDocumentPayload(payload)
+}
+
+class CaseInterrogationsValidation {
+  +validateCreateCaseInterrogationPayload(payload)
 }
 
 class CaseDocumentsTypeSpecificValidation {
@@ -243,6 +312,15 @@ class CaseDocumentsRepository {
   +getCasePeopleDirectoryByCaseId(caseId)
 }
 
+class CaseInterrogationsRepository {
+  +getCaseInterrogationsByCaseId(caseId)
+  +upsertCaseInterrogationForPerson(caseId, payload, userId)
+}
+
+UseCaseInterrogationCreateState --> CaseInterrogationCreateStateUtils
+CaseInterrogationCreateModal --> CaseInterrogationNodeBuilderSection
+CaseInterrogationNodeBuilderSection --> CaseInterrogationTreePreview
+
 class AuthGuardMiddleware {
   +requireAuth(req, res, next)
 }
@@ -260,6 +338,8 @@ class SQLiteDatabase {
   +case_person_dossiers
   +case_person_dossier_profiles
   +case_documents(metadata_json)
+  +case_interrogations
+  +case_interrogation_nodes
   +case_timeline_items
   +case_user_progress
 }
@@ -274,9 +354,16 @@ CaseWorkspacePage *-- CreateCaseSidebar
 CaseWorkspacePage *-- CasePeopleTab
 CaseWorkspacePage *-- CaseStatementsTab
 CaseWorkspacePage *-- CasePoliceDocumentsTab
+CaseWorkspacePage *-- CaseInterrogationsTab
 CasePeopleTab *-- CasePersonDossierModal
 CaseStatementsTab *-- CaseDocumentsTab
 CasePoliceDocumentsTab *-- CaseDocumentsTab
+CaseInterrogationsTab *-- CaseInterrogationCreateModal
+CaseInterrogationsTab *-- CaseInterrogationChatModal
+CaseInterrogationsTab ..> UseCaseInterrogationsTabState
+UseCaseInterrogationsTabState ..> UseCaseInterrogationCreateState
+UseCaseInterrogationsTabState ..> CaseInterrogationsHelpers
+UseCaseInterrogationCreateState ..> CaseInterrogationsHelpers
 CaseDocumentsTab ..> UseCaseDocumentsTabState
 UseCaseDocumentsTabState ..> UseCaseDocumentFormState
 UseCaseDocumentFormState ..> UseCaseDocumentImageState
@@ -296,16 +383,19 @@ CasePersonDossierModal ..> CaseWorkspaceLinking
 CasePeopleTab ..> CasePeopleApiClient
 CaseStatementsTab ..> CaseDocumentsApiClient
 CasePoliceDocumentsTab ..> CaseDocumentsApiClient
+CaseInterrogationsTab ..> CaseInterrogationsApiClient
 CaseWorkspacePage ..> CasesApiClient
 LoggedHomePage ..> CasesApiClient
 CreateCasePage ..> CasesApiClient
 CasePeopleApiClient ..> SessionStorageService
 CaseDocumentsApiClient ..> SessionStorageService
+CaseInterrogationsApiClient ..> SessionStorageService
 CasesApiClient ..> SessionStorageService
 CasesApiClient ..> RouteUtils
 
 CasePeopleApiClient ..> ExpressApp
 CaseDocumentsApiClient ..> ExpressApp
+CaseInterrogationsApiClient ..> ExpressApp
 CasesApiClient ..> ExpressApp
 ExpressApp --> CasesRoutes
 CasesRoutes --> AuthGuardMiddleware
@@ -313,6 +403,7 @@ CasesRoutes --> CasesController
 CasesController --> CasesService
 CasesController --> CasePeopleService
 CasesController --> CaseDocumentsService
+CasesController --> CaseInterrogationsService
 CasesService --> CasesRepository
 CasePeopleService --> CasePeopleValidation
 CasePeopleService --> CasesRepository
@@ -322,9 +413,14 @@ CaseDocumentsValidation --> CaseDocumentsTypeSpecificValidation
 CaseDocumentsValidation --> CaseDocumentsValidationShared
 CaseDocumentsService --> CasesRepository
 CaseDocumentsService --> CaseDocumentsRepository
+CaseInterrogationsService --> CaseInterrogationsValidation
+CaseInterrogationsService --> CasesRepository
+CaseInterrogationsService --> CaseDocumentsRepository
+CaseInterrogationsService --> CaseInterrogationsRepository
 CaseDocumentsRepository ..> CaseDocumentsValidationShared
 CasesRepository --> DatabaseModule
 CasePeopleRepository --> DatabaseModule
 CaseDocumentsRepository --> DatabaseModule
+CaseInterrogationsRepository --> DatabaseModule
 DatabaseModule --> SQLiteDatabase
 @enduml

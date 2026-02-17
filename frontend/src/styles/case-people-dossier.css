@@ -107,6 +107,23 @@
   color: #17385f;
 }
 
+.dossier-linked-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+}
+
+.dossier-linked-header h5 {
+  margin: 0;
+}
+
+.dossier-interrogation-link {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 .dossier-linked-list {
   margin: 0;
   padding: 0;

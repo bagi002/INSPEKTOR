@@ -3,6 +3,7 @@ import CreateCaseSidebar from "./CreateCaseSidebar";
 import CasePeopleTab from "./CasePeopleTab";
 import CasePoliceDocumentsTab from "./CasePoliceDocumentsTab";
 import CaseStatementsTab from "./CaseStatementsTab";
+import CaseInterrogationsTab from "./CaseInterrogationsTab";
 import { CASE_WORKSPACE_TABS, findCaseWorkspaceTab } from "./caseWorkspaceTabs";
 import { fetchCreatorCase } from "../services/casesApi";
 import { AUTH_ROUTES, CASE_WORKSPACE_MODES } from "../utils/routes";
@@ -37,6 +38,7 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   const isPeopleTab = activeTab.slug === "osobe-i-dosijei";
   const isPoliceDocumentsTab = activeTab.slug === "dokumenti";
   const isStatementsTab = activeTab.slug === "izjave";
+  const isInterrogationsTab = activeTab.slug === "saslusanja";
   const modeDescription = useMemo(() => {
     if (!isPeopleTab) {
       if (isPoliceDocumentsTab) {
@@ -51,13 +53,26 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
         }
         return "Operativni panel za unos i pregled izjava svjedoka, osumnjicenih i zrtava kroz strukturisane dokumente.";
       }
+      if (isInterrogationsTab) {
+        if (mode === CASE_WORKSPACE_MODES.SOLVE) {
+          return "Pregled i pokretanje saslusanja po osobi kroz chat prikaz sa unapred definisanim granama pitanja.";
+        }
+        return "Operativni panel za kreiranje stabla pitanja i odgovora po osobi i testiranje toka saslusanja kroz chat modal.";
+      }
       return modeTexts.description;
     }
     if (mode === CASE_WORKSPACE_MODES.SOLVE) {
       return "Pregled formalnih dosijea lica u read-only rezimu, sa fokusom na evidenciju i detalje profila.";
     }
     return "Operativni panel za kreiranje, uredjivanje i pregled dosijea osoba kroz strukturisan modalni workflow.";
-  }, [isPeopleTab, isPoliceDocumentsTab, isStatementsTab, mode, modeTexts.description]);
+  }, [
+    isPeopleTab,
+    isPoliceDocumentsTab,
+    isStatementsTab,
+    isInterrogationsTab,
+    mode,
+    modeTexts.description,
+  ]);
   const loadCaseData = useCallback(async () => {
     if (mode === CASE_WORKSPACE_MODES.SOLVE) {
       setCaseData({
@@ -110,6 +125,9 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
     if (activeTab.slug === "izjave") {
       return <CaseStatementsTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
     }
+    if (activeTab.slug === "saslusanja") {
+      return <CaseInterrogationsTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
+    }
     return (
       <section className="card reveal delay-3">
         <h3>Prazna stranica (placeholder)</h3>
@@ -119,7 +137,8 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   }
   const showPublishButton = mode === CASE_WORKSPACE_MODES.CREATE;
   const publishDisabled = !showPublishButton || !caseData || isLoading || Boolean(errorMessage);
-  const showTabSummaryCard = !isPeopleTab && !isPoliceDocumentsTab && !isStatementsTab;
+  const showTabSummaryCard =
+    !isPeopleTab && !isPoliceDocumentsTab && !isStatementsTab && !isInterrogationsTab;
   return (
     <div className="app-shell app-shell-create-case">
       <CreateCaseSidebar

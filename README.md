@@ -70,6 +70,11 @@ Tok koriscenja:
    svaku kroz policijski pregled dokumenta, uz dodatna polja koja se menjaju po tipu izjave.
 9. U tabu `/slucaj/:id/kreiranje/dokumenti` mozes kreirati policijske izvjestaje i
    forenzicke nalaze, sa formalnim pregledom svakog dokumenta i podrskom za dodavanje slika.
+10. U tabu `/slucaj/:id/kreiranje/saslusanja` mozes izabrati osobu, kreirati stablo pitanja
+    i odgovora uz vizuelni prikaz toka (tree preview), ponovo koristiti postojece pitanje
+    u drugoj grani i odmah pokrenuti saslusanje kroz chat modal.
+11. Iz formalnog dosijea svake osobe mozes kliknuti `Saslusaj osobu`, sto otvara
+    `/slucaj/:id/resavanje/saslusanja` i pokusava automatski da pokrene chat za tu osobu.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
@@ -136,6 +141,19 @@ Napomena:
   - `imageEvidence` je niz `data:image/...;base64,...` slika (JPEG/PNG/WEBP),
     podrzan za policijske izvjestaje i forenzicke nalaze
   - pristup je trenutno ogranicen na autora slucaja
+- `GET /api/cases/:caseId/interrogations` (autorizacija: `Bearer <JWT>`)
+  - vraca sva saslusanja u slucaju zajedno sa stablom pitanja/odgovora i
+    direktorijumom osoba
+  - pristup je trenutno ogranicen na autora slucaja
+- `POST /api/cases/:caseId/interrogations` (autorizacija: `Bearer <JWT>`)
+  - kreira ili azurira saslusanje za konkretnu osobu (`personId`) sa poljima:
+    `title`, `openingPrompt`, `nodes[]`
+  - svaki cvor u `nodes[]` sadrzi: `nodeKey`, `parentKey`, `question`, `answer`,
+    i opciono `questionReferenceKey` kada se koristi ponovno pitanje iz drugog cvora
+  - validira strukturu stabla (jedinstveni cvorovi, validne roditeljske veze,
+    bez ciklusa), pravilo da se isto pitanje ne moze ponoviti u istoj grani i
+    pravilo da je saslusanje dozvoljeno samo za zive osobe
+  - pristup je trenutno ogranicen na autora slucaja
 - `GET /api/health`
   - provera dostupnosti API-ja i baze
 
@@ -200,6 +218,14 @@ Napomena:
     - pregled svakog dokumenta radi kroz formalni policijski prikaz sa sekcijom fotodokumentacije
     - iz formalnog prikaza dokumenta moguce je otvoriti dosije svake povezane osobe
     - u rezimu resavanja tab radi u read-only nacinu
+  - tab `saslusanja`:
+    - prikazuje saslusanja po osobi i omogucava direktan izbor osobe za pokretanje saslusanja
+    - u creatorskom modu omogucava modalno kreiranje stabla pitanja i odgovora
+      za konkretnu osobu, sa vizuelnim prikazom stabla i reuse opcijom pitanja po granama
+    - pokretanje saslusanja se vrsi kroz zaseban chat modal sa grananjem pitanja i
+      opcijom `Zakljuci saslusanje` na kraju grane
+    - iz svakog dosijea postoji akcija `Saslusaj osobu` koja vodi na ovaj tab
+      u rezimu pregleda i pokusava auto-otvaranje chat modala
 - Opcija objave:
   - u meniju rezima kreiranja postoji `Objavi slucaj` kao dugme
   - dugme ne vodi na novu rutu/stranicu
@@ -211,15 +237,16 @@ Napomena:
   - koristi isti set tabova i istu navigacionu strukturu kao creatorski workspace
   - tab `osobe-i-dosijei` je dostupan za read-only pregled osoba i dosijea
   - tabovi `izjave` i `dokumenti` su dostupni za read-only pregled formalnih dokumenata
-  - tabovi `vremenska-linija`, `saslusanja` i `kviz` su trenutno placeholder prikazi
+  - tab `saslusanja` je dostupan za read-only pokretanje i pregled chat saslusanja
+  - tabovi `vremenska-linija` i `kviz` su trenutno placeholder prikazi
 - Backend auth:
   - modularna Express struktura (routes/controller/service/repository)
   - SQLite migracije i maintenance podesavanja
 - Backend slucajevi:
   - SQLite model za `cases`, `case_people`, `case_person_dossiers`,
-    `case_person_dossier_profiles`, `case_documents`, `case_timeline_items`,
-    `case_user_progress`
+    `case_person_dossier_profiles`, `case_documents`, `case_interrogations`,
+    `case_interrogation_nodes`, `case_timeline_items`, `case_user_progress`
   - prosiren `case_documents` model sa `metadata_json` za formalna polja izjava i
     policijskih dokumenata
   - JWT-zasticeni endpointi za cuvanje slucaja, prikaz ulogovane pocetne, osobe/dosijee,
-    izjave i policijska dokumenta
+    izjave, policijska dokumenta i saslusanja

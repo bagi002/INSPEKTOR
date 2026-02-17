@@ -2,10 +2,12 @@ import { Router } from "express";
 import { requireAuth } from "../../middleware/authGuard.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import {
+  createCreatorCaseInterrogationController,
   createCreatorCasePoliceDocumentController,
   createCreatorCasePersonController,
   createCreatorCaseStatementController,
   createCaseController,
+  getCreatorCaseInterrogationsController,
   getCreatorCasePoliceDocumentsController,
   getCreatorCaseController,
   getCreatorCasePeopleController,
@@ -30,6 +32,8 @@ casesRoutes.post(
   "/:caseId/police-documents",
   asyncHandler(createCreatorCasePoliceDocumentController)
 );
+casesRoutes.get("/:caseId/interrogations", asyncHandler(getCreatorCaseInterrogationsController));
+casesRoutes.post("/:caseId/interrogations", asyncHandler(createCreatorCaseInterrogationController));
 casesRoutes.post("/", asyncHandler(createCaseController));
 
 export default casesRoutes;

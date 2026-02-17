@@ -1,5 +1,6 @@
 import { getMany, runQuery } from "./sqliteClient.js";
 import { CASE_PEOPLE_MIGRATIONS } from "./migrations.casePeople.js";
+import { CASE_INTERROGATIONS_MIGRATIONS } from "./migrations.interrogations.js";
 
 const MIGRATIONS = [
   `
@@ -47,6 +48,7 @@ const MIGRATIONS = [
     ON cases(publication_status);
   `,
   ...CASE_PEOPLE_MIGRATIONS,
+  ...CASE_INTERROGATIONS_MIGRATIONS,
   `
     CREATE TABLE IF NOT EXISTS case_documents (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -154,6 +156,12 @@ async function applyColumnMigrations(database) {
     "case_documents",
     "metadata_json",
     "TEXT NOT NULL DEFAULT '{}'"
+  );
+  await ensureColumnExists(
+    database,
+    "case_interrogation_nodes",
+    "question_reference_key",
+    "TEXT NOT NULL DEFAULT ''"
   );
 }
 

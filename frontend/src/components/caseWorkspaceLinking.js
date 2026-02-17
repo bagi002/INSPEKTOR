@@ -36,6 +36,10 @@ export function parseDocumentIdFromLocationSearch(search) {
   return parseQueryInteger(search, "documentId");
 }
 
+export function parseInterrogationPersonIdFromLocationSearch(search) {
+  return parseQueryInteger(search, "interrogationPersonId");
+}
+
 export function consumeWorkspaceLinkingQueryParams(queryKeys) {
   if (typeof window === "undefined") {
     return;
@@ -79,4 +83,14 @@ export function buildDocumentPreviewHref(caseId, mode, document) {
   const tabSlug = resolveDocumentTabSlug(document?.documentType || "");
   const baseRoute = buildCaseWorkspaceRoute(caseId, mode, tabSlug);
   return `${baseRoute}?documentId=${parsedDocumentId}`;
+}
+
+export function buildInterrogationHref(caseId, mode, personId) {
+  const parsedPersonId = toPositiveInteger(personId);
+  if (!parsedPersonId) {
+    return "#";
+  }
+
+  const baseRoute = buildCaseWorkspaceRoute(caseId, mode, "saslusanja");
+  return `${baseRoute}?interrogationPersonId=${parsedPersonId}`;
 }

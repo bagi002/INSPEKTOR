@@ -90,10 +90,15 @@ export async function getCasePeopleDirectoryByCaseId(caseId) {
   const rows = await getMany(
     database,
     `
-      SELECT id, full_name, apparent_role
-      FROM case_people
-      WHERE case_id = ?
-      ORDER BY full_name ASC, id ASC
+      SELECT
+        p.id,
+        p.full_name,
+        p.apparent_role,
+        COALESCE(d.is_alive, 1) AS is_alive
+      FROM case_people p
+      LEFT JOIN case_person_dossiers d ON d.person_id = p.id
+      WHERE p.case_id = ?
+      ORDER BY p.full_name ASC, p.id ASC
     `,
     [caseId]
   );
@@ -102,5 +107,6 @@ export async function getCasePeopleDirectoryByCaseId(caseId) {
     id: row.id,
     fullName: row.full_name,
     apparentRole: row.apparent_role,
+    isAlive: row.is_alive === 1,
   }));
 }

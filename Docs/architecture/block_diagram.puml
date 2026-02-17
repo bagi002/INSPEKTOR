@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Dosijei, izjave i policijski dokumenti u slucaju
+title Block Diagram - Dosijei, izjave, policijski dokumenti i saslusanja u slucaju
 
 package "Frontend" {
   [App Shell]
@@ -17,21 +17,32 @@ package "Frontend" {
   [Case People Tab]
   [Case Statements Tab]
   [Case Police Documents Tab]
+  [Case Interrogations Tab]
   [People List View]
   [Documents List View]
+  [Interrogations List View]
   [Create Person Modal]
   [Create Document Modal]
+  [Create Interrogation Modal]
+  [Interrogation Node Builder Section]
+  [Interrogation Tree Preview]
   [Dossier Modal View]
   [Document Preview Modal]
+  [Interrogation Chat Modal]
   [Photo Upload Handler]
   [Document Image Upload Handler]
   [Type-Specific Document Field Config]
+  [Interrogation Tree Helper]
+  [Case Interrogation Create Utils]
   [Case Workspace Cross-Link Helper]
   [Case People State Hook]
   [Case People Linked Documents Hook]
   [Case Documents State Hook]
+  [Case Interrogations State Hook]
+  [Case Interrogation Create Hook]
   [Case People API Client]
   [Case Documents API Client]
+  [Case Interrogations API Client]
   [Cases API Client]
   [Auth API Client]
   [Session Storage]
@@ -48,15 +59,18 @@ package "Backend (Node.js + Express)" {
   [Cases Service]
   [Case People Service]
   [Case Documents Service]
+  [Case Interrogations Service]
   [Cases Validation]
   [Case People Validation]
   [Case Documents Validation]
+  [Case Interrogations Validation]
   [Type-Specific Document Validation]
   [JWT Token Service]
   [User Repository]
   [Cases Repository]
   [Case People Repository]
   [Case Documents Repository]
+  [Case Interrogations Repository]
   [SQLite Module]
   [Migration Runner]
   [Health Route]
@@ -66,6 +80,7 @@ database "SQLite Database" as Db
 database "cases + case_documents + timeline" as CasesDb
 database "case_people + dossier profiles" as PeopleDb
 database "metadata_json u case_documents" as MetadataDb
+database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
 
 [App Shell] --> [Desktop Policy Gate]
 [Desktop Policy Gate] --> [Route Resolver]
@@ -90,6 +105,7 @@ database "metadata_json u case_documents" as MetadataDb
 [Case Workspace Page] --> [Case People Tab]
 [Case Workspace Page] --> [Case Statements Tab]
 [Case Workspace Page] --> [Case Police Documents Tab]
+[Case Workspace Page] --> [Case Interrogations Tab]
 
 [Case People Tab] --> [People List View]
 [Case People Tab] --> [Create Person Modal]
@@ -118,6 +134,22 @@ database "metadata_json u case_documents" as MetadataDb
 [Document Preview Modal] --> [Case Workspace Cross-Link Helper]
 [Case Documents State Hook] --> [Case Workspace Cross-Link Helper]
 
+[Case Interrogations Tab] --> [Interrogations List View]
+[Case Interrogations Tab] --> [Create Interrogation Modal]
+[Case Interrogations Tab] --> [Interrogation Chat Modal]
+[Create Interrogation Modal] --> [Interrogation Node Builder Section]
+[Interrogation Node Builder Section] --> [Interrogation Tree Preview]
+[Case Interrogations Tab] --> [Case Interrogations State Hook]
+[Case Interrogations State Hook] --> [Case Interrogation Create Hook]
+[Case Interrogation Create Hook] --> [Case Interrogation Create Utils]
+[Case Interrogations State Hook] --> [Interrogation Tree Helper]
+[Case Interrogation Create Hook] --> [Interrogation Tree Helper]
+[Case Interrogation Create Utils] --> [Interrogation Tree Helper]
+[Create Interrogation Modal] --> [Case Interrogation Create Hook]
+[Interrogation Chat Modal] --> [Interrogation Tree Helper]
+[Case Interrogations Tab] --> [Case Interrogations API Client]
+[Create Interrogation Modal] --> [Case Workspace Cross-Link Helper]
+
 [Shared Case Sidebar] --> [Case Workspace Tabs]
 [Shared Case Sidebar] --> [Route Utils]
 
@@ -125,6 +157,7 @@ database "metadata_json u case_documents" as MetadataDb
 [Cases API Client] --> [Session Storage]
 [Case People API Client] --> [Session Storage]
 [Case Documents API Client] --> [Session Storage]
+[Case Interrogations API Client] --> [Session Storage]
 [Logout Action] --> [Session Storage]
 [Logged Sidebar] --> [Logout Action]
 [Shared Case Sidebar] --> [Logout Action]
@@ -133,6 +166,7 @@ database "metadata_json u case_documents" as MetadataDb
 [Cases API Client] --> [Express App]
 [Case People API Client] --> [Express App]
 [Case Documents API Client] --> [Express App]
+[Case Interrogations API Client] --> [Express App]
 
 [Express App] --> [Auth Routes]
 [Express App] --> [Cases Routes]
@@ -143,6 +177,7 @@ database "metadata_json u case_documents" as MetadataDb
 [Cases Routes] --> [Cases Service]
 [Cases Routes] --> [Case People Service]
 [Cases Routes] --> [Case Documents Service]
+[Cases Routes] --> [Case Interrogations Service]
 
 [Auth Guard Middleware] --> [JWT Token Service]
 [Auth Service] --> [JWT Token Service]
@@ -156,16 +191,22 @@ database "metadata_json u case_documents" as MetadataDb
 [Case Documents Validation] --> [Type-Specific Document Validation]
 [Case Documents Service] --> [Cases Repository]
 [Case Documents Service] --> [Case Documents Repository]
+[Case Interrogations Service] --> [Case Interrogations Validation]
+[Case Interrogations Service] --> [Cases Repository]
+[Case Interrogations Service] --> [Case Documents Repository]
+[Case Interrogations Service] --> [Case Interrogations Repository]
 
 [User Repository] --> [SQLite Module]
 [Cases Repository] --> [SQLite Module]
 [Case People Repository] --> [SQLite Module]
 [Case Documents Repository] --> [SQLite Module]
+[Case Interrogations Repository] --> [SQLite Module]
 
 [SQLite Module] --> Db
 [SQLite Module] --> CasesDb
 [SQLite Module] --> PeopleDb
 [SQLite Module] --> MetadataDb
+[SQLite Module] --> InterrogationsDb
 [Migration Runner] --> Db
 [Health Route] --> [SQLite Module]
 @enduml

@@ -9,7 +9,8 @@ import {
   toRoleLabel,
 } from "./casePeopleHelpers";
 import { formatRecordedAt, toDocumentTypeLabel } from "./caseDocumentHelpers";
-import { buildDocumentPreviewHref } from "./caseWorkspaceLinking";
+import { buildDocumentPreviewHref, buildInterrogationHref } from "./caseWorkspaceLinking";
+import { CASE_WORKSPACE_MODES } from "../utils/routes";
 
 function renderField(label, value) {
   return (
@@ -103,7 +104,15 @@ function CasePersonDossierModal({
           </section>
 
           <section className="dossier-document-linked-docs">
-            <h5>Povezani dokumenti i izjave</h5>
+            <div className="dossier-linked-header">
+              <h5>Povezani dokumenti i izjave</h5>
+              <a
+                className="btn btn-secondary dossier-interrogation-link"
+                href={buildInterrogationHref(caseId, CASE_WORKSPACE_MODES.SOLVE, person.id)}
+              >
+                Saslusaj osobu
+              </a>
+            </div>
             {linkedDocumentsError ? (
               <p className="dossier-linked-error">{linkedDocumentsError}</p>
             ) : null}

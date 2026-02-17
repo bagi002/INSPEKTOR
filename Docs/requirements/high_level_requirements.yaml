@@ -118,7 +118,7 @@
 
 - id: REQ-012
   name: Izgled prozora za slucaj
-  status: In Progress
+  status: In Review
   description: >
     U meniju ce se nakon sto korisnik udje u slucaj pojaviti pored opcije za izlazak iz slucajja i 
     Pocetna ( cini osnovne informacije o slucaju kao sto su naziv, opis, ocjena, broj recenzija i autor)
@@ -140,7 +140,7 @@
 
 - id: REQ-014
   name: Osobe u slucaju
-  status: In Progress
+  status: In Review
   description: >
     Osobe u slucaju treba da budu prikazane u formi liste sa osnovnim informacijama o svakoj osobi, kao sto su ime, prezime i uloga u slucaju (osumnjiceni, zrtva, svjedok)
     Za svaku osobu treba da postoji opcija za pregled dosijea koji sadrzi sve informacije o toj osobi.
@@ -150,7 +150,7 @@
 
 - id: REQ-015
   name: Dosije osobe
-  status: finished
+  status: Finished
   description: >
     Dosije osobe treba da sadrzi sve informacije o toj osobi.
     Kao sto su ime prezime mjesto stanovanja broj telefona visina 
@@ -161,7 +161,7 @@
 
 - id: REQ-016
   name: Ispitivanja sa osobama
-  status: Draft
+  status: Finished
   description: >
     Ispitivanja sa osobama treba da budu interaktivna i da omoguce korisniku da bira pitanje i da ga postavljati
     Sva pitanja i odgovre na ista je unapred pripremio kreator slucaja
@@ -202,7 +202,7 @@
 
 - id: REQ-020
   name: Kreiranje sasluanja
-  status: Draft
+  status: Finished
   description:
     Treba da sadrzi formu za kreiranje novog sasluanja sa osobom u slucaju
     Treba da sadrzi opciju za dodavanje pitanja i odgovora u formi stabla
