@@ -21,17 +21,34 @@ import {
   getSolveVisibilityForUser,
   normalizeCaseReadScope,
 } from "./cases.solve.visibility.js";
+import { getSolvePeopleRoleState } from "./cases.solve.roles.service.js";
+
+function applySolveRolesToDocumentPeople(documents, solvePeopleById) {
+  return documents.map((document) => ({
+    ...document,
+    relatedPeople: Array.isArray(document.relatedPeople)
+      ? document.relatedPeople.map((person) => solvePeopleById.get(person.id) || person)
+      : [],
+    giverPerson: document.giverPerson
+      ? solvePeopleById.get(document.giverPerson.id) || null
+      : null,
+  }));
+}
 
 async function getSolveScopedDocuments(caseId, requesterUserId, documentTypes) {
   const [documentsPayload, visibility] = await Promise.all([
     getDocumentsForCase(caseId, documentTypes),
     getSolveVisibilityForUser(caseId, requesterUserId),
   ]);
-
-  const visiblePeople = filterPeopleByUnlockedIds(
-    documentsPayload.peopleDirectory,
+  const solvePeopleState = await getSolvePeopleRoleState(
+    caseId,
+    requesterUserId,
     visibility.unlockedPersonIds
   );
+  const solvePeopleById = new Map(
+    solvePeopleState.solvePeople.map((person) => [person.id, person])
+  );
+
   const visibleDocuments = filterDocumentsByUnlockedIds(
     documentsPayload.documents,
     visibility.unlockedDocumentIds,
@@ -41,8 +58,9 @@ async function getSolveScopedDocuments(caseId, requesterUserId, documentTypes) {
   return {
     caseId,
     total: visibleDocuments.length,
-    documents: visibleDocuments,
-    people: visiblePeople,
+    documents: applySolveRolesToDocumentPeople(visibleDocuments, solvePeopleById),
+    people: filterPeopleByUnlockedIds(solvePeopleState.solvePeople, visibility.unlockedPersonIds),
+    roleProgress: solvePeopleState.roleProgress,
   };
 }
 

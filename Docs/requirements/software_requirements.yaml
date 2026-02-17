@@ -165,8 +165,8 @@
     Implementirati skeleton prikaz prozora creatorskog moda na ruti `/slucaj/:id/kreiranje`
     sa odvojenim podstranicama/tabovima za vremensku liniju, osobe i dosijee, dokumente,
     izjave, saslusanja i kviz, pri cemu tabovi `vremenska-linija`, `osobe-i-dosijei`,
-    `dokumenti`, `izjave` i `saslusanja` imaju funkcionalne workflow-e, dok je tab
-    `kviz` trenutno placeholder prikaz.
+    `dokumenti`, `izjave` i `saslusanja` imaju funkcionalne workflow-e, dok tab `kviz`
+    koristi zaseban workflow definisan kroz requirements za zavrsni kviz slucaja.
 
 - id: REQ-SW-020
   name: Meni za rezim kreiranja slucaja
@@ -412,3 +412,48 @@
     1) pregled i promenu statusa support tiketa,
     2) pregled i izmenu korisnickih podataka (bez lozinki),
     3) pregled i izmenu podataka o slucajevima.
+
+- id: REQ-SW-043
+  name: Creatorsko definisanje zavrsnog kviza i prikaz opisa slucaja
+  status: In Review
+  refines: REQ-026
+  description: >
+    Implementirati funkcionalan tab `kviz` u creatorskom modu koji omogucava
+    kreiranje i cuvanje pitanja sa ponudjenim odgovorima i objasnjenjem tacnog
+    odgovora kroz backend API (`GET/PUT /api/cases/:caseId/quiz`), kao i solve
+    prikaz opisa slucaja sa podacima o nazivu, opisu, ocjeni, broju recenzija i
+    autoru preko endpointa `GET /api/cases/:caseId/overview?scope=solve`.
+
+- id: REQ-SW-044
+  name: Potvrda rjesenja slucaja kroz zavrsni kviz
+  status: In Review
+  refines: REQ-023
+  description: >
+    Implementirati backend i frontend tok potvrde rjesenja slucaja kroz predaju
+    zavrsnog kviza (`POST /api/cases/:caseId/quiz/submit`) sa pravilom prolaza
+    strogo vecim od 80%, automatskim prelaskom korisnickog progresa na `resolved`,
+    cuvanjem trenutka rjesavanja (`resolved_at`), prikazom tacnih odgovora i
+    objasnjenja samo nakon uspjesnog rjesavanja, te zadrzavanjem slucaja u
+    statusu `in_progress` kada prag nije dostignut.
+
+- id: REQ-SW-045
+  name: Dodjela uloga osobama u toku resavanja kao uslov za zavrsni kviz
+  status: In Review
+  refines: REQ-023
+  description: >
+    Implementirati solve workflow u kome korisnik za svaku otkljucanu osobu
+    menja procenjenu ulogu (`unknown`, `suspect`, `victim`, `witness`) kroz
+    endpoint `PUT /api/cases/:caseId/people/:personId/role`, pri cemu je pocetna
+    vrijednost `unknown`, a opcija `Rijesi slucaj`, predaja zavrsnog kviza i
+    dostupnost taba `kviz` u solve meniju su moguci tek kada su uloge tacno
+    postavljene za sve otkljucane osobe.
+
+- id: REQ-SW-046
+  name: Vracanje slucaja iz resolved u rezim resavanja za kreatora
+  status: In Review
+  refines: REQ-027
+  description: >
+    Implementirati creatorsku opciju u meniju kreiranja slucaja koja za autora
+    slucaja poziva backend endpoint `POST /api/cases/:caseId/progress/reset-to-solve`
+    i vraca njegov progress status sa `resolved` na `in_progress`, uz brisanje
+    `resolved_at`, kako bi kreator mogao ponovo da resava sopstveni slucaj.

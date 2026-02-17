@@ -155,13 +155,15 @@ export async function createCaseWithDetails({
             user_id,
             progress_status,
             progress_percent,
-            user_rating
+            user_rating,
+            resolved_at
           )
-          VALUES (?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?)
           ON CONFLICT(case_id, user_id) DO UPDATE SET
             progress_status = excluded.progress_status,
             progress_percent = excluded.progress_percent,
             user_rating = excluded.user_rating,
+            resolved_at = excluded.resolved_at,
             updated_at = CURRENT_TIMESTAMP
         `,
         [
@@ -170,6 +172,7 @@ export async function createCaseWithDetails({
           progressItem.progressStatus,
           progressItem.progressPercent,
           progressItem.userRating,
+          progressItem.resolvedAt || null,
         ]
       );
     }

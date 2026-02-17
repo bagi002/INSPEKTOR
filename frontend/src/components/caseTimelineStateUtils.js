@@ -20,6 +20,7 @@ export function buildDefaultTimelineProgress(totalItems = 0) {
     progressStatus: "in_progress",
     hasNextItem: false,
     lastUnlockedTimelineAt: "",
+    resolvedAt: null,
   };
 }
 
@@ -45,14 +46,32 @@ export function mapTimelineProgressForState(rawProgress, totalItems) {
     typeof rawProgress.lastUnlockedTimelineAt === "string"
       ? rawProgress.lastUnlockedTimelineAt.trim()
       : "";
+  const progressStatus = rawProgress.progressStatus === "resolved" ? "resolved" : "in_progress";
+  const resolvedAt =
+    typeof rawProgress.resolvedAt === "string" && rawProgress.resolvedAt.trim().length > 0
+      ? rawProgress.resolvedAt.trim()
+      : null;
+
+  if (progressStatus === "resolved") {
+    return {
+      totalItems: safeTotal,
+      unlockedCount: safeTotal,
+      progressPercent: 100,
+      progressStatus,
+      hasNextItem: false,
+      lastUnlockedTimelineAt,
+      resolvedAt,
+    };
+  }
 
   return {
     totalItems: safeTotal,
     unlockedCount,
     progressPercent,
-    progressStatus: "in_progress",
+    progressStatus,
     hasNextItem: unlockedCount < safeTotal,
     lastUnlockedTimelineAt,
+    resolvedAt: null,
   };
 }
 

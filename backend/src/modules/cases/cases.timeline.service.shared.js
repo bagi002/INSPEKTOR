@@ -44,6 +44,26 @@ function resolveLastUnlockedAt(item) {
 
 export function buildProgressSnapshot(progressRow, timelineItems, overrideUnlockedCount = null) {
   const totalItems = timelineItems.length;
+  const storedStatus = progressRow?.progressStatus === "resolved" ? "resolved" : "in_progress";
+  const storedResolvedAt =
+    typeof progressRow?.resolvedAt === "string" && progressRow.resolvedAt.trim().length > 0
+      ? progressRow.resolvedAt.trim()
+      : null;
+
+  if (storedStatus === "resolved") {
+    const resolvedUnlockedCount = totalItems > 0 ? totalItems : 0;
+    return {
+      totalItems,
+      unlockedCount: resolvedUnlockedCount,
+      progressPercent: 100,
+      progressStatus: "resolved",
+      hasNextItem: false,
+      lastUnlockedTimelineAt:
+        resolvedUnlockedCount > 0 ? resolveLastUnlockedAt(timelineItems[resolvedUnlockedCount - 1]) : "",
+      resolvedAt: storedResolvedAt,
+    };
+  }
+
   if (totalItems === 0) {
     return {
       totalItems,
@@ -52,6 +72,7 @@ export function buildProgressSnapshot(progressRow, timelineItems, overrideUnlock
       progressStatus: "in_progress",
       hasNextItem: false,
       lastUnlockedTimelineAt: "",
+      resolvedAt: null,
     };
   }
 
@@ -73,6 +94,7 @@ export function buildProgressSnapshot(progressRow, timelineItems, overrideUnlock
     progressStatus: "in_progress",
     hasNextItem: unlockedCount < totalItems,
     lastUnlockedTimelineAt,
+    resolvedAt: null,
   };
 }
 
@@ -85,7 +107,8 @@ export function shouldPersistProgress(progressRow, snapshot) {
     progressRow.progressStatus !== snapshot.progressStatus ||
     progressRow.progressPercent !== snapshot.progressPercent ||
     progressRow.unlockedTimelineCount !== snapshot.unlockedCount ||
-    progressRow.lastUnlockedTimelineAt !== snapshot.lastUnlockedTimelineAt
+    progressRow.lastUnlockedTimelineAt !== snapshot.lastUnlockedTimelineAt ||
+    (progressRow.resolvedAt || null) !== (snapshot.resolvedAt || null)
   );
 }
 

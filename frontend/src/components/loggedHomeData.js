@@ -58,3 +58,22 @@ export function formatReviews(reviews) {
 
   return `${total} recenzija`;
 }
+
+export function formatResolvedAt(resolvedAt) {
+  if (typeof resolvedAt !== "string" || resolvedAt.trim().length === 0) {
+    return "-";
+  }
+
+  const parsedDate = new Date(resolvedAt);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "-";
+  }
+
+  return parsedDate.toLocaleString("sr-Latn-RS", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}

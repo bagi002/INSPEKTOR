@@ -13,6 +13,7 @@ function mapCaseUserProgressRow(row) {
     progressPercent: row.progress_percent,
     unlockedTimelineCount: row.unlocked_timeline_count,
     lastUnlockedTimelineAt: row.last_unlocked_timeline_at || "",
+    resolvedAt: row.resolved_at || null,
     userRating: row.user_rating,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -32,6 +33,7 @@ export async function getCaseUserProgressByCaseIdAndUserId(caseId, userId) {
         user_rating,
         unlocked_timeline_count,
         last_unlocked_timeline_at,
+        resolved_at,
         created_at,
         updated_at
       FROM case_user_progress
@@ -56,9 +58,10 @@ export async function ensureCaseUserProgressByCaseIdAndUserId(caseId, userId) {
         progress_percent,
         user_rating,
         unlocked_timeline_count,
-        last_unlocked_timeline_at
+        last_unlocked_timeline_at,
+        resolved_at
       )
-      VALUES (?, ?, 'in_progress', 0, NULL, 0, '')
+      VALUES (?, ?, 'in_progress', 0, NULL, 0, '', NULL)
       ON CONFLICT(case_id, user_id) DO NOTHING
     `,
     [caseId, userId]
@@ -87,14 +90,16 @@ export async function upsertCaseUserProgress(caseId, userId, payload) {
         progress_percent,
         user_rating,
         unlocked_timeline_count,
-        last_unlocked_timeline_at
+        last_unlocked_timeline_at,
+        resolved_at
       )
-      VALUES (?, ?, ?, ?, NULL, ?, ?)
+      VALUES (?, ?, ?, ?, NULL, ?, ?, ?)
       ON CONFLICT(case_id, user_id) DO UPDATE SET
         progress_status = excluded.progress_status,
         progress_percent = excluded.progress_percent,
         unlocked_timeline_count = excluded.unlocked_timeline_count,
         last_unlocked_timeline_at = excluded.last_unlocked_timeline_at,
+        resolved_at = excluded.resolved_at,
         updated_at = CURRENT_TIMESTAMP
     `,
     [
@@ -104,6 +109,7 @@ export async function upsertCaseUserProgress(caseId, userId, payload) {
       payload.progressPercent,
       unlockedTimelineCount,
       payload.lastUnlockedTimelineAt,
+      payload.resolvedAt || null,
     ]
   );
 
@@ -122,6 +128,7 @@ export async function normalizeCaseUserProgressForTimeline(caseId, totalTimeline
           progress_percent = 0,
           unlocked_timeline_count = 0,
           last_unlocked_timeline_at = '',
+          resolved_at = NULL,
           updated_at = CURRENT_TIMESTAMP
         WHERE case_id = ?
       `,
@@ -156,6 +163,7 @@ export async function normalizeCaseUserProgressForTimeline(caseId, totalTimeline
           WHEN unlocked_timeline_count <= 0 THEN ''
           ELSE last_unlocked_timeline_at
         END,
+        resolved_at = NULL,
         updated_at = CURRENT_TIMESTAMP
       WHERE case_id = ?
     `,
@@ -168,4 +176,22 @@ export async function normalizeCaseUserProgressForTimeline(caseId, totalTimeline
       caseId,
     ]
   );
+}
+
+export async function resetCaseUserProgressToSolve(caseId, userId) {
+  const database = getDatabase();
+  await runQuery(
+    database,
+    `
+      UPDATE case_user_progress
+      SET
+        progress_status = 'in_progress',
+        resolved_at = NULL,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE case_id = ? AND user_id = ?
+    `,
+    [caseId, userId]
+  );
+
+  return await ensureCaseUserProgressByCaseIdAndUserId(caseId, userId);
 }

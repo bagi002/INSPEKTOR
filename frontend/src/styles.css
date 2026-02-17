@@ -9,5 +9,7 @@
 @import "./styles/case-people.css";
 @import "./styles/case-documents.css";
 @import "./styles/case-interrogations.css";
+@import "./styles/case-quiz.css";
+@import "./styles/case-quiz-editor.css";
 @import "./styles/desktop-notice.css";
 @import "./styles/animations.css";

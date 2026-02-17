@@ -8,8 +8,9 @@ import {
 } from "./caseWorkspaceLinking";
 import { useCasePeopleTabState } from "./useCasePeopleTabState";
 import { useCasePeopleLinkedDocumentsState } from "./useCasePeopleLinkedDocumentsState";
+import { useCasePeopleSolveRoleState } from "./useCasePeopleSolveRoleState";
 
-function CasePeopleTab({ caseId, mode, onUnauthorized }) {
+function CasePeopleTab({ caseId, mode, onUnauthorized, onSolveRolesUpdated }) {
   const {
     people,
     activePerson,
@@ -40,6 +41,22 @@ function CasePeopleTab({ caseId, mode, onUnauthorized }) {
       onUnauthorized,
       scope: isCreateMode ? "create" : "solve",
     });
+  const {
+    isUpdatingRole,
+    roleUpdateError,
+    setRoleUpdateError,
+    handleSolveRoleChange,
+  } = useCasePeopleSolveRoleState({
+    caseId,
+    isCreateMode,
+    onUnauthorized,
+    onRoleUpdated: async () => {
+      await loadPeople();
+      if (typeof onSolveRolesUpdated === "function") {
+        await onSolveRolesUpdated();
+      }
+    },
+  });
   const activePersonLinkedDocuments = useMemo(
     () => getLinkedDocumentsForPerson(activePerson?.id),
     [activePerson?.id, getLinkedDocumentsForPerson]
@@ -88,6 +105,10 @@ function CasePeopleTab({ caseId, mode, onUnauthorized }) {
           onOpenCreateModal={openCreateModal}
           onOpenDossierModal={openDossierModal}
           isCreateMode={isCreateMode}
+          isUpdatingRole={isUpdatingRole}
+          roleUpdateError={roleUpdateError}
+          onRoleUpdateErrorClose={() => setRoleUpdateError("")}
+          onSolveRoleChange={handleSolveRoleChange}
         />
       ) : null}
 

@@ -33,15 +33,22 @@ function normalizeText(value) {
   return String(value || "").toLowerCase().trim();
 }
 
-function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal, isCreateMode }) {
+function CasePeopleOverviewPanel({
+  people,
+  onOpenCreateModal,
+  onOpenDossierModal,
+  isCreateMode,
+  isUpdatingRole = false,
+  roleUpdateError = "",
+  onRoleUpdateErrorClose = null,
+  onSolveRoleChange = null,
+}) {
   const [searchValue, setSearchValue] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [lifeFilter, setLifeFilter] = useState("all");
-
   const stats = useMemo(() => buildStats(people), [people]);
   const filteredPeople = useMemo(() => {
     const searchTerm = normalizeText(searchValue);
-
     return people.filter((person) => {
       if (roleFilter !== "all" && person.apparentRole !== roleFilter) {
         return false;
@@ -52,12 +59,10 @@ function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal
       if (searchTerm.length === 0) {
         return true;
       }
-
       const personText = normalizeText(`${person.fullName} ${person.dossier?.dossierNumber || ""}`);
       return personText.includes(searchTerm);
     });
   }, [people, searchValue, roleFilter, lifeFilter]);
-
   return (
     <div className="case-people-overview">
       <section className={`card reveal delay-3 case-people-hero-card ${isCreateMode ? "is-create" : "is-solve"}`}>
@@ -68,7 +73,7 @@ function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal
             <p className="create-case-summary">
               {isCreateMode
                 ? "Kreiraj nova lica, odrzavaj formalne profile i otvaraj detaljan dosije klikom na red osobe."
-                : "Pregledaj formalne dosijee i fotografije lica. Evidencija je zakljucana za izmjene u ovom modu."}
+                : "Pregledaj formalne dosijee i za svaku otkljucanu osobu postavi ulogu u slucaju."}
             </p>
           </div>
           {isCreateMode ? (
@@ -77,7 +82,6 @@ function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal
             </button>
           ) : null}
         </div>
-
         <div className="case-people-stat-grid">
           {stats.map((item) => (
             <article className="case-people-stat-card" key={item.label}>
@@ -86,8 +90,21 @@ function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal
             </article>
           ))}
         </div>
+        {!isCreateMode && roleUpdateError ? (
+          <p className="error-banner">
+            {roleUpdateError}
+            {typeof onRoleUpdateErrorClose === "function" ? (
+              <button
+                type="button"
+                className="btn btn-secondary inline-action case-people-error-dismiss"
+                onClick={onRoleUpdateErrorClose}
+              >
+                Zatvori
+              </button>
+            ) : null}
+          </p>
+        ) : null}
       </section>
-
       <section className="card reveal delay-3 case-people-toolbar-card">
         <div className="case-people-toolbar">
           <label className="create-case-field">
@@ -100,7 +117,6 @@ function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal
               placeholder="npr. DOS-0001-00001"
             />
           </label>
-
           <label className="create-case-field">
             Uloga
             <select className="create-case-input" value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
@@ -111,7 +127,6 @@ function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal
               ))}
             </select>
           </label>
-
           <label className="create-case-field">
             Status osobe
             <select className="create-case-input" value={lifeFilter} onChange={(event) => setLifeFilter(event.target.value)}>
@@ -124,7 +139,6 @@ function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal
           </label>
         </div>
       </section>
-
       <section className="card reveal delay-3 case-people-directory-card">
         {filteredPeople.length === 0 ? (
           <p className="case-people-empty">Nema rezultata za zadate filtere.</p>
@@ -132,7 +146,11 @@ function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal
           <ul className="case-people-directory-list">
             {filteredPeople.map((person) => (
               <li key={person.id}>
-                <button type="button" className="case-people-directory-row" onClick={() => onOpenDossierModal(person.id)}>
+                <button
+                  type="button"
+                  className={`case-people-directory-row ${isCreateMode ? "" : "is-solve-row"}`.trim()}
+                  onClick={() => onOpenDossierModal(person.id)}
+                >
                   <span className="case-people-directory-main">
                     <strong>{person.fullName}</strong>
                     <small>{person.dossier?.dossierNumber || "N/A"}</small>
@@ -142,6 +160,27 @@ function CasePeopleOverviewPanel({ people, onOpenCreateModal, onOpenDossierModal
                     <small>Status: {person.dossier?.isAlive ? "Ziva osoba" : "Preminula osoba"}</small>
                     <small>Lokacija: {person.dossier?.lastKnownLocation || "Nije evidentirano"}</small>
                   </span>
+                  {!isCreateMode ? (
+                    <span
+                      className="case-people-solve-role-picker"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <small>Tvoja procjena</small>
+                      <select
+                        value={person.apparentRole || "unknown"}
+                        onChange={(event) =>
+                          typeof onSolveRoleChange === "function"
+                            ? onSolveRoleChange(person.id, event.target.value)
+                            : null
+                        }
+                        disabled={isUpdatingRole}
+                      >
+                        {CASE_PERSON_ROLE_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </span>
+                  ) : null}
                   <span className="case-people-directory-action">Otvori dosije</span>
                 </button>
               </li>

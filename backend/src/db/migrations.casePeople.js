@@ -78,4 +78,24 @@ export const CASE_PEOPLE_MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_case_person_dossier_profiles_dossier_id
     ON case_person_dossier_profiles(dossier_id);
   `,
+  `
+    CREATE TABLE IF NOT EXISTS case_person_role_assignments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      case_id INTEGER NOT NULL,
+      person_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      assigned_role TEXT NOT NULL DEFAULT 'unknown'
+        CHECK (assigned_role IN ('unknown', 'suspect', 'victim', 'witness')),
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (case_id) REFERENCES cases(id) ON DELETE CASCADE,
+      FOREIGN KEY (person_id) REFERENCES case_people(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE (case_id, person_id, user_id)
+    );
+  `,
+  `
+    CREATE INDEX IF NOT EXISTS idx_case_person_role_assignments_case_user
+    ON case_person_role_assignments(case_id, user_id);
+  `,
 ];

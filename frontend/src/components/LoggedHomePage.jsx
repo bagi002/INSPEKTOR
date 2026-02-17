@@ -4,13 +4,13 @@ import LoggedSidebar from "./LoggedSidebar";
 import {
   EMPTY_HOME_DATA,
   formatAverageRating,
+  formatResolvedAt,
   formatReviews,
   formatStatus,
   normalizeHomeData,
 } from "./loggedHomeData";
 import { fetchLoggedHomeCases } from "../services/casesApi";
 import { AUTH_ROUTES, CASE_WORKSPACE_MODES, buildCaseWorkspaceRoute } from "../utils/routes";
-
 function LoggedHomePage({ user, onLogout }) {
   const [homeData, setHomeData] = useState(EMPTY_HOME_DATA);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,11 +50,9 @@ function LoggedHomePage({ user, onLogout }) {
     setHomeData(normalizeHomeData(result.data));
     setIsLoading(false);
   }, [onLogout]);
-
   useEffect(() => {
     void loadHomeData();
   }, [loadHomeData]);
-
   return (
     <div className="app-shell app-shell-logged" id="ulogovani-home">
       <LoggedSidebar activePath={AUTH_ROUTES.HOME} user={user} onLogout={onLogout} />
@@ -132,10 +130,15 @@ function LoggedHomePage({ user, onLogout }) {
               delayClass="delay-3"
               emptyMessage="Jos nemas resene slucajeve."
               renderDetails={(item) => (
-                <p>
-                  Ocena: <strong>{formatAverageRating(item.rating)}</strong> |{" "}
-                  {formatReviews(item.reviews)}
-                </p>
+                <>
+                  <p>
+                    Ocena: <strong>{formatAverageRating(item.rating)}</strong> |{" "}
+                    {formatReviews(item.reviews)}
+                  </p>
+                  <p>
+                    Rijeseno: <strong>{formatResolvedAt(item.resolvedAt)}</strong>
+                  </p>
+                </>
               )}
             />
 

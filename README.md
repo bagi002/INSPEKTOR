@@ -1,7 +1,7 @@
 # INSPEKTOR
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
-Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, kao i ulogovana pocetna koja prikazuje stvarne slucajeve iz SQLite baze.
+Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, ulogovana pocetna sa stvarnim podacima iz SQLite baze, kao i zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
@@ -91,20 +91,31 @@ Tok koriscenja:
 11. U tabu `/slucaj/:id/kreiranje/saslusanja` mozes izabrati osobu, kreirati stablo pitanja
     i odgovora uz vizuelni prikaz toka (tree preview), ponovo koristiti postojece pitanje
     u drugoj grani i odmah pokrenuti saslusanje kroz chat modal.
-12. Iz formalnog dosijea svake osobe mozes kliknuti `Saslusaj osobu`, sto otvara
+12. U tabu `/slucaj/:id/kreiranje/kviz` kreator definise zavrsna pitanja, ponudjene odgovore
+    i objasnjenje za svako pitanje; taj kviz se koristi za potvrdu rjesenja slucaja.
+13. Iz formalnog dosijea svake osobe mozes kliknuti `Saslusaj osobu`, sto otvara
     `/slucaj/:id/resavanje/saslusanja` i pokusava automatski da pokrene chat za tu osobu.
-13. U tabu `/slucaj/:id/resavanje/vremenska-linija` koristi dugme `Dalje` za postepeno
+14. U tabu `/slucaj/:id/resavanje/vremenska-linija` koristi dugme `Dalje` za postepeno
     otkljucavanje sledece stavke; lista prikazuje najnovije otkljucano na vrhu, a
     `Trenutni datum` predstavlja datum poslednje otkljucane stavke.
-14. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i verziju
+15. Kada su sve timeline stavke otkljucane, kviz postoji i korisnik tacno postavi ulogu
+    za svaku otkljucanu osobu (pocetno stanje je `unknown`), u lijevom meniju solve moda
+    se pojavljuje opcija `Rijesi slucaj` koja vodi na `/slucaj/:id/resavanje/kviz`.
+16. U solve tabu `kviz` korisnik vidi opis slucaja (naziv, opis, autor, ocjena, broj recenzija),
+    odgovara na pitanja i predaje kviz; potrebno je ostvariti strogo vise od 80% tacnih odgovora.
+17. Pri uspjesnom rezultatu slucaj prelazi u status `resolved` uz cuvanje vremena rjesavanja,
+    prikaz tacnih odgovora i objasnjenja, i pomjeranje slucaja u sekciju `Reseni slucajevi`.
+18. U lijevom meniju creatorskog moda postoji opcija `Vrati slucaj u resavanje` koja autoru
+    vraca sopstveni progress iz `resolved` u `in_progress`.
+19. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i verziju
     aplikacije, i pratiti statuse svih svojih tiketa.
-15. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
+20. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
     email+lozinka naloga + lozinka admin panela (`ADMIN_PANEL_PASSWORD`).
-16. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
+21. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
-- Slucajevi i povezani podaci (osobe, dokumenti, timeline, korisnicki napredak) cuvaju se u SQLite `case_*` tabelama.
+- Slucajevi i povezani podaci (osobe, dokumenti, timeline, korisnicki napredak i zavrsni kviz) cuvaju se u SQLite `case_*` tabelama.
 - Ticketi podrske se cuvaju u tabeli `support_tickets`.
 - Pri uspesnoj prijavi backend vraca JWT token koji se cuva u `localStorage` na klijentu.
 - Pri prvom pokretanju backend automatski obezbedjuje bootstrap admin nalog na osnovu `.env`
@@ -128,8 +139,17 @@ Napomena:
     - timeline: `timeline[]`
     - korisnicki napredak: `progress[]`
   - napomena: trenutno je podrzano cuvanje napretka za autora slucaja (ulogovanog korisnika)
+- `GET /api/cases/:caseId/overview` (autorizacija: `Bearer <JWT>`)
+  - vraca pregled slucaja za workspace (opis, autor, ocjenu, broj recenzija)
+  - `?scope=create` vraca creatorski pregled samo autoru slucaja
+  - `?scope=solve` vraca solve pregled (sa korisnickim progresom, brojem kviz pitanja
+    i role readiness statusom) autoru, kao i korisnicima koji imaju pravo pristupa slucaju
 - `GET /api/cases/:caseId/creator` (autorizacija: `Bearer <JWT>`)
   - vraca slucaj za creatorski mod samo ako je ulogovani korisnik autor tog slucaja
+- `POST /api/cases/:caseId/progress/reset-to-solve` (autorizacija: `Bearer <JWT>`)
+  - dostupno samo autoru slucaja; vraca njegov progress status sa `resolved` na
+    `in_progress` i cisti `resolved_at`
+  - koristi se iz menija creatorskog moda kroz akciju `Vrati slucaj u resavanje`
 - `GET /api/cases/:caseId/timeline` (autorizacija: `Bearer <JWT>`)
   - vraca vremensku liniju slucaja (redosled stavki + napomene + datum/vreme)
     zajedno sa direktorijumom osoba i dokumenata dostupnih za timeline, kao i
@@ -147,10 +167,15 @@ Napomena:
 - `GET /api/cases/:caseId/people` (autorizacija: `Bearer <JWT>`)
   - vraca listu osoba i njihove dosijee za trazeni slucaj
   - opciono `?scope=solve` vraca samo osobe otkljucane do trenutnog korisnickog
-    progresa na vremenskoj liniji
+    progresa na vremenskoj liniji, sa korisnicki izabranim ulogama
+    (inicijalno `unknown`) i role progress statusom
   - dosije ukljucuje auto-generisane administrativne podatke (`dossierNumber`,
     `classificationLevel`, `revisionNumber`, `generatedAt`)
   - bez `scope=solve` pristup je ogranicen na autora slucaja
+- `PUT /api/cases/:caseId/people/:personId/role` (autorizacija: `Bearer <JWT>`)
+  - menja procenjenu ulogu osobe u solve modu (`unknown`, `suspect`, `victim`, `witness`)
+  - vraca azurirani role progress (`allRolesResolved`) koji je uslov za prikaz opcije
+    `Rijesi slucaj` i predaju zavrsnog kviza
 - `POST /api/cases/:caseId/people` (autorizacija: `Bearer <JWT>`)
   - kreira novu osobu i pripadajuci dosije u okviru slucaja
   - podrzana polja: `fullName`, `apparentRole`, `biography`, `phoneNumber`, `address`,
@@ -206,6 +231,21 @@ Napomena:
     bez ciklusa), pravilo da se isto pitanje ne moze ponoviti u istoj grani i
     pravilo da je saslusanje dozvoljeno samo za zive osobe
   - pristup je trenutno ogranicen na autora slucaja
+- `GET /api/cases/:caseId/quiz` (autorizacija: `Bearer <JWT>`)
+  - `?scope=create` vraca creatorski payload za uredjivanje pitanja/odgovora i
+    objasnjenja (samo autor slucaja)
+  - `?scope=solve` vraca solve payload sa opisom slucaja, stanjem progresa, pravilima
+    spremnosti za predaju (ukljucujuci proveru tacno postavljenih uloga osoba) i pitanjima
+    kviza bez otkrivanja tacnih odgovora dok slucaj nije rijesen
+- `PUT /api/cases/:caseId/quiz` (autorizacija: `Bearer <JWT>`)
+  - cuva kompletan zavrsni kviz slucaja (`questions[]`, `options[]`, `isCorrect`, `explanationText`)
+  - pristup je ogranicen na autora slucaja
+- `POST /api/cases/:caseId/quiz/submit` (autorizacija: `Bearer <JWT>`)
+  - predaje odgovore korisnika na zavrsni kviz i racuna rezultat
+  - prag prolaza je strogo veci od 80% tacnih odgovora
+  - uspjesan rezultat azurira `case_user_progress` na `resolved`, postavlja `resolved_at`
+    i vraca review podatke sa tacnim odgovorima i objasnjenjima
+  - neuspjesan rezultat ostavlja slucaj u `in_progress` bez prikaza tacnih odgovora
 - `GET /api/support/tickets/me` (autorizacija: `Bearer <JWT>`)
   - vraca sve tikete trenutno ulogovanog korisnika, ukljucujuci status i admin napomenu
 - `POST /api/support/tickets` (autorizacija: `Bearer <JWT>`)
@@ -300,6 +340,7 @@ Napomena:
     - klik na osobu otvara formalni dosije u iskacucem prozoru
     - u creatorskom modu kreiranje nove osobe i dosijea se radi kroz iskacuci prozor
     - u rezimu resavanja prikazuje samo osobe koje su trenutno otkljucane na vremenskoj liniji
+      i omogucava korisniku da za svaku postavi procenjenu ulogu (pocetno `unknown`)
     - forma koristi padajuce liste za sva pogodna polja (ukljucujuci pol) i upload fotografije osobe
     - dosije prikazuje sve povezane izjave i dokumente kao direktne linkove ka formalnom prikazu
   - tab `izjave`:
@@ -324,12 +365,20 @@ Napomena:
     - u rezimu resavanja prikazuje samo saslusanja osoba koje su trenutno otkljucane na vremenskoj liniji
     - iz svakog dosijea postoji akcija `Saslusaj osobu` koja vodi na ovaj tab
       u rezimu pregleda i pokusava auto-otvaranje chat modala
+  - tab `kviz`:
+    - u creatorskom modu omogucava kreiranje zavrsnog kviza (pitanja, ponudjeni odgovori i objasnjenja)
+    - u rezimu resavanja prikazuje opis slucaja i kviz za potvrdu rjesenja
+    - prikaz tacnih odgovora i objasnjenja je dostupan tek nakon uspjesnog rjesavanja slucaja
 - Opcija objave:
   - u meniju rezima kreiranja postoji `Objavi slucaj` kao dugme
   - dugme ne vodi na novu rutu/stranicu
   - trenutno prikazuje placeholder status poruku (bez pune backend logike objave)
+- Reset statusa za kreatora:
+  - u meniju rezima kreiranja postoji opcija `Vrati slucaj u resavanje`
+  - akcija poziva `POST /api/cases/:caseId/progress/reset-to-solve` i resetuje
+    samo progress trenutno ulogovanog autora slucaja
 - Creatorski workspace:
-  - ucitava draft slucaj preko `GET /api/cases/:caseId/creator`
+  - ucitava pregled slucaja preko `GET /api/cases/:caseId/overview?scope=create`
   - prikazuje osnovne podatke slucaja i funkcionalne operativne tabove
 - Resavacki workspace:
   - koristi isti set tabova i istu navigacionu strukturu kao creatorski workspace
@@ -338,15 +387,20 @@ Napomena:
   - tab `osobe-i-dosijei` je dostupan za read-only pregled samo timeline-otkljucanih osoba i dosijea
   - tabovi `izjave` i `dokumenti` su dostupni za read-only pregled samo timeline-otkljucanih dokumenata
   - tab `saslusanja` je dostupan za read-only pokretanje i pregled chat saslusanja samo za timeline-otkljucane osobe
-  - tab `kviz` je trenutno placeholder prikaz
+  - tab `kviz` nije prikazan u solve meniju dok nisu tacno postavljene uloge osoba
+  - opcija `Rijesi slucaj` se pojavljuje u meniju tek kada su ispunjeni svi uslovi:
+    otkljucana timeline sekvenca, postojeci kviz i tacno postavljene uloge svih otkljucanih osoba
+  - tab `kviz` omogucava predaju zavrsnog kviza; rezultat >80% prebacuje slucaj u `resolved`
+    i cuva vrijeme rjesavanja (`resolved_at`)
 - Backend auth:
   - modularna Express struktura (routes/controller/service/repository)
   - SQLite migracije i maintenance podesavanja
 - Backend slucajevi:
   - SQLite model za `cases`, `case_people`, `case_person_dossiers`,
-    `case_person_dossier_profiles`, `case_documents`, `case_interrogations`,
-    `case_interrogation_nodes`, `case_timeline_items`, `case_user_progress`
+    `case_person_dossier_profiles`, `case_person_role_assignments`, `case_documents`, `case_interrogations`,
+    `case_interrogation_nodes`, `case_timeline_items`, `case_user_progress`,
+    `case_quiz_questions`, `case_quiz_options`, `case_quiz_user_results`
   - prosiren `case_documents` model sa `metadata_json` za formalna polja izjava i
     policijskih dokumenata
-  - JWT-zasticeni endpointi za cuvanje slucaja, prikaz ulogovane pocetne, vremensku liniju,
-    osobe/dosijee, izjave, policijska dokumenta i saslusanja
+  - JWT-zasticeni endpointi za cuvanje slucaja, prikaz ulogovane pocetne, workspace overview,
+    vremensku liniju, osobe/dosijee, izjave, policijska dokumenta, saslusanja i zavrsni kviz

@@ -33,6 +33,7 @@ export function mapHomeResolvedCase(row) {
     title: row.title,
     rating: row.rating,
     reviews: row.reviews,
+    resolvedAt: row.resolved_at || "",
   };
 }
 

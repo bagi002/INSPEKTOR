@@ -1,6 +1,7 @@
 import { getMany, runQuery } from "./sqliteClient.js";
 import { CASE_PEOPLE_MIGRATIONS } from "./migrations.casePeople.js";
 import { CASE_INTERROGATIONS_MIGRATIONS } from "./migrations.interrogations.js";
+import { CASE_QUIZ_MIGRATIONS } from "./migrations.caseQuiz.js";
 import { SUPPORT_ADMIN_MIGRATIONS, applySupportAdminColumnMigrations } from "./migrations.supportAdmin.js";
 
 const MIGRATIONS = [
@@ -53,6 +54,7 @@ const MIGRATIONS = [
   `,
   ...CASE_PEOPLE_MIGRATIONS,
   ...CASE_INTERROGATIONS_MIGRATIONS,
+  ...CASE_QUIZ_MIGRATIONS,
   `
     CREATE TABLE IF NOT EXISTS case_documents (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -129,6 +131,7 @@ const MIGRATIONS = [
       unlocked_timeline_count INTEGER NOT NULL DEFAULT 0
         CHECK (unlocked_timeline_count >= 0),
       last_unlocked_timeline_at TEXT NOT NULL DEFAULT '',
+      resolved_at TEXT,
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (case_id) REFERENCES cases(id) ON DELETE CASCADE,
@@ -151,49 +154,19 @@ async function ensureColumnExists(database, tableName, columnName, definitionSql
 }
 async function applyColumnMigrations(database) {
   await applySupportAdminColumnMigrations(database, ensureColumnExists);
-  await runQuery(
-    database,
-    `
-      CREATE INDEX IF NOT EXISTS idx_users_role
-      ON users(role);
-    `
-  );
-  await ensureColumnExists(
-    database,
-    "case_person_dossier_profiles",
-    "photo_data_url",
-    "TEXT NOT NULL DEFAULT ''"
-  );
-  await ensureColumnExists(
-    database,
-    "case_documents",
-    "metadata_json",
-    "TEXT NOT NULL DEFAULT '{}'"
-  );
+  await runQuery(database, `CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);`);
+  await ensureColumnExists(database, "case_person_dossier_profiles", "photo_data_url", "TEXT NOT NULL DEFAULT ''");
+  await ensureColumnExists(database, "case_documents", "metadata_json", "TEXT NOT NULL DEFAULT '{}'");
   await ensureColumnExists(
     database,
     "case_interrogation_nodes",
     "question_reference_key",
     "TEXT NOT NULL DEFAULT ''"
   );
-  await ensureColumnExists(
-    database,
-    "case_timeline_items",
-    "unlock_at",
-    "TEXT NOT NULL DEFAULT ''"
-  );
-  await ensureColumnExists(
-    database,
-    "case_user_progress",
-    "unlocked_timeline_count",
-    "INTEGER NOT NULL DEFAULT 0"
-  );
-  await ensureColumnExists(
-    database,
-    "case_user_progress",
-    "last_unlocked_timeline_at",
-    "TEXT NOT NULL DEFAULT ''"
-  );
+  await ensureColumnExists(database, "case_timeline_items", "unlock_at", "TEXT NOT NULL DEFAULT ''");
+  await ensureColumnExists(database, "case_user_progress", "unlocked_timeline_count", "INTEGER NOT NULL DEFAULT 0");
+  await ensureColumnExists(database, "case_user_progress", "last_unlocked_timeline_at", "TEXT NOT NULL DEFAULT ''");
+  await ensureColumnExists(database, "case_user_progress", "resolved_at", "TEXT");
 }
 export async function applyMigrations(database) {
   for (const statement of MIGRATIONS) {

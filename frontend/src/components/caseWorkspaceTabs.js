@@ -33,7 +33,7 @@ export const CASE_WORKSPACE_TABS = [
     slug: "kviz",
     label: "Kviz",
     description:
-      "Prazna stranica za zavrsni kviz slucaja.",
+      "Kreiranje zavrsnog kviza i potvrda rjesenja slucaja kroz prag tacnosti veci od 80%.",
   },
 ];
 

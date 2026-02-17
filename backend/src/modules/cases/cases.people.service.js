@@ -7,7 +7,12 @@ import {
   getSolveVisibilityForUser,
   normalizeCaseReadScope,
 } from "./cases.solve.visibility.js";
-import { filterPeopleByUnlockedIds } from "./cases.solve.visibility.filters.js";
+import { getSolvePeopleRoleState } from "./cases.solve.roles.service.js";
+import {
+  buildCaseSolveRoleProgress,
+  normalizeCasePersonRole,
+} from "./cases.solve.roles.shared.js";
+import { upsertCasePersonRoleSelection } from "./cases.repository.people.roles.js";
 
 function throwValidationIfNeeded(errors) {
   if (Object.keys(errors).length > 0) {
@@ -30,6 +35,21 @@ function parseCaseId(caseIdInput) {
   return caseId;
 }
 
+function parsePersonId(personIdInput) {
+  const normalizedValue =
+    typeof personIdInput === "string" ? personIdInput.trim() : String(personIdInput ?? "");
+  if (!/^\d+$/.test(normalizedValue)) {
+    throw new HttpError(400, "Prosledjena osoba nije validna.");
+  }
+
+  const personId = Number.parseInt(normalizedValue, 10);
+  if (!Number.isInteger(personId) || personId <= 0) {
+    throw new HttpError(400, "Prosledjena osoba nije validna.");
+  }
+
+  return personId;
+}
+
 async function assertAuthorAccess(caseId, authorUserId) {
   const caseRow = await findCaseByIdForAuthor(caseId, authorUserId);
   if (!caseRow) {
@@ -37,21 +57,34 @@ async function assertAuthorAccess(caseId, authorUserId) {
   }
 }
 
+function parseSolveRolePayload(payload) {
+  const normalizedRole = normalizeCasePersonRole(payload?.apparentRole ?? payload?.role);
+  if (!normalizedRole) {
+    throw new HttpError(400, "Uloga osobe nije podrzana.", {
+      apparentRole: "Dozvoljene vrednosti su unknown, suspect, victim i witness.",
+    });
+  }
+
+  return normalizedRole;
+}
+
 export async function getCreatorCasePeople(caseIdInput, authorUserId, scopeInput = CASE_READ_SCOPES.CREATE) {
   const caseId = parseCaseId(caseIdInput);
   const readScope = normalizeCaseReadScope(scopeInput);
 
   if (readScope === CASE_READ_SCOPES.SOLVE) {
-    const [people, visibility] = await Promise.all([
-      getCasePeopleByCaseId(caseId),
-      getSolveVisibilityForUser(caseId, authorUserId),
-    ]);
+    const visibility = await getSolveVisibilityForUser(caseId, authorUserId);
+    const solvePeopleState = await getSolvePeopleRoleState(
+      caseId,
+      authorUserId,
+      visibility.unlockedPersonIds
+    );
 
-    const visiblePeople = filterPeopleByUnlockedIds(people, visibility.unlockedPersonIds);
     return {
       caseId,
-      total: visiblePeople.length,
-      people: visiblePeople,
+      total: solvePeopleState.solvePeople.length,
+      people: solvePeopleState.solvePeople,
+      roleProgress: solvePeopleState.roleProgress,
     };
   }
 
@@ -80,5 +113,34 @@ export async function createCreatorCasePerson(caseIdInput, payload, authorUserId
   return {
     caseId,
     person: createdPerson,
+  };
+}
+
+export async function updateSolveCasePersonRole(caseIdInput, personIdInput, payload, requesterUserId) {
+  const caseId = parseCaseId(caseIdInput);
+  const personId = parsePersonId(personIdInput);
+  const selectedRole = parseSolveRolePayload(payload);
+
+  const visibility = await getSolveVisibilityForUser(caseId, requesterUserId);
+  const solvePeopleState = await getSolvePeopleRoleState(caseId, requesterUserId, visibility.unlockedPersonIds);
+
+  const personExistsInSolveScope = solvePeopleState.visiblePeople.some((person) => person.id === personId);
+  if (!personExistsInSolveScope) {
+    throw new HttpError(404, "Osoba nije pronadjena ili jos nije otkljucana za resavanje.");
+  }
+
+  await upsertCasePersonRoleSelection(caseId, personId, requesterUserId, selectedRole);
+
+  const nextSelectedRolesByPersonId = new Map(solvePeopleState.selectedRolesByPersonId);
+  nextSelectedRolesByPersonId.set(personId, selectedRole);
+
+  return {
+    caseId,
+    personId,
+    apparentRole: selectedRole,
+    roleProgress: buildCaseSolveRoleProgress(
+      solvePeopleState.visiblePeople,
+      nextSelectedRolesByPersonId
+    ),
   };
 }

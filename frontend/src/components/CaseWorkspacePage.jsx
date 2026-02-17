@@ -5,30 +5,21 @@ import CasePeopleTab from "./CasePeopleTab";
 import CasePoliceDocumentsTab from "./CasePoliceDocumentsTab";
 import CaseStatementsTab from "./CaseStatementsTab";
 import CaseInterrogationsTab from "./CaseInterrogationsTab";
+import CaseQuizTab from "./CaseQuizTab";
+import {
+  resolveModeDescription,
+  resolveModeTexts,
+  resolveSolveActionState,
+} from "./caseWorkspaceModeHelpers";
 import { CASE_WORKSPACE_TABS, findCaseWorkspaceTab } from "./caseWorkspaceTabs";
-import { fetchCreatorCase } from "../services/casesApi";
-import { AUTH_ROUTES, CASE_WORKSPACE_MODES } from "../utils/routes";
-
-function resolveModeTexts(mode) {
-  if (mode === CASE_WORKSPACE_MODES.SOLVE) {
-    return {
-      label: "Rezim resavanja",
-      description:
-        "Otvori tragove, dokumente i izjave kroz iste tabove kao u kreiranju, ali u modu resavanja.",
-      placeholder:
-        "Ovo je prazna stranica za ovaj tab u rezimu resavanja. Sadrzaj ce biti dodat u narednim fazama.",
-    };
-  }
-  return {
-    label: "Creatorski mod",
-    description:
-      "U istom setu tabova pripremas strukturu slucaja, dokumente, izjave, saslusanja i kviz.",
-    placeholder:
-      "Ovo je prazna stranica za ovaj tab u rezimu kreiranja. Konkretni editori ce biti dodati u narednim fazama.",
-  };
-}
+import { fetchCaseOverview } from "../services/casesApi";
+import {
+  AUTH_ROUTES,
+  CASE_WORKSPACE_MODES,
+  buildCaseWorkspaceRoute,
+} from "../utils/routes";
 function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
-  const [caseData, setCaseData] = useState(null);
+  const [caseOverview, setCaseOverview] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [publishStatusMessage, setPublishStatusMessage] = useState("");
@@ -39,52 +30,24 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   const isPoliceDocumentsTab = activeTab.slug === "dokumenti";
   const isStatementsTab = activeTab.slug === "izjave";
   const isInterrogationsTab = activeTab.slug === "saslusanja";
-  const modeDescription = useMemo(() => {
-    if (isTimelineTab) {
-      return mode === CASE_WORKSPACE_MODES.SOLVE
-        ? "Postepeno otkljucavanje redosleda osoba i dokumenata kroz akciju 'Dalje', uz prikaz trenutnog datuma istrage."
-        : "Operativni panel za definisanje redosleda, napomena i vremena otkljucavanja osoba i dokumenata.";
-    }
-    if (!isPeopleTab) {
-      if (isPoliceDocumentsTab) {
-        if (mode === CASE_WORKSPACE_MODES.SOLVE) {
-          return "Pregled policijskih izvjestaja i forenzickih nalaza u read-only rezimu sa formalnim prikazom dokumenta.";
-        }
-        return "Operativni panel za kreiranje policijskih izvjestaja i forenzickih nalaza kroz formalni modalni workflow.";
-      }
-      if (isStatementsTab) {
-        if (mode === CASE_WORKSPACE_MODES.SOLVE) {
-          return "Pregled svih izjava u slucaju, povezivanje sa osobama i formalni read-only prikaz u policijskom formatu.";
-        }
-        return "Operativni panel za unos i pregled izjava svjedoka, osumnjicenih i zrtava kroz strukturisane dokumente.";
-      }
-      if (isInterrogationsTab) {
-        if (mode === CASE_WORKSPACE_MODES.SOLVE) {
-          return "Pregled i pokretanje saslusanja po osobi kroz chat prikaz sa unapred definisanim granama pitanja.";
-        }
-        return "Operativni panel za kreiranje stabla pitanja i odgovora po osobi i testiranje toka saslusanja kroz chat modal.";
-      }
-      return modeTexts.description;
-    }
-    if (mode === CASE_WORKSPACE_MODES.SOLVE) {
-      return "Pregled formalnih dosijea lica u read-only rezimu, sa fokusom na evidenciju i detalje profila.";
-    }
-    return "Operativni panel za kreiranje, uredjivanje i pregled dosijea osoba kroz strukturisan modalni workflow.";
-  }, [isTimelineTab, isPeopleTab, isPoliceDocumentsTab, isStatementsTab, isInterrogationsTab, mode, modeTexts.description]);
+  const isQuizTab = activeTab.slug === "kviz";
+  const caseData = caseOverview?.case || null;
+  const caseProgress = caseOverview?.progress || null;
+  const roleProgress = caseOverview?.roleProgress || null;
+  const quizInfo = caseOverview?.quiz || null;
+  const quizTotalQuestions = Number(quizInfo?.totalQuestions) || 0;
+  const { showSolveAction, solveActionLabel, solveActionDisabled, solveStatusMessage } = useMemo(
+    () => resolveSolveActionState(mode, caseProgress, quizTotalQuestions, roleProgress),
+    [mode, caseProgress, quizTotalQuestions, roleProgress]
+  );
+  const modeDescription = useMemo(
+    () => resolveModeDescription(activeTab.slug, mode, modeTexts.description),
+    [activeTab.slug, mode, modeTexts.description]
+  );
   const loadCaseData = useCallback(async () => {
-    if (mode === CASE_WORKSPACE_MODES.SOLVE) {
-      setCaseData({
-        id: caseId,
-        title: `Slucaj #${caseId}`,
-        description: "Pocetna verzija prikaza za rezim resavanja slucaja.",
-      });
-      setErrorMessage("");
-      setIsLoading(false);
-      return;
-    }
     setIsLoading(true);
     setErrorMessage("");
-    const result = await fetchCreatorCase(caseId);
+    const result = await fetchCaseOverview(caseId, mode === CASE_WORKSPACE_MODES.SOLVE ? "solve" : "create");
     if (!result.ok) {
       if (result.unauthorized) {
         onLogout();
@@ -94,12 +57,12 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
       setIsLoading(false);
       return;
     }
-    if (!result.data || !result.data.id) {
+    if (!result.data || !result.data.case?.id) {
       setErrorMessage("Slucaj nije pronadjen ili vise nije dostupan.");
       setIsLoading(false);
       return;
     }
-    setCaseData(result.data);
+    setCaseOverview(result.data);
     setIsLoading(false);
   }, [caseId, mode, onLogout]);
   useEffect(() => {
@@ -111,12 +74,32 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   function handlePublishClick() {
     setPublishStatusMessage("Objava slucaja je trenutno dostupna kao dugme u meniju. Potvrda objave i backend logika bice dodati u sledecoj fazi.");
   }
+  function handleOpenSolveQuiz() {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.location.href = buildCaseWorkspaceRoute(caseId, CASE_WORKSPACE_MODES.SOLVE, "kviz");
+  }
+  function handleCaseResolved() {
+    void loadCaseData();
+  }
+  function handleSolveRolesUpdated() {
+    void loadCaseData();
+  }
   function renderTabContent() {
     if (activeTab.slug === "vremenska-linija") {
       return <CaseTimelineTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
     }
     if (activeTab.slug === "osobe-i-dosijei") {
-      return <CasePeopleTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
+      return (
+        <CasePeopleTab
+          caseId={caseId}
+          mode={mode}
+          onUnauthorized={onLogout}
+          onSolveRolesUpdated={handleSolveRolesUpdated}
+        />
+      );
     }
     if (activeTab.slug === "dokumenti") {
       return <CasePoliceDocumentsTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
@@ -127,6 +110,16 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
     if (activeTab.slug === "saslusanja") {
       return <CaseInterrogationsTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
     }
+    if (activeTab.slug === "kviz") {
+      return (
+        <CaseQuizTab
+          caseId={caseId}
+          mode={mode}
+          onUnauthorized={onLogout}
+          onResolved={handleCaseResolved}
+        />
+      );
+    }
     return (
       <section className="card reveal delay-3">
         <h3>Prazna stranica (placeholder)</h3>
@@ -136,7 +129,13 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   }
   const showPublishButton = mode === CASE_WORKSPACE_MODES.CREATE;
   const publishDisabled = !showPublishButton || !caseData || isLoading || Boolean(errorMessage);
-  const showTabSummaryCard = !isTimelineTab && !isPeopleTab && !isPoliceDocumentsTab && !isStatementsTab && !isInterrogationsTab;
+  const showTabSummaryCard =
+    !isTimelineTab &&
+    !isPeopleTab &&
+    !isPoliceDocumentsTab &&
+    !isStatementsTab &&
+    !isInterrogationsTab &&
+    !isQuizTab;
   return (
     <div className="app-shell app-shell-create-case">
       <CreateCaseSidebar
@@ -148,6 +147,11 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
         onPublish={handlePublishClick}
         publishDisabled={publishDisabled}
         publishStatusMessage={showPublishButton ? publishStatusMessage : ""}
+        onOpenSolveQuiz={handleOpenSolveQuiz}
+        showSolveAction={showSolveAction}
+        solveActionDisabled={solveActionDisabled}
+        solveStatusMessage={solveStatusMessage}
+        solveActionLabel={solveActionLabel}
       />
       <main className="content create-case-content">
         {isLoading ? (

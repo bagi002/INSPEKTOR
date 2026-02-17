@@ -1,9 +1,11 @@
+import { useEffect, useMemo, useState } from "react";
 import { CASE_WORKSPACE_TABS } from "./caseWorkspaceTabs";
 import {
   AUTH_ROUTES,
   CASE_WORKSPACE_MODES,
   buildCaseWorkspaceRoute,
 } from "../utils/routes";
+import { resetCaseProgressToSolve } from "../services/caseProgressApi";
 
 function CreateCaseSidebar({
   user,
@@ -14,13 +16,27 @@ function CreateCaseSidebar({
   onPublish = null,
   publishDisabled = true,
   publishStatusMessage = "",
+  onOpenSolveQuiz = null,
+  showSolveAction = false,
+  solveActionDisabled = true,
+  solveStatusMessage = "",
+  solveActionLabel = "Rijesi slucaj",
 }) {
+  const [isResettingCaseProgress, setIsResettingCaseProgress] = useState(false);
+  const [resetProgressStatusMessage, setResetProgressStatusMessage] = useState("");
   const isCreateMode = mode === CASE_WORKSPACE_MODES.CREATE;
   const modeLabel = isCreateMode ? "Kreiranje slucaja" : "Resavanje slucaja";
   const sidebarLabel = isCreateMode
     ? "Meni za kreiranje slucaja"
     : "Meni za resavanje slucaja";
   const exitLabel = isCreateMode ? "Izlaz iz kreiranja" : "Izlaz iz resavanja";
+  const visibleTabs = useMemo(
+    () =>
+      CASE_WORKSPACE_TABS.filter(
+        (tab) => isCreateMode || tab.slug !== "kviz" || showSolveAction
+      ),
+    [isCreateMode, showSolveAction]
+  );
 
   function resolveTabHref(tabSlug) {
     if (!caseId) {
@@ -28,6 +44,41 @@ function CreateCaseSidebar({
     }
 
     return buildCaseWorkspaceRoute(caseId, mode, tabSlug);
+  }
+
+  useEffect(() => {
+    setResetProgressStatusMessage("");
+  }, [caseId, mode]);
+
+  async function handleResetToSolveClick() {
+    if (!isCreateMode || !caseId || isResettingCaseProgress) {
+      return;
+    }
+
+    setIsResettingCaseProgress(true);
+    setResetProgressStatusMessage("");
+    const result = await resetCaseProgressToSolve(caseId);
+
+    if (!result.ok) {
+      if (result.unauthorized) {
+        setIsResettingCaseProgress(false);
+        if (typeof onLogout === "function") {
+          onLogout();
+        }
+        return;
+      }
+
+      setResetProgressStatusMessage(
+        result.message || "Vracanje slucaja u rezim resavanja nije uspelo."
+      );
+      setIsResettingCaseProgress(false);
+      return;
+    }
+
+    setResetProgressStatusMessage(
+      result.message || "Status slucaja je vracen na rezim resavanja."
+    );
+    setIsResettingCaseProgress(false);
   }
 
   return (
@@ -46,7 +97,7 @@ function CreateCaseSidebar({
 
       <nav aria-label={sidebarLabel}>
         <ul className="menu-list">
-          {CASE_WORKSPACE_TABS.map((tab) => {
+          {visibleTabs.map((tab) => {
             const isActive = tab.slug === activeTabSlug;
             const isDisabled = !caseId;
             const className = [
@@ -80,6 +131,35 @@ function CreateCaseSidebar({
           </button>
           {publishStatusMessage ? (
             <p className="create-case-publish-status">{publishStatusMessage}</p>
+          ) : null}
+          <button
+            type="button"
+            className="btn btn-secondary create-case-publish-btn"
+            onClick={handleResetToSolveClick}
+            disabled={!caseId || isResettingCaseProgress}
+          >
+            {isResettingCaseProgress
+              ? "Vracam status..."
+              : "Vrati slucaj u resavanje"}
+          </button>
+          {resetProgressStatusMessage ? (
+            <p className="create-case-publish-status">{resetProgressStatusMessage}</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {!isCreateMode && showSolveAction ? (
+        <div className="create-case-publish-panel">
+          <button
+            type="button"
+            className="btn btn-primary create-case-publish-btn"
+            onClick={onOpenSolveQuiz || (() => null)}
+            disabled={solveActionDisabled}
+          >
+            {solveActionLabel}
+          </button>
+          {solveStatusMessage ? (
+            <p className="create-case-publish-status">{solveStatusMessage}</p>
           ) : null}
         </div>
       ) : null}

@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Kreiranje i pregled slucaja + korisnicka podrska + admin panel
+title Runtime Diagram - Kreiranje, zavrsni kviz i resavanje slucaja + korisnicka podrska + admin panel
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -15,12 +15,14 @@ participant "CasePeopleTab" as PeopleTab
 participant "CaseStatementsTab" as StatementsTab
 participant "CasePoliceDocumentsTab" as DocsTab
 participant "CaseInterrogationsTab" as InterrogationsTab
+participant "CaseQuizTab" as QuizTab
 participant "SupportPage" as SupportPage
 participant "Cases API Client" as CasesClient
 participant "Case Timeline API Client" as TimelineClient
 participant "Case People API Client" as PeopleClient
 participant "Case Documents API Client" as DocumentsClient
 participant "Case Interrogations API Client" as InterrogationsClient
+participant "Case Quiz API Client" as QuizClient
 participant "Support API Client" as SupportClient
 participant "Auth API Client" as AuthClient
 participant "Express Auth API" as AuthApi
@@ -34,14 +36,17 @@ participant "Case Timeline Service" as TimelineService
 participant "Case People Service" as PeopleService
 participant "Case Documents Service" as DocumentsService
 participant "Case Interrogations Service" as InterrogationsService
+participant "Case Quiz Service" as QuizService
 participant "Support Service" as SupportService
 participant "Admin Service" as AdminService
 participant "Case Solve Visibility Service" as SolveVisibility
+participant "Case Solve Roles Service" as SolveRoles
 participant "Cases Repository" as CasesRepo
 participant "Case Timeline Repository" as TimelineRepo
 participant "Case People Repository" as PeopleRepo
 participant "Case Documents Repository" as DocumentsRepo
 participant "Case Interrogations Repository" as InterrogationsRepo
+participant "Case Quiz Repository" as QuizRepo
 participant "Support Repository" as SupportRepo
 participant "Admin Repository" as AdminRepo
 actor "Administrator" as Admin
@@ -50,9 +55,10 @@ participant "Admin Dashboard" as AdminDashboard
 participant "Admin API Client" as AdminClient
 database "SQLite users" as UsersStore
 database "SQLite cases/timeline/progress" as CasesStore
-database "SQLite people + dossiers" as PeopleStore
+database "SQLite people + dossiers + role assignments" as PeopleStore
 database "SQLite case_documents(metadata_json)" as DocumentsStore
 database "SQLite case_interrogations + nodes" as InterrogationsStore
+database "SQLite case_quiz_questions/options/results" as QuizStore
 database "SQLite support_tickets" as SupportStore
 database "LocalStorage (session)" as SessionStore
 database "LocalStorage (admin session)" as AdminSessionStore
@@ -105,17 +111,34 @@ alt Desktop sirina
   CreateCaseStart -> Router: /slucaj/{caseId}/kreiranje/vremenska-linija
   Router -> Guard: Provera sesije
   Guard -> Workspace: Ucitavanje case workspace-a
-  Workspace -> CasesClient: GET /api/cases/{caseId}/creator
+  Workspace -> CasesClient: GET /api/cases/{caseId}/overview?scope=create
   CasesClient -> CasesApi: HTTP zahtev
   CasesApi -> JwtGuard: Verifikacija tokena
-  JwtGuard -> CasesService: getCreatorCase(caseId, userId)
+  JwtGuard -> CasesService: getCaseWorkspaceOverview(caseId, userId, "create")
   CasesService -> CasesRepo: findCaseByIdForAuthor(caseId, userId)
+  CasesService -> QuizRepo: getCaseQuizQuestionCount(caseId)
   CasesRepo -> CasesStore: SELECT slucaj po id + author
+  QuizRepo -> QuizStore: SELECT broj kviz pitanja
   CasesStore --> CasesRepo: case row
+  QuizStore --> QuizRepo: broj pitanja
   CasesRepo --> CasesService: case row
   CasesService --> CasesApi: response payload
   CasesApi --> CasesClient: JSON uspeh
-  CasesClient --> Workspace: Osnovni podaci slucaja
+  CasesClient --> Workspace: Osnovni podaci slucaja + kviz statistika
+
+  User -> WorkspaceSidebar: Klik "Vrati slucaj u resavanje"
+  WorkspaceSidebar -> ProgressClient: POST /api/cases/{caseId}/progress/reset-to-solve
+  ProgressClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> ProgressService: resetCreatorCaseProgressToSolve(caseId, authorUserId)
+  ProgressService -> CasesRepo: findCaseByIdForAuthor(caseId, authorUserId)
+  ProgressService -> ProgressRepo: resetCaseUserProgressToSolve(caseId, authorUserId)
+  ProgressRepo -> CasesStore: UPDATE case_user_progress (progress_status=in_progress, resolved_at=NULL)
+  CasesStore --> ProgressRepo: potvrda reseta statusa
+  ProgressRepo --> ProgressService: azuriran progress autora
+  ProgressService --> CasesApi: response payload
+  CasesApi --> ProgressClient: JSON uspeh
+  ProgressClient --> WorkspaceSidebar: Status poruka o vracanju u rezim resavanja
 
   User -> WorkspaceSidebar: Klik tab "Vremenska linija"
   WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/vremenska-linija
@@ -330,10 +353,61 @@ alt Desktop sirina
   User -> InterrogationsTab: Dolazi do kraja grane i bira "Zakljuci saslusanje"
   InterrogationsTab --> User: Chat oznacava razgovor kao zakljucen
 
+  User -> WorkspaceSidebar: Klik tab "Kviz" (kreiranje)
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/kviz
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Creatorski prikaz zavrsnog kviza
+  Workspace -> QuizTab: Prosledjuje caseId i mode
+  QuizTab -> QuizClient: GET /api/cases/{caseId}/quiz?scope=create
+  QuizClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> QuizService: getCaseQuiz(caseId, userId, "create")
+  QuizService -> CasesRepo: findCaseByIdForAuthor(caseId, userId)
+  QuizService -> QuizRepo: getCaseQuizQuestionsByCaseId(caseId, includeCorrect=true)
+  QuizRepo -> QuizStore: SELECT pitanja i odgovori
+  QuizStore --> QuizRepo: quiz pitanja
+  QuizRepo --> QuizService: mapiran quiz payload
+  QuizService --> CasesApi: response payload
+  CasesApi --> QuizClient: JSON uspeh
+  QuizClient --> QuizTab: Prikaz/edit pitanja, odgovora i objasnjenja
+
+  User -> QuizTab: Dodaje pitanja i cuva zavrsni kviz
+  QuizTab -> QuizClient: PUT /api/cases/{caseId}/quiz
+  QuizClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> QuizService: upsertCreatorCaseQuiz(caseId, payload, userId)
+  QuizService -> QuizRepo: replaceCaseQuizQuestions(caseId, questions)
+  QuizRepo -> QuizStore: DELETE stari + INSERT nova pitanja/odgovore
+  QuizStore --> QuizRepo: potvrda upisa
+  QuizRepo --> QuizService: osvezen kviz
+  QuizService --> CasesApi: 200 response
+  CasesApi --> QuizClient: JSON uspeh
+  QuizClient --> QuizTab: Potvrda cuvanja kviza
+
   User -> LoggedHome: Klik "Nastavi resavanje"
   LoggedHome -> Router: /slucaj/{caseId}/resavanje/vremenska-linija
   Router -> Guard: Provera sesije
   Guard -> Workspace: Solve mode (postepeno otkljucavanje)
+  Workspace -> CasesClient: GET /api/cases/{caseId}/overview?scope=solve
+  CasesClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> CasesService: getCaseWorkspaceOverview(caseId, userId, "solve")
+  CasesService -> CasesRepo: findCaseById(caseId) + provera pristupa
+  CasesService -> SolveVisibility: getSolveVisibilityForUser(caseId, userId)
+  CasesService -> SolveRoles: getSolvePeopleRoleState(caseId, userId, unlockedPersonIds)
+  CasesService -> QuizRepo: getCaseQuizQuestionCount(caseId)
+  SolveVisibility -> TimelineRepo: SELECT case_timeline_items
+  SolveVisibility -> CasesStore: SELECT/ensure case_user_progress
+  SolveRoles -> PeopleRepo: SELECT case_people + role assignments
+  QuizRepo -> QuizStore: SELECT broj kviz pitanja
+  CasesStore --> SolveVisibility: case_user_progress red
+  TimelineRepo --> SolveVisibility: timeline stavke
+  PeopleRepo --> SolveRoles: mapirane uloge korisnika
+  QuizStore --> QuizRepo: broj pitanja
+  CasesService --> CasesApi: response payload
+  CasesApi --> CasesClient: JSON uspeh
+  CasesClient --> Workspace: Opis slucaja + napredak + kviz spremnost + role readiness
+  Workspace --> WorkspaceSidebar: Tab "Kviz" je sakriven dok role readiness nije ispunjen
   Workspace -> TimelineTab: Prikaz sa akcijom "Dalje"
   TimelineTab -> TimelineClient: GET /api/cases/{caseId}/timeline
   TimelineClient --> TimelineTab: Trenutno otkljucane stavke + procenat istrage
@@ -357,11 +431,27 @@ alt Desktop sirina
   CasesApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> PeopleService: getCreatorCasePeople(caseId, userId, "solve")
   PeopleService -> SolveVisibility: getSolveVisibilityForUser(caseId, userId)
+  PeopleService -> SolveRoles: getSolvePeopleRoleState(caseId, userId, unlockedPeople)
+  SolveRoles -> PeopleRepo: getCasePersonRoleSelectionsByPersonIds(caseId, userId, unlockedPeople)
+  PeopleRepo -> PeopleStore: SELECT case_person_role_assignments
+  PeopleStore --> PeopleRepo: izabrane uloge po osobi
   SolveVisibility -> TimelineRepo: SELECT case_timeline_items ORDER BY unlock_order
   SolveVisibility -> CasesStore: SELECT/ensure case_user_progress za korisnika
-  PeopleService --> CasesApi: filtrirane osobe (samo timeline-otkljucane)
+  PeopleService --> CasesApi: filtrirane osobe sa korisnickim ulogama (inicijalno unknown)
   CasesApi --> PeopleClient: JSON uspeh
   PeopleClient --> PeopleTab: Prikaz samo otkljucanih osoba
+
+  User -> PeopleTab: Menja procenjenu ulogu osobe
+  PeopleTab -> PeopleClient: PUT /api/cases/{caseId}/people/{personId}/role
+  PeopleClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> PeopleService: updateSolveCasePersonRole(caseId, personId, role, userId)
+  PeopleService -> PeopleRepo: upsertCasePersonRoleSelection(caseId, personId, userId, role)
+  PeopleRepo -> PeopleStore: UPSERT case_person_role_assignments
+  PeopleStore --> PeopleRepo: potvrda cuvanja
+  PeopleService --> CasesApi: roleProgress (allRolesResolved)
+  CasesApi --> PeopleClient: JSON uspeh
+  PeopleClient --> Workspace: Osvezen role readiness za prikaz opcije "Rijesi slucaj"
 
   User -> WorkspaceSidebar: Klik tab "Izjave" ili "Dokumenti" (solve)
   WorkspaceSidebar -> Router: /slucaj/{caseId}/resavanje/(izjave|dokumenti)
@@ -392,6 +482,47 @@ alt Desktop sirina
   InterrogationsService --> CasesApi: filtrirana saslusanja + filtrirane osobe
   CasesApi --> InterrogationsClient: JSON uspeh
   InterrogationsClient --> InterrogationsTab: Samo saslusanja otkljucanih osoba
+
+  User -> WorkspaceSidebar: Klik "Rijesi slucaj"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/resavanje/kviz
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Solve tab zavrsnog kviza
+  Workspace -> QuizTab: Prosledjuje caseId i mode
+  QuizTab -> QuizClient: GET /api/cases/{caseId}/quiz?scope=solve
+  QuizClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> QuizService: getCaseQuiz(caseId, userId, "solve")
+  QuizService -> CasesRepo: findCaseById(caseId) + provera pristupa
+  QuizService -> SolveVisibility: getSolveVisibilityForUser(caseId, userId)
+  QuizService -> SolveRoles: getSolvePeopleRoleState(caseId, userId, unlockedPersonIds)
+  QuizService -> QuizRepo: getCaseQuizQuestionsByCaseId(caseId, includeCorrect=true)
+  QuizService -> QuizRepo: getCaseQuizUserResult(caseId, userId)
+  QuizRepo -> QuizStore: SELECT pitanja + poslednji rezultat korisnika
+  QuizStore --> QuizRepo: quiz podaci + rezultat
+  QuizService --> CasesApi: response payload + blockers (timeline/role readiness)
+  CasesApi --> QuizClient: JSON uspeh
+  QuizClient --> QuizTab: Prikaz opisa slucaja i pitanja kviza
+
+  User -> QuizTab: Predaje odgovore zavrsnog kviza
+  QuizTab -> QuizClient: POST /api/cases/{caseId}/quiz/submit
+  QuizClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> QuizService: submitCaseQuiz(caseId, answers, userId)
+  QuizService -> QuizRepo: upsertCaseQuizUserResult(caseId, userId, score)
+  QuizRepo -> QuizStore: UPSERT case_quiz_user_results
+  QuizStore --> QuizRepo: cuvan rezultat pokusaja
+
+  alt Rezultat > 80% tacnih
+    QuizService -> CasesStore: UPDATE case_user_progress(status=resolved, resolved_at, progress=100)
+    QuizService --> CasesApi: response payload sa review podacima
+    CasesApi --> QuizClient: JSON uspeh (slucaj rijesen)
+    QuizClient --> QuizTab: Prikaz tacnih odgovora + objasnjenja + vrijeme rjesavanja
+    QuizTab --> LoggedHome: Slucaj prelazi u listu "Reseni slucajevi"
+  else Rezultat <= 80% tacnih
+    QuizService --> CasesApi: response payload bez tacnih odgovora
+    CasesApi --> QuizClient: JSON odgovor (slucaj ostaje in_progress)
+    QuizClient --> QuizTab: Poruka o nedovoljnom rezultatu i nastavku istrage
+  end
 
   User -> LoggedHome: Klik "Podrska"
   LoggedHome -> Router: /podrska

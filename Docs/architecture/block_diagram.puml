@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Case workspace + korisnicka podrska + admin panel
+title Block Diagram - Case workspace + zavrsni kviz + korisnicka podrska + admin panel
 
 package "Frontend" {
   [App Shell]
@@ -14,12 +14,14 @@ package "Frontend" {
   [Create Case Start Page]
   [Case Workspace Page]
   [Shared Case Sidebar]
+  [Sidebar Solve Readiness Gate]
   [Case Workspace Tabs]
   [Case Timeline Tab]
   [Case People Tab]
   [Case Statements Tab]
   [Case Police Documents Tab]
   [Case Interrogations Tab]
+  [Case Quiz Tab]
   [Timeline Roadmap View]
   [Timeline Form Panel]
   [Timeline Advance Action]
@@ -43,14 +45,18 @@ package "Frontend" {
   [Timeline Helper Utils]
   [Case Timeline State Hook]
   [Case People State Hook]
+  [Case People Solve Role Hook]
   [Case People Linked Documents Hook]
   [Case Documents State Hook]
   [Case Interrogations State Hook]
   [Case Interrogation Create Hook]
+  [Case Quiz State Hook]
   [Case Timeline API Client]
   [Case People API Client]
   [Case Documents API Client]
   [Case Interrogations API Client]
+  [Case Quiz API Client]
+  [Case Progress API Client]
   [Support API Client]
   [Cases API Client]
   [Auth API Client]
@@ -86,7 +92,10 @@ package "Backend (Node.js + Express)" {
   [Case People Service]
   [Case Documents Service]
   [Case Interrogations Service]
+  [Case Quiz Service]
+  [Case Progress Service]
   [Case Solve Visibility Service]
+  [Case Solve Roles Service]
   [Support Validation]
   [Admin Validation]
   [Cases Validation]
@@ -94,6 +103,7 @@ package "Backend (Node.js + Express)" {
   [Case People Validation]
   [Case Documents Validation]
   [Case Interrogations Validation]
+  [Case Quiz Validation]
   [Type-Specific Document Validation]
   [JWT Token Service]
   [User Repository]
@@ -101,8 +111,10 @@ package "Backend (Node.js + Express)" {
   [Case Timeline Repository]
   [Case Progress Repository]
   [Case People Repository]
+  [Case People Roles Repository]
   [Case Documents Repository]
   [Case Interrogations Repository]
+  [Case Quiz Repository]
   [Support Repository]
   [Admin Repository]
   [Admin Bootstrap]
@@ -113,9 +125,10 @@ package "Backend (Node.js + Express)" {
 
 database "SQLite Database" as Db
 database "cases + case_documents + timeline" as CasesDb
-database "case_people + dossier profiles" as PeopleDb
+database "case_people + dossier profiles + role assignments" as PeopleDb
 database "metadata_json u case_documents" as MetadataDb
 database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
+database "case_quiz_*" as QuizDb
 database "support_tickets" as SupportDb
 
 [App Shell] --> [Desktop Policy Gate]
@@ -139,6 +152,8 @@ database "support_tickets" as SupportDb
 [Create Case Start Page] --> [Cases API Client]
 
 [Case Workspace Page] --> [Shared Case Sidebar]
+[Case Workspace Page] --> [Sidebar Solve Readiness Gate]
+[Sidebar Solve Readiness Gate] --> [Shared Case Sidebar]
 [Case Workspace Page] --> [Case Workspace Tabs]
 [Case Workspace Page] --> [Cases API Client]
 [Case Workspace Page] --> [Case Timeline Tab]
@@ -146,6 +161,7 @@ database "support_tickets" as SupportDb
 [Case Workspace Page] --> [Case Statements Tab]
 [Case Workspace Page] --> [Case Police Documents Tab]
 [Case Workspace Page] --> [Case Interrogations Tab]
+[Case Workspace Page] --> [Case Quiz Tab]
 
 [Case Timeline Tab] --> [Timeline Roadmap View]
 [Case Timeline Tab] --> [Timeline Form Panel]
@@ -161,8 +177,10 @@ database "support_tickets" as SupportDb
 [Case People Tab] --> [Dossier Modal View]
 [Create Person Modal] --> [Photo Upload Handler]
 [Case People Tab] --> [Case People State Hook]
+[Case People Tab] --> [Case People Solve Role Hook]
 [Case People Tab] --> [Case People Linked Documents Hook]
 [Case People Tab] --> [Case People API Client]
+[Case People Solve Role Hook] --> [Case People API Client]
 [Case People Linked Documents Hook] --> [Case Documents API Client]
 [Dossier Modal View] --> [Case Workspace Cross-Link Helper]
 
@@ -198,6 +216,10 @@ database "support_tickets" as SupportDb
 [Interrogation Chat Modal] --> [Interrogation Tree Helper]
 [Case Interrogations Tab] --> [Case Interrogations API Client]
 [Create Interrogation Modal] --> [Case Workspace Cross-Link Helper]
+[Case Quiz Tab] --> [Case Quiz State Hook]
+[Case Quiz Tab] --> [Case Quiz API Client]
+[Case Quiz State Hook] --> [Case Quiz API Client]
+[Shared Case Sidebar] --> [Case Progress API Client]
 
 [Shared Case Sidebar] --> [Case Workspace Tabs]
 [Shared Case Sidebar] --> [Route Utils]
@@ -208,6 +230,8 @@ database "support_tickets" as SupportDb
 [Case People API Client] --> [Session Storage]
 [Case Documents API Client] --> [Session Storage]
 [Case Interrogations API Client] --> [Session Storage]
+[Case Quiz API Client] --> [Session Storage]
+[Case Progress API Client] --> [Session Storage]
 [Support API Client] --> [Session Storage]
 [Logout Action] --> [Session Storage]
 [Logged Sidebar] --> [Logout Action]
@@ -228,6 +252,8 @@ database "support_tickets" as SupportDb
 [Case People API Client] --> [Express App]
 [Case Documents API Client] --> [Express App]
 [Case Interrogations API Client] --> [Express App]
+[Case Quiz API Client] --> [Express App]
+[Case Progress API Client] --> [Express App]
 [Support API Client] --> [Express App]
 [Admin API Client] --> [Express App]
 
@@ -244,6 +270,8 @@ database "support_tickets" as SupportDb
 [Cases Routes] --> [Case People Service]
 [Cases Routes] --> [Case Documents Service]
 [Cases Routes] --> [Case Interrogations Service]
+[Cases Routes] --> [Case Quiz Service]
+[Cases Routes] --> [Case Progress Service]
 [Support Routes] --> [Auth Guard Middleware]
 [Support Routes] --> [Support Service]
 [Admin Routes] --> [Admin Panel Auth Guard]
@@ -261,6 +289,8 @@ database "support_tickets" as SupportDb
 [Admin Service] --> [User Repository]
 [Cases Service] --> [Cases Validation]
 [Cases Service] --> [Cases Repository]
+[Cases Service] --> [Case Solve Visibility Service]
+[Cases Service] --> [Case Solve Roles Service]
 [Case Timeline Service] --> [Case Timeline Validation]
 [Case Timeline Service] --> [Cases Repository]
 [Case Timeline Service] --> [Case Timeline Repository]
@@ -268,27 +298,42 @@ database "support_tickets" as SupportDb
 [Case People Service] --> [Case People Validation]
 [Case People Service] --> [Cases Repository]
 [Case People Service] --> [Case People Repository]
+[Case People Service] --> [Case People Roles Repository]
 [Case People Service] --> [Case Solve Visibility Service]
+[Case People Service] --> [Case Solve Roles Service]
 [Case Documents Service] --> [Case Documents Validation]
 [Case Documents Validation] --> [Type-Specific Document Validation]
 [Case Documents Service] --> [Cases Repository]
 [Case Documents Service] --> [Case Documents Repository]
 [Case Documents Service] --> [Case Solve Visibility Service]
+[Case Documents Service] --> [Case Solve Roles Service]
 [Case Interrogations Service] --> [Case Interrogations Validation]
 [Case Interrogations Service] --> [Cases Repository]
 [Case Interrogations Service] --> [Case Documents Repository]
 [Case Interrogations Service] --> [Case Interrogations Repository]
 [Case Interrogations Service] --> [Case Solve Visibility Service]
+[Case Interrogations Service] --> [Case Solve Roles Service]
+[Case Quiz Service] --> [Case Quiz Validation]
+[Case Quiz Service] --> [Cases Repository]
+[Case Quiz Service] --> [Case Quiz Repository]
+[Case Quiz Service] --> [Case Progress Repository]
+[Case Quiz Service] --> [Case Solve Roles Service]
+[Case Progress Service] --> [Cases Repository]
+[Case Progress Service] --> [Case Progress Repository]
 [Case Solve Visibility Service] --> [Case Timeline Repository]
 [Case Solve Visibility Service] --> [Case Progress Repository]
+[Case Solve Roles Service] --> [Case People Repository]
+[Case Solve Roles Service] --> [Case People Roles Repository]
 
 [User Repository] --> [SQLite Module]
 [Cases Repository] --> [SQLite Module]
 [Case Timeline Repository] --> [SQLite Module]
 [Case Progress Repository] --> [SQLite Module]
 [Case People Repository] --> [SQLite Module]
+[Case People Roles Repository] --> [SQLite Module]
 [Case Documents Repository] --> [SQLite Module]
 [Case Interrogations Repository] --> [SQLite Module]
+[Case Quiz Repository] --> [SQLite Module]
 [Support Repository] --> [SQLite Module]
 [Admin Repository] --> [SQLite Module]
 [Admin Bootstrap] --> [User Repository]
@@ -298,6 +343,7 @@ database "support_tickets" as SupportDb
 [SQLite Module] --> PeopleDb
 [SQLite Module] --> MetadataDb
 [SQLite Module] --> InterrogationsDb
+[SQLite Module] --> QuizDb
 [SQLite Module] --> SupportDb
 [Migration Runner] --> Db
 [Health Route] --> [SQLite Module]

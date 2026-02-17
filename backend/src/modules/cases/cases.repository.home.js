@@ -30,11 +30,12 @@ export async function getHomeOverviewRows(userId) {
             c.id,
             c.title,
             ROUND(COALESCE(p.user_rating, c.average_rating), 1) AS rating,
-            c.rating_count AS reviews
+            c.rating_count AS reviews,
+            COALESCE(p.resolved_at, p.updated_at) AS resolved_at
           FROM case_user_progress p
           INNER JOIN cases c ON c.id = p.case_id
           WHERE p.user_id = ? AND p.progress_status = 'resolved'
-          ORDER BY p.updated_at DESC, c.id DESC
+          ORDER BY COALESCE(p.resolved_at, p.updated_at) DESC, c.id DESC
           LIMIT 6
         `,
         [userId]

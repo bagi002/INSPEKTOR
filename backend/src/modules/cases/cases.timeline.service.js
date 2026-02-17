@@ -9,6 +9,8 @@ import {
   getCaseTimelinePeopleSourcesByCaseId,
   replaceCaseTimelineItems,
 } from "./cases.repository.timeline.js";
+import { getCasePersonRoleSelectionsByPersonIds } from "./cases.repository.people.roles.js";
+import { CASE_PERSON_UNKNOWN_ROLE } from "./cases.solve.roles.shared.js";
 import { validateReplaceCaseTimelinePayload } from "./cases.timeline.validation.js";
 import {
   assertTimelineReadAccess,
@@ -20,9 +22,45 @@ import {
   throwValidationIfNeeded,
 } from "./cases.timeline.service.shared.js";
 
+function applySolveRolesToPeople(people, selectedRolesByPersonId) {
+  return people.map((person) => ({
+    ...person,
+    apparentRole: selectedRolesByPersonId.get(person.id) || CASE_PERSON_UNKNOWN_ROLE,
+  }));
+}
+
+function applySolveRolesToTimelineItems(items, selectedRolesByPersonId) {
+  return items.map((item) => {
+    if (item.itemType !== "person") {
+      return item;
+    }
+
+    return {
+      ...item,
+      sourceMeta: {
+        ...(item.sourceMeta || {}),
+        apparentRole: selectedRolesByPersonId.get(item.sourceId) || CASE_PERSON_UNKNOWN_ROLE,
+      },
+    };
+  });
+}
+
+async function resolveSolveRoleViews(caseId, requesterUserId, people, items) {
+  const selectedRolesByPersonId = await getCasePersonRoleSelectionsByPersonIds(
+    caseId,
+    requesterUserId,
+    people.map((person) => person.id)
+  );
+
+  return {
+    people: applySolveRolesToPeople(people, selectedRolesByPersonId),
+    items: applySolveRolesToTimelineItems(items, selectedRolesByPersonId),
+  };
+}
+
 export async function getCreatorCaseTimeline(caseIdInput, requesterUserId) {
   const caseId = parseCaseId(caseIdInput);
-  await assertTimelineReadAccess(caseId, requesterUserId);
+  const caseRow = await assertTimelineReadAccess(caseId, requesterUserId);
 
   const [items, people, documents, progressRow] = await Promise.all([
     getCaseTimelineItemsByCaseId(caseId),
@@ -34,6 +72,18 @@ export async function getCreatorCaseTimeline(caseIdInput, requesterUserId) {
   const userProgress = buildProgressSnapshot(progressRow, items);
   if (shouldPersistProgress(progressRow, userProgress)) {
     await upsertCaseUserProgress(caseId, requesterUserId, userProgress);
+  }
+
+  if (caseRow.authorUserId !== requesterUserId) {
+    const solveRoleViews = await resolveSolveRoleViews(caseId, requesterUserId, people, items);
+    return {
+      caseId,
+      total: solveRoleViews.items.length,
+      items: solveRoleViews.items,
+      people: solveRoleViews.people,
+      documents,
+      userProgress,
+    };
   }
 
   return {
@@ -74,22 +124,32 @@ export async function replaceCreatorCaseTimeline(caseIdInput, payload, requester
 
 export async function advanceCaseTimeline(caseIdInput, requesterUserId) {
   const caseId = parseCaseId(caseIdInput);
-  await assertTimelineReadAccess(caseId, requesterUserId);
+  const caseRow = await assertTimelineReadAccess(caseId, requesterUserId);
 
-  const [items, progressRow] = await Promise.all([
+  const [items, progressRow, people] = await Promise.all([
     getCaseTimelineItemsByCaseId(caseId),
     ensureCaseUserProgressByCaseIdAndUserId(caseId, requesterUserId),
+    getCaseTimelinePeopleSourcesByCaseId(caseId),
   ]);
 
   const currentProgress = buildProgressSnapshot(progressRow, items);
+  const isSolveUser = caseRow.authorUserId !== requesterUserId;
+
   if (!currentProgress.hasNextItem) {
+    const solveRoleViews = isSolveUser
+      ? await resolveSolveRoleViews(caseId, requesterUserId, people, items)
+      : { people, items };
+
     return {
       caseId,
-      total: items.length,
-      items,
+      total: solveRoleViews.items.length,
+      items: solveRoleViews.items,
       userProgress: currentProgress,
       hasNewUnlock: false,
-      unlockedItem: currentProgress.unlockedCount > 0 ? items[currentProgress.unlockedCount - 1] : null,
+      unlockedItem:
+        currentProgress.unlockedCount > 0
+          ? solveRoleViews.items[currentProgress.unlockedCount - 1] || null
+          : null,
     };
   }
 
@@ -97,12 +157,16 @@ export async function advanceCaseTimeline(caseIdInput, requesterUserId) {
   const nextProgress = buildProgressSnapshot(progressRow, items, nextUnlockedCount);
   await upsertCaseUserProgress(caseId, requesterUserId, nextProgress);
 
+  const solveRoleViews = isSolveUser
+    ? await resolveSolveRoleViews(caseId, requesterUserId, people, items)
+    : { people, items };
+
   return {
     caseId,
-    total: items.length,
-    items,
+    total: solveRoleViews.items.length,
+    items: solveRoleViews.items,
     userProgress: nextProgress,
     hasNewUnlock: true,
-    unlockedItem: items[nextUnlockedCount - 1] || null,
+    unlockedItem: solveRoleViews.items[nextUnlockedCount - 1] || null,
   };
 }

@@ -15,6 +15,7 @@ import {
   getSolveVisibilityForUser,
   normalizeCaseReadScope,
 } from "./cases.solve.visibility.js";
+import { getSolvePeopleRoleState } from "./cases.solve.roles.service.js";
 
 function throwValidationIfNeeded(errors, message) {
   if (Object.keys(errors).length > 0) {
@@ -77,19 +78,19 @@ export async function getCreatorCaseInterrogations(
   const readScope = normalizeCaseReadScope(scopeInput);
 
   if (readScope === CASE_READ_SCOPES.SOLVE) {
-    const [interrogations, peopleDirectory, visibility] = await Promise.all([
+    const [interrogations, visibility] = await Promise.all([
       getCaseInterrogationsByCaseId(caseId),
-      getCasePeopleDirectoryByCaseId(caseId),
       getSolveVisibilityForUser(caseId, authorUserId),
     ]);
+    const solvePeopleState = await getSolvePeopleRoleState(
+      caseId,
+      authorUserId,
+      visibility.unlockedPersonIds
+    );
 
-    const peopleMap = buildPeopleMap(peopleDirectory);
+    const peopleMap = buildPeopleMap(solvePeopleState.solvePeople);
     const normalizedInterrogations = interrogations.map((interrogation) =>
       normalizeInterrogation(interrogation, peopleMap)
-    );
-    const visiblePeople = filterPeopleByUnlockedIds(
-      peopleDirectory,
-      visibility.unlockedPersonIds
     );
     const visibleInterrogations = filterInterrogationsByUnlockedPeople(
       normalizedInterrogations,
@@ -100,7 +101,11 @@ export async function getCreatorCaseInterrogations(
       caseId,
       total: visibleInterrogations.length,
       interrogations: visibleInterrogations,
-      people: visiblePeople,
+      people: filterPeopleByUnlockedIds(
+        solvePeopleState.solvePeople,
+        visibility.unlockedPersonIds
+      ),
+      roleProgress: solvePeopleState.roleProgress,
     };
   }
 

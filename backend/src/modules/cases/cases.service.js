@@ -4,7 +4,15 @@ import {
   findCaseByIdForAuthor,
   getHomeOverviewRows,
 } from "./cases.repository.js";
+import { getCaseQuizQuestionCount } from "./cases.repository.quiz.js";
 import { validateCreateCasePayload } from "./cases.validation.js";
+import {
+  CASE_READ_SCOPES,
+  getSolveVisibilityForUser,
+  normalizeCaseReadScope,
+} from "./cases.solve.visibility.js";
+import { assertTimelineReadAccess } from "./cases.timeline.service.shared.js";
+import { getSolvePeopleRoleState } from "./cases.solve.roles.service.js";
 
 function throwValidationIfNeeded(errors) {
   if (Object.keys(errors).length > 0) {
@@ -126,4 +134,63 @@ export async function getCreatorCase(caseIdInput, userId) {
   }
 
   return caseRow;
+}
+
+function mapCaseOverview(caseRow) {
+  return {
+    id: caseRow.id,
+    title: caseRow.title,
+    description: caseRow.description,
+    publicationStatus: caseRow.publicationStatus,
+    averageRating: caseRow.averageRating,
+    ratingCount: caseRow.ratingCount,
+    author: `${caseRow.authorFirstName || ""} ${caseRow.authorLastName || ""}`.trim(),
+  };
+}
+
+export async function getCaseWorkspaceOverview(
+  caseIdInput,
+  requesterUserId,
+  scopeInput = CASE_READ_SCOPES.CREATE
+) {
+  const caseId = parseCaseId(caseIdInput);
+  const readScope = normalizeCaseReadScope(scopeInput);
+
+  if (readScope === CASE_READ_SCOPES.CREATE) {
+    const caseRow = await findCaseByIdForAuthor(caseId, requesterUserId);
+    if (!caseRow) {
+      throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+    }
+
+    const totalQuestions = await getCaseQuizQuestionCount(caseId);
+    return {
+      scope: CASE_READ_SCOPES.CREATE,
+      case: mapCaseOverview(caseRow),
+      progress: null,
+      quiz: {
+        totalQuestions,
+      },
+    };
+  }
+
+  const caseRow = await assertTimelineReadAccess(caseId, requesterUserId);
+  const [visibility, totalQuestions] = await Promise.all([
+    getSolveVisibilityForUser(caseId, requesterUserId),
+    getCaseQuizQuestionCount(caseId),
+  ]);
+  const solvePeopleState = await getSolvePeopleRoleState(
+    caseId,
+    requesterUserId,
+    visibility.unlockedPersonIds
+  );
+
+  return {
+    scope: CASE_READ_SCOPES.SOLVE,
+    case: mapCaseOverview(caseRow),
+    progress: visibility.progress,
+    roleProgress: solvePeopleState.roleProgress,
+    quiz: {
+      totalQuestions,
+    },
+  };
 }

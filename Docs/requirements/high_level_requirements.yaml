@@ -234,7 +234,7 @@
 
 - id: REQ-023
   name: Potvrda rijesenog slucaja
-  status: Draft
+  status: Finished
   description: >
     Nakon sto korisnik odredi tacne uloge za sve krivce i samo na njima stoji d a su osumljiceni
     Tada ce se u meniju pojaviti opcija rijesi slucaj
@@ -259,7 +259,7 @@
 
 - id: REQ-026
   name: Kviz za kraj slucaja i opis sluccaja
-  status: Draft
+  status: Finished
   description: >
     Opis slucajja i kviz koji ga rijesava takodje kreira kreator slucaja i treba da bude unapred pripremljen od strane kreatora slucaja
     Opis slucaja treba da sadrzi sve relevantne informacije o slucaju, kao sto su naziv, opis, ocjena, broj recenzija i autor
@@ -269,7 +269,7 @@
 
 - id: REQ-027
   name: Objavljivanje slucajja 
-  status: In Progress
+  status: In Review
   description: >
     Nakon sto kretor zavrsi uredjivanje slucajja moze da ga objavi i tek tada ce ga ostali korisnici vidjeti i rijesvati
     Takdoej kreator za vrijemme kreiranja slucajja mzoe preci u mod za pregled d avidi kkao ce izgledati u pregledu za korisnika 
