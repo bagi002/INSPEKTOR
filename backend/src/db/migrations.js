@@ -94,6 +94,7 @@ const MIGRATIONS = [
       unlock_order INTEGER NOT NULL
         CHECK (unlock_order > 0),
       unlock_note TEXT NOT NULL DEFAULT '',
+      unlock_at TEXT NOT NULL DEFAULT '',
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (case_id) REFERENCES cases(id) ON DELETE CASCADE,
       FOREIGN KEY (document_id) REFERENCES case_documents(id) ON DELETE CASCADE,
@@ -121,6 +122,9 @@ const MIGRATIONS = [
         CHECK (progress_percent >= 0 AND progress_percent <= 100),
       user_rating REAL
         CHECK (user_rating >= 0 AND user_rating <= 5),
+      unlocked_timeline_count INTEGER NOT NULL DEFAULT 0
+        CHECK (unlocked_timeline_count >= 0),
+      last_unlocked_timeline_at TEXT NOT NULL DEFAULT '',
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (case_id) REFERENCES cases(id) ON DELETE CASCADE,
@@ -161,6 +165,24 @@ async function applyColumnMigrations(database) {
     database,
     "case_interrogation_nodes",
     "question_reference_key",
+    "TEXT NOT NULL DEFAULT ''"
+  );
+  await ensureColumnExists(
+    database,
+    "case_timeline_items",
+    "unlock_at",
+    "TEXT NOT NULL DEFAULT ''"
+  );
+  await ensureColumnExists(
+    database,
+    "case_user_progress",
+    "unlocked_timeline_count",
+    "INTEGER NOT NULL DEFAULT 0"
+  );
+  await ensureColumnExists(
+    database,
+    "case_user_progress",
+    "last_unlocked_timeline_at",
     "TEXT NOT NULL DEFAULT ''"
   );
 }

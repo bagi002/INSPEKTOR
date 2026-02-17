@@ -23,13 +23,7 @@ function buildAuthorizationHeader() {
   return `Bearer ${session.token}`;
 }
 
-async function requestCaseInterrogations(
-  caseId,
-  method,
-  payload,
-  fallbackMessage,
-  endpointPath = "interrogations"
-) {
+async function requestCaseTimeline(caseId, method, payload, fallbackMessage, endpoint = "timeline") {
   const authorizationHeader = buildAuthorizationHeader();
   if (!authorizationHeader) {
     return {
@@ -41,7 +35,7 @@ async function requestCaseInterrogations(
   }
 
   try {
-    const response = await fetch(`${CASES_API_BASE}/${caseId}/${endpointPath}`, {
+    const response = await fetch(`${CASES_API_BASE}/${caseId}/${endpoint}`, {
       method,
       headers: {
         "Content-Type": "application/json",
@@ -51,6 +45,7 @@ async function requestCaseInterrogations(
     });
 
     const responsePayload = await parseResponseBody(response);
+
     if (!response.ok) {
       return {
         ok: false,
@@ -79,20 +74,25 @@ async function requestCaseInterrogations(
   }
 }
 
-function withScope(endpointPath, scope) {
-  return scope === "solve" ? `${endpointPath}?scope=solve` : endpointPath;
+export function fetchCaseTimeline(caseId) {
+  return requestCaseTimeline(caseId, "GET", null, "Ucitavanje vremenske linije nije uspelo.");
 }
 
-export function fetchCaseInterrogations(caseId, scope = "create") {
-  return requestCaseInterrogations(
+export function replaceCaseTimeline(caseId, payload) {
+  return requestCaseTimeline(
     caseId,
-    "GET",
-    null,
-    "Ucitavanje saslusanja nije uspelo.",
-    withScope("interrogations", scope)
+    "PUT",
+    payload,
+    "Cuvanje vremenske linije nije uspelo."
   );
 }
 
-export function createCaseInterrogation(caseId, payload) {
-  return requestCaseInterrogations(caseId, "POST", payload, "Cuvanje saslusanja nije uspelo.");
+export function advanceCaseTimeline(caseId) {
+  return requestCaseTimeline(
+    caseId,
+    "POST",
+    {},
+    "Otkljucavanje sledece timeline stavke nije uspelo.",
+    "timeline/advance"
+  );
 }

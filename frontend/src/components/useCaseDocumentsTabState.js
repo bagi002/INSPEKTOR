@@ -26,7 +26,7 @@ export function useCaseDocumentsTabState({ caseId, mode, category, onUnauthorize
     setIsLoading(true);
     setErrorMessage("");
 
-    const result = await api.fetchDocuments(caseId);
+    const result = await api.fetchDocuments(caseId, isCreateMode ? "create" : "solve");
     if (!result.ok) {
       if (result.unauthorized) {
         setIsLoading(false);
@@ -47,7 +47,7 @@ export function useCaseDocumentsTabState({ caseId, mode, category, onUnauthorize
       nextDocuments.some((document) => document.id === previousId) ? previousId : null
     );
     setIsLoading(false);
-  }, [api, caseId, onUnauthorized]);
+  }, [api, caseId, isCreateMode, onUnauthorized]);
 
   useEffect(() => {
     void loadDocuments();

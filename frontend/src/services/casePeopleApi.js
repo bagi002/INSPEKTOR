@@ -23,7 +23,11 @@ function buildAuthorizationHeader() {
   return `Bearer ${session.token}`;
 }
 
-export async function fetchCasePeople(caseId) {
+function buildScopeQuerySuffix(scope) {
+  return scope === "solve" ? "?scope=solve" : "";
+}
+
+export async function fetchCasePeople(caseId, scope = "create") {
   const authorizationHeader = buildAuthorizationHeader();
   if (!authorizationHeader) {
     return {
@@ -34,12 +38,15 @@ export async function fetchCasePeople(caseId) {
   }
 
   try {
-    const response = await fetch(`${CASES_API_BASE}/${caseId}/people`, {
-      method: "GET",
-      headers: {
-        Authorization: authorizationHeader,
-      },
-    });
+    const response = await fetch(
+      `${CASES_API_BASE}/${caseId}/people${buildScopeQuerySuffix(scope)}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: authorizationHeader,
+        },
+      }
+    );
     const payload = await parseResponseBody(response);
 
     if (!response.ok) {

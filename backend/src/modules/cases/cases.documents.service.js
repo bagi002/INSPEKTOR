@@ -1,10 +1,3 @@
-import { HttpError } from "../../utils/httpError.js";
-import { findCaseByIdForAuthor } from "./cases.repository.js";
-import {
-  createCaseDocumentForCase,
-  getCaseDocumentsByCaseIdAndTypes,
-  getCasePeopleDirectoryByCaseId,
-} from "./cases.repository.documents.js";
 import {
   validateCreateCasePoliceDocumentPayload,
   validateCreateCaseStatementPayload,
@@ -13,112 +6,63 @@ import {
   POLICE_DOCUMENT_TYPES,
   STATEMENT_DOCUMENT_TYPES,
 } from "./cases.documents.validation.shared.js";
+import {
+  assertAuthorAccess,
+  createDocumentForCase,
+  getDocumentsForCase,
+  parseCaseId,
+} from "./cases.documents.service.shared.js";
+import {
+  filterDocumentsByUnlockedIds,
+  filterPeopleByUnlockedIds,
+} from "./cases.solve.visibility.filters.js";
+import {
+  CASE_READ_SCOPES,
+  getSolveVisibilityForUser,
+  normalizeCaseReadScope,
+} from "./cases.solve.visibility.js";
 
-function throwValidationIfNeeded(errors, message) {
-  if (Object.keys(errors).length > 0) {
-    throw new HttpError(400, message, errors);
-  }
-}
-
-function parseCaseId(caseIdInput) {
-  const normalizedValue =
-    typeof caseIdInput === "string" ? caseIdInput.trim() : String(caseIdInput ?? "");
-
-  if (!/^\d+$/.test(normalizedValue)) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
-  }
-
-  const caseId = Number.parseInt(normalizedValue, 10);
-  if (!Number.isInteger(caseId) || caseId <= 0) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
-  }
-
-  return caseId;
-}
-
-async function assertAuthorAccess(caseId, authorUserId) {
-  const caseRow = await findCaseByIdForAuthor(caseId, authorUserId);
-  if (!caseRow) {
-    throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
-  }
-}
-
-function buildPeopleMap(peopleDirectory) {
-  return new Map(peopleDirectory.map((person) => [person.id, person]));
-}
-
-function enrichDocumentWithPeople(document, peopleMap) {
-  const relatedIds = document?.metadata?.relatedPersonIds || [];
-  const relatedPeople = relatedIds
-    .map((personId) => peopleMap.get(personId) || null)
-    .filter(Boolean);
-
-  const giverPerson = document?.metadata?.giverPersonId
-    ? peopleMap.get(document.metadata.giverPersonId) || null
-    : null;
-
-  return {
-    ...document,
-    relatedPeople,
-    giverPerson,
-  };
-}
-
-function validateReferencedPeople(metadata, peopleMap, errors, requiresGiverPerson) {
-  const relatedPersonIds = metadata?.relatedPersonIds || [];
-  const missingRelated = relatedPersonIds.filter((personId) => !peopleMap.has(personId));
-  if (missingRelated.length > 0) {
-    errors.relatedPersonIds = "Dokument referencira osobe koje ne postoje u trazenom slucaju.";
-  }
-
-  if (requiresGiverPerson && metadata?.giverPersonId && !peopleMap.has(metadata.giverPersonId)) {
-    errors.giverPersonId = "Izabrana osoba za izjavu ne postoji u trazenom slucaju.";
-  }
-}
-
-async function getDocumentsForCase(caseId, documentTypes) {
-  const [documents, peopleDirectory] = await Promise.all([
-    getCaseDocumentsByCaseIdAndTypes(caseId, documentTypes),
-    getCasePeopleDirectoryByCaseId(caseId),
+async function getSolveScopedDocuments(caseId, requesterUserId, documentTypes) {
+  const [documentsPayload, visibility] = await Promise.all([
+    getDocumentsForCase(caseId, documentTypes),
+    getSolveVisibilityForUser(caseId, requesterUserId),
   ]);
 
-  const peopleMap = buildPeopleMap(peopleDirectory);
+  const visiblePeople = filterPeopleByUnlockedIds(
+    documentsPayload.peopleDirectory,
+    visibility.unlockedPersonIds
+  );
+  const visibleDocuments = filterDocumentsByUnlockedIds(
+    documentsPayload.documents,
+    visibility.unlockedDocumentIds,
+    visibility.unlockedPersonIds
+  );
+
   return {
-    documents: documents.map((document) => enrichDocumentWithPeople(document, peopleMap)),
-    peopleDirectory,
-    peopleMap,
+    caseId,
+    total: visibleDocuments.length,
+    documents: visibleDocuments,
+    people: visiblePeople,
   };
 }
 
-async function createDocumentForCase({
-  caseId,
-  payload,
-  validatePayload,
-  validationMessage,
-  requiresGiverPerson,
-}) {
-  const { errors, sanitized } = validatePayload(payload);
-  const peopleDirectory = await getCasePeopleDirectoryByCaseId(caseId);
-  const peopleMap = buildPeopleMap(peopleDirectory);
+export async function getCreatorCaseStatements(
+  caseIdInput,
+  requesterUserId,
+  scopeInput = CASE_READ_SCOPES.CREATE
+) {
+  const caseId = parseCaseId(caseIdInput);
+  const readScope = normalizeCaseReadScope(scopeInput);
 
-  validateReferencedPeople(sanitized.metadata, peopleMap, errors, requiresGiverPerson);
-  throwValidationIfNeeded(errors, validationMessage);
-
-  const createdDocument = await createCaseDocumentForCase(caseId, sanitized);
-  if (!createdDocument) {
-    throw new HttpError(500, "Dokument je sacuvan, ali odgovor nije moguce ucitati.");
+  if (readScope === CASE_READ_SCOPES.SOLVE) {
+    return await getSolveScopedDocuments(
+      caseId,
+      requesterUserId,
+      Array.from(STATEMENT_DOCUMENT_TYPES)
+    );
   }
 
-  return {
-    document: enrichDocumentWithPeople(createdDocument, peopleMap),
-    peopleDirectory,
-  };
-}
-
-export async function getCreatorCaseStatements(caseIdInput, authorUserId) {
-  const caseId = parseCaseId(caseIdInput);
-  await assertAuthorAccess(caseId, authorUserId);
-
+  await assertAuthorAccess(caseId, requesterUserId);
   const { documents, peopleDirectory } = await getDocumentsForCase(
     caseId,
     Array.from(STATEMENT_DOCUMENT_TYPES)
@@ -150,10 +94,23 @@ export async function createCreatorCaseStatement(caseIdInput, payload, authorUse
   };
 }
 
-export async function getCreatorCasePoliceDocuments(caseIdInput, authorUserId) {
+export async function getCreatorCasePoliceDocuments(
+  caseIdInput,
+  requesterUserId,
+  scopeInput = CASE_READ_SCOPES.CREATE
+) {
   const caseId = parseCaseId(caseIdInput);
-  await assertAuthorAccess(caseId, authorUserId);
+  const readScope = normalizeCaseReadScope(scopeInput);
 
+  if (readScope === CASE_READ_SCOPES.SOLVE) {
+    return await getSolveScopedDocuments(
+      caseId,
+      requesterUserId,
+      Array.from(POLICE_DOCUMENT_TYPES)
+    );
+  }
+
+  await assertAuthorAccess(caseId, requesterUserId);
   const { documents, peopleDirectory } = await getDocumentsForCase(
     caseId,
     Array.from(POLICE_DOCUMENT_TYPES)

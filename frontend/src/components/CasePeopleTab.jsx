@@ -35,7 +35,11 @@ function CasePeopleTab({ caseId, mode, onUnauthorized }) {
   } = useCasePeopleTabState({ caseId, mode, onUnauthorized });
 
   const { linkedDocumentsError, getLinkedDocumentsForPerson } =
-    useCasePeopleLinkedDocumentsState({ caseId, onUnauthorized });
+    useCasePeopleLinkedDocumentsState({
+      caseId,
+      onUnauthorized,
+      scope: isCreateMode ? "create" : "solve",
+    });
   const activePersonLinkedDocuments = useMemo(
     () => getLinkedDocumentsForPerson(activePerson?.id),
     [activePerson?.id, getLinkedDocumentsForPerson]

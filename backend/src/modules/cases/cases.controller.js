@@ -10,6 +10,15 @@ import {
   createCreatorCaseInterrogation,
   getCreatorCaseInterrogations,
 } from "./cases.interrogations.service.js";
+import {
+  advanceCaseTimeline,
+  getCreatorCaseTimeline,
+  replaceCreatorCaseTimeline,
+} from "./cases.timeline.service.js";
+
+function parseReadScope(queryValue) {
+  return typeof queryValue === "string" ? queryValue : "";
+}
 
 export async function createCaseController(req, res) {
   const result = await createCase(req.body || {}, req.auth.userId);
@@ -42,7 +51,11 @@ export async function getCreatorCaseController(req, res) {
 }
 
 export async function getCreatorCasePeopleController(req, res) {
-  const result = await getCreatorCasePeople(req.params.caseId, req.auth.userId);
+  const result = await getCreatorCasePeople(
+    req.params.caseId,
+    req.auth.userId,
+    parseReadScope(req.query?.scope)
+  );
 
   res.status(200).json({
     ok: true,
@@ -62,7 +75,11 @@ export async function createCreatorCasePersonController(req, res) {
 }
 
 export async function getCreatorCaseStatementsController(req, res) {
-  const result = await getCreatorCaseStatements(req.params.caseId, req.auth.userId);
+  const result = await getCreatorCaseStatements(
+    req.params.caseId,
+    req.auth.userId,
+    parseReadScope(req.query?.scope)
+  );
 
   res.status(200).json({
     ok: true,
@@ -82,7 +99,11 @@ export async function createCreatorCaseStatementController(req, res) {
 }
 
 export async function getCreatorCasePoliceDocumentsController(req, res) {
-  const result = await getCreatorCasePoliceDocuments(req.params.caseId, req.auth.userId);
+  const result = await getCreatorCasePoliceDocuments(
+    req.params.caseId,
+    req.auth.userId,
+    parseReadScope(req.query?.scope)
+  );
 
   res.status(200).json({
     ok: true,
@@ -102,7 +123,11 @@ export async function createCreatorCasePoliceDocumentController(req, res) {
 }
 
 export async function getCreatorCaseInterrogationsController(req, res) {
-  const result = await getCreatorCaseInterrogations(req.params.caseId, req.auth.userId);
+  const result = await getCreatorCaseInterrogations(
+    req.params.caseId,
+    req.auth.userId,
+    parseReadScope(req.query?.scope)
+  );
 
   res.status(200).json({
     ok: true,
@@ -117,6 +142,38 @@ export async function createCreatorCaseInterrogationController(req, res) {
   res.status(201).json({
     ok: true,
     message: "Saslusanje je uspesno sacuvano.",
+    data: result,
+  });
+}
+
+export async function getCreatorCaseTimelineController(req, res) {
+  const result = await getCreatorCaseTimeline(req.params.caseId, req.auth.userId);
+
+  res.status(200).json({
+    ok: true,
+    message: "Vremenska linija je uspesno ucitana.",
+    data: result,
+  });
+}
+
+export async function replaceCreatorCaseTimelineController(req, res) {
+  const result = await replaceCreatorCaseTimeline(req.params.caseId, req.body || {}, req.auth.userId);
+
+  res.status(200).json({
+    ok: true,
+    message: "Vremenska linija je uspesno sacuvana.",
+    data: result,
+  });
+}
+
+export async function advanceCaseTimelineController(req, res) {
+  const result = await advanceCaseTimeline(req.params.caseId, req.auth.userId);
+
+  res.status(200).json({
+    ok: true,
+    message: result.hasNewUnlock
+      ? "Sledeca timeline stavka je uspesno otkljucana."
+      : "Sve timeline stavke su vec otkljucane.",
     data: result,
   });
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CreateCaseSidebar from "./CreateCaseSidebar";
+import CaseTimelineTab from "./CaseTimelineTab";
 import CasePeopleTab from "./CasePeopleTab";
 import CasePoliceDocumentsTab from "./CasePoliceDocumentsTab";
 import CaseStatementsTab from "./CaseStatementsTab";
@@ -7,6 +8,7 @@ import CaseInterrogationsTab from "./CaseInterrogationsTab";
 import { CASE_WORKSPACE_TABS, findCaseWorkspaceTab } from "./caseWorkspaceTabs";
 import { fetchCreatorCase } from "../services/casesApi";
 import { AUTH_ROUTES, CASE_WORKSPACE_MODES } from "../utils/routes";
+
 function resolveModeTexts(mode) {
   if (mode === CASE_WORKSPACE_MODES.SOLVE) {
     return {
@@ -30,16 +32,19 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [publishStatusMessage, setPublishStatusMessage] = useState("");
-  const activeTab = useMemo(
-    () => findCaseWorkspaceTab(activeTabSlug) || CASE_WORKSPACE_TABS[0],
-    [activeTabSlug]
-  );
+  const activeTab = useMemo(() => findCaseWorkspaceTab(activeTabSlug) || CASE_WORKSPACE_TABS[0], [activeTabSlug]);
   const modeTexts = useMemo(() => resolveModeTexts(mode), [mode]);
+  const isTimelineTab = activeTab.slug === "vremenska-linija";
   const isPeopleTab = activeTab.slug === "osobe-i-dosijei";
   const isPoliceDocumentsTab = activeTab.slug === "dokumenti";
   const isStatementsTab = activeTab.slug === "izjave";
   const isInterrogationsTab = activeTab.slug === "saslusanja";
   const modeDescription = useMemo(() => {
+    if (isTimelineTab) {
+      return mode === CASE_WORKSPACE_MODES.SOLVE
+        ? "Postepeno otkljucavanje redosleda osoba i dokumenata kroz akciju 'Dalje', uz prikaz trenutnog datuma istrage."
+        : "Operativni panel za definisanje redosleda, napomena i vremena otkljucavanja osoba i dokumenata.";
+    }
     if (!isPeopleTab) {
       if (isPoliceDocumentsTab) {
         if (mode === CASE_WORKSPACE_MODES.SOLVE) {
@@ -65,14 +70,7 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
       return "Pregled formalnih dosijea lica u read-only rezimu, sa fokusom na evidenciju i detalje profila.";
     }
     return "Operativni panel za kreiranje, uredjivanje i pregled dosijea osoba kroz strukturisan modalni workflow.";
-  }, [
-    isPeopleTab,
-    isPoliceDocumentsTab,
-    isStatementsTab,
-    isInterrogationsTab,
-    mode,
-    modeTexts.description,
-  ]);
+  }, [isTimelineTab, isPeopleTab, isPoliceDocumentsTab, isStatementsTab, isInterrogationsTab, mode, modeTexts.description]);
   const loadCaseData = useCallback(async () => {
     if (mode === CASE_WORKSPACE_MODES.SOLVE) {
       setCaseData({
@@ -111,11 +109,12 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
     setPublishStatusMessage("");
   }, [caseId, mode]);
   function handlePublishClick() {
-    setPublishStatusMessage(
-      "Objava slucaja je trenutno dostupna kao dugme u meniju. Potvrda objave i backend logika bice dodati u sledecoj fazi."
-    );
+    setPublishStatusMessage("Objava slucaja je trenutno dostupna kao dugme u meniju. Potvrda objave i backend logika bice dodati u sledecoj fazi.");
   }
   function renderTabContent() {
+    if (activeTab.slug === "vremenska-linija") {
+      return <CaseTimelineTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
+    }
     if (activeTab.slug === "osobe-i-dosijei") {
       return <CasePeopleTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
     }
@@ -137,8 +136,7 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   }
   const showPublishButton = mode === CASE_WORKSPACE_MODES.CREATE;
   const publishDisabled = !showPublishButton || !caseData || isLoading || Boolean(errorMessage);
-  const showTabSummaryCard =
-    !isPeopleTab && !isPoliceDocumentsTab && !isStatementsTab && !isInterrogationsTab;
+  const showTabSummaryCard = !isTimelineTab && !isPeopleTab && !isPoliceDocumentsTab && !isStatementsTab && !isInterrogationsTab;
   return (
     <div className="app-shell app-shell-create-case">
       <CreateCaseSidebar
@@ -147,7 +145,6 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
         mode={mode}
         caseId={caseId}
         activeTabSlug={activeTab.slug}
-        caseTitle={caseData?.title || ""}
         onPublish={handlePublishClick}
         publishDisabled={publishDisabled}
         publishStatusMessage={showPublishButton ? publishStatusMessage : ""}

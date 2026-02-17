@@ -3,7 +3,7 @@ export const CASE_WORKSPACE_TABS = [
     slug: "vremenska-linija",
     label: "Vremenska linija",
     description:
-      "Prazna stranica za uredjivanje i pregled redosleda dogadjaja i otkljucavanja stavki.",
+      "Editor i pregled redosleda otkljucavanja osoba i dokumenata sa datumom/vremenom i napomenama.",
   },
   {
     slug: "osobe-i-dosijei",

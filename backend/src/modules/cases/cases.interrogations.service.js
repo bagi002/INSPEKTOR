@@ -6,6 +6,15 @@ import {
 } from "./cases.repository.interrogations.js";
 import { getCasePeopleDirectoryByCaseId } from "./cases.repository.documents.js";
 import { validateCreateCaseInterrogationPayload } from "./cases.interrogations.validation.js";
+import {
+  filterInterrogationsByUnlockedPeople,
+  filterPeopleByUnlockedIds,
+} from "./cases.solve.visibility.filters.js";
+import {
+  CASE_READ_SCOPES,
+  getSolveVisibilityForUser,
+  normalizeCaseReadScope,
+} from "./cases.solve.visibility.js";
 
 function throwValidationIfNeeded(errors, message) {
   if (Object.keys(errors).length > 0) {
@@ -59,8 +68,42 @@ function validateInterrogationPerson(personId, peopleMap, errors) {
   }
 }
 
-export async function getCreatorCaseInterrogations(caseIdInput, authorUserId) {
+export async function getCreatorCaseInterrogations(
+  caseIdInput,
+  authorUserId,
+  scopeInput = CASE_READ_SCOPES.CREATE
+) {
   const caseId = parseCaseId(caseIdInput);
+  const readScope = normalizeCaseReadScope(scopeInput);
+
+  if (readScope === CASE_READ_SCOPES.SOLVE) {
+    const [interrogations, peopleDirectory, visibility] = await Promise.all([
+      getCaseInterrogationsByCaseId(caseId),
+      getCasePeopleDirectoryByCaseId(caseId),
+      getSolveVisibilityForUser(caseId, authorUserId),
+    ]);
+
+    const peopleMap = buildPeopleMap(peopleDirectory);
+    const normalizedInterrogations = interrogations.map((interrogation) =>
+      normalizeInterrogation(interrogation, peopleMap)
+    );
+    const visiblePeople = filterPeopleByUnlockedIds(
+      peopleDirectory,
+      visibility.unlockedPersonIds
+    );
+    const visibleInterrogations = filterInterrogationsByUnlockedPeople(
+      normalizedInterrogations,
+      visibility.unlockedPersonIds
+    );
+
+    return {
+      caseId,
+      total: visibleInterrogations.length,
+      interrogations: visibleInterrogations,
+      people: visiblePeople,
+    };
+  }
+
   await assertAuthorAccess(caseId, authorUserId);
 
   const [interrogations, peopleDirectory] = await Promise.all([

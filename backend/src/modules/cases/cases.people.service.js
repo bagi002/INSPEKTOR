@@ -2,6 +2,12 @@ import { HttpError } from "../../utils/httpError.js";
 import { findCaseByIdForAuthor } from "./cases.repository.js";
 import { createCasePersonForCase, getCasePeopleByCaseId } from "./cases.repository.people.js";
 import { validateCreateCasePersonPayload } from "./cases.people.validation.js";
+import {
+  CASE_READ_SCOPES,
+  getSolveVisibilityForUser,
+  normalizeCaseReadScope,
+} from "./cases.solve.visibility.js";
+import { filterPeopleByUnlockedIds } from "./cases.solve.visibility.filters.js";
 
 function throwValidationIfNeeded(errors) {
   if (Object.keys(errors).length > 0) {
@@ -31,8 +37,24 @@ async function assertAuthorAccess(caseId, authorUserId) {
   }
 }
 
-export async function getCreatorCasePeople(caseIdInput, authorUserId) {
+export async function getCreatorCasePeople(caseIdInput, authorUserId, scopeInput = CASE_READ_SCOPES.CREATE) {
   const caseId = parseCaseId(caseIdInput);
+  const readScope = normalizeCaseReadScope(scopeInput);
+
+  if (readScope === CASE_READ_SCOPES.SOLVE) {
+    const [people, visibility] = await Promise.all([
+      getCasePeopleByCaseId(caseId),
+      getSolveVisibilityForUser(caseId, authorUserId),
+    ]);
+
+    const visiblePeople = filterPeopleByUnlockedIds(people, visibility.unlockedPersonIds);
+    return {
+      caseId,
+      total: visiblePeople.length,
+      people: visiblePeople,
+    };
+  }
+
   await assertAuthorAccess(caseId, authorUserId);
 
   const people = await getCasePeopleByCaseId(caseId);

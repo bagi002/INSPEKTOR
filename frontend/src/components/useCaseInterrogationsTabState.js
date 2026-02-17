@@ -33,7 +33,7 @@ export function useCaseInterrogationsTabState({ caseId, mode, onUnauthorized }) 
   const loadInterrogations = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage("");
-    const result = await fetchCaseInterrogations(caseId);
+    const result = await fetchCaseInterrogations(caseId, isCreateMode ? "create" : "solve");
     if (!result.ok) {
       if (result.unauthorized) {
         setIsLoading(false);
@@ -61,7 +61,7 @@ export function useCaseInterrogationsTabState({ caseId, mode, onUnauthorized }) 
       nextInterrogations.some((interrogation) => interrogation.id === previousId) ? previousId : null
     );
     setIsLoading(false);
-  }, [caseId, onUnauthorized]);
+  }, [caseId, isCreateMode, onUnauthorized]);
 
   const createState = useCaseInterrogationCreateState({
     caseId,

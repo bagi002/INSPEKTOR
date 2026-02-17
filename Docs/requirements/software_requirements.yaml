@@ -102,13 +102,14 @@
 
 - id: REQ-SW-013
   name: Pocetna stranica za ulogovanog korisnika - Realni podaci iz baze
-  status: Finished
+  status: In Review
   refines: REQ-005
   description: >
     Implementirati pocetnu stranicu za ulogovanog korisnika koja prikazuje dobrodoslicu sa imenom
     korisnika i stvarne podatke o slucajevima dobijene preko backend API-ja, bez mokovanog
     sadrzaja u prikazu listi i statistika, ukljucujuci i eksplicitan prikaz slucajeva u fazi
-    kreiranja sa akcijom za nastavak uredjivanja.
+    kreiranja sa akcijom za nastavak uredjivanja, uz prikaz faze istrage koji koristi
+    procenat trenutno otkljucanih timeline stavki za ulogovanog korisnika.
 
 - id: REQ-SW-014
   name: Meni i routing za ulogovano stanje
@@ -163,18 +164,19 @@
   description: >
     Implementirati skeleton prikaz prozora creatorskog moda na ruti `/slucaj/:id/kreiranje`
     sa odvojenim podstranicama/tabovima za vremensku liniju, osobe i dosijee, dokumente,
-    izjave, saslusanja i kviz, pri cemu tabovi `osobe-i-dosijei`, `dokumenti`, `izjave`
-    i `saslusanja` imaju funkcionalne workflow-e, dok su `vremenska-linija` i `kviz`
-    trenutno placeholder prikazi.
+    izjave, saslusanja i kviz, pri cemu tabovi `vremenska-linija`, `osobe-i-dosijei`,
+    `dokumenti`, `izjave` i `saslusanja` imaju funkcionalne workflow-e, dok je tab
+    `kviz` trenutno placeholder prikaz.
 
 - id: REQ-SW-020
   name: Meni za rezim kreiranja slucaja
-  status: Finished
+  status: In Review
   refines: REQ-029
   description: >
     Implementirati levi meni tokom kreiranja slucaja koji prikazuje tabove sekcija procesa
     (vremenska linija, osobe i dosijei, dokumenti, izjave, saslusanja, kviz), uz jasnu opciju
-    za povratak na ulogovanu pocetnu i odjavu korisnika.
+    za povratak na ulogovanu pocetnu i odjavu korisnika, bez dodatnog informativnog
+    tekstualnog bloka o aktivnom slucaju i statusu tabova.
 
 - id: REQ-SW-021
   name: Backend endpoint za creatorski prikaz pojedinacnog slucaja
@@ -211,14 +213,15 @@
 
 - id: REQ-SW-025
   name: Backend model i API za osobe i dosijee u slucaju
-  status: Finished
+  status: In Review
   refines: REQ-015
   description: >
     Implementirati prosiren SQLite model dosijea osobe (ukljucujuci administrativne
     auto-generisane podatke kao broj dosijea, klasifikaciju i reviziju), podrsku za cuvanje
     fotografije osobe, kao i JWT-zasticene
-    endpointe `GET /api/cases/:caseId/people` i `POST /api/cases/:caseId/people` za autora
-    slucaja, uz validaciju ulaza i vracanje strukturisanih podataka osobe i formalnog dosijea.
+    endpointe `GET /api/cases/:caseId/people` i `POST /api/cases/:caseId/people`, pri cemu
+    GET podrzava `scope=solve` za timeline-otkljucan prikaz osoba po korisniku, a POST ostaje
+    za autora slucaja, uz validaciju ulaza i vracanje strukturisanih podataka osobe i formalnog dosijea.
 
 - id: REQ-SW-026
   name: Tab osobe i dosijei - kreiranje i pregled
@@ -229,51 +232,58 @@
     prikazu pokazuje listu osoba sa osnovnim podacima, dok se kreiranje nove osobe/dosijea
     i pregled detaljnog formalnog dosijea obavljaju kroz iskacuce prozore (modale), uz
     padajuce liste za sva pogodna polja i posebno prilagodjen uvodni prikaz taba za
-    creatorski i rezim resavanja, kao i sekciju povezanih dokumenata/izjava sa direktnim
+    creatorski i rezim resavanja, pri cemu u rezimu resavanja prikazuje samo osobe koje su
+    otkljucane na vremenskoj liniji, kao i sekciju povezanih dokumenata/izjava sa direktnim
     linkovima ka konkretnim stavkama, uz akciju `Saslusaj osobu` koja iz dosijea otvara
     tab saslusanja u rezimu pregleda za konkretnu osobu.
 
 - id: REQ-SW-027
   name: Backend API za izjave u slucaju
-  status: Finished
+  status: In Review
   refines: REQ-017
   description: >
     Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/statements` i
-    `POST /api/cases/:caseId/statements` za autora slucaja, sa validacijom formalnih
+    `POST /api/cases/:caseId/statements`, pri cemu GET podrzava `scope=solve` i vraca samo
+    timeline-otkljucane izjave (uz filtriranje prikaza povezanih osoba na otkljucane), dok je
+    POST za autora slucaja, sa validacijom formalnih
     polja izjave (tip, naslov, sadrzaj, klasifikacija, datum, lokacija, sluzbenik,
     davalac izjave i povezane osobe), kao i tip-specificnih polja po vrsti izjave
     (`witness_statement`, `suspect_statement`, `victim_statement`) uz cuvanje u metapodacima.
 
 - id: REQ-SW-028
   name: Backend API za policijska dokumenta u slucaju
-  status: Finished
+  status: In Review
   refines: REQ-018
   description: >
     Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/police-documents` i
-    `POST /api/cases/:caseId/police-documents` za autora slucaja, uz validaciju i cuvanje
+    `POST /api/cases/:caseId/police-documents`, pri cemu GET podrzava `scope=solve` i vraca
+    samo timeline-otkljucane dokumente (uz filtriranje prikaza povezanih osoba na otkljucane),
+    dok je POST za autora slucaja, uz validaciju i cuvanje
     policijskih izvjestaja i forenzickih nalaza sa formalnim metapodacima, tip-specificnim
     poljima po tipu dokumenta i fotodokumentacijom (`imageEvidence`) za `police_report`
     i `forensic_report`, zajedno sa vezama na osobe.
 
 - id: REQ-SW-029
   name: Tab izjave - kreiranje i formalni pregled
-  status: Finished
+  status: In Review
   refines: REQ-017
   description: >
     Implementirati funkcionalan tab `izjave` u case workspace-u koji prikazuje listu i filtere,
     modal za kreiranje novih izjava i modal za formalni pregled svake izjave u ozbiljnom
     policijskom stilu, uz dinamicna tip-specificna polja u formi po izabranom tipu izjave,
-    sa read-only rezimom u modu resavanja slucaja i linkovima ka dosijeima povezanih osoba.
+    sa read-only rezimom u modu resavanja slucaja koji prikazuje samo timeline-otkljucane
+    izjave i linkovima ka dosijeima povezanih osoba.
 
 - id: REQ-SW-030
   name: Tab dokumenti - kreiranje i formalni pregled
-  status: Finished
+  status: In Review
   refines: REQ-018
   description: >
     Implementirati funkcionalan tab `dokumenti` u case workspace-u za policijske izvjestaje
     i forenzicke nalaze, sa listom/filterima, modalnim kreiranjem i formalnim prikazom
     dokumenta, uz dinamicna tip-specificna polja i upload slika za oba tipa dokumenta,
-    kao i read-only ogranicenje u rezimu resavanja i linkovima ka dosijeima povezanih osoba.
+    kao i read-only ogranicenje u rezimu resavanja koje prikazuje samo timeline-otkljucane
+    dokumente i linkove ka dosijeima povezanih osoba.
 
 - id: REQ-SW-031
   name: Objedinjeni creatorski workflow za tri tipa dokumentacije
@@ -296,19 +306,20 @@
 
 - id: REQ-SW-033
   name: Backend model i API za saslusanja po osobi
-  status: In Review
+  status: Finished
   refines: REQ-020
   description: >
     Implementirati SQLite model za saslusanja (`case_interrogations` i
     `case_interrogation_nodes`) i JWT-zasticene endpointe
-    `GET /api/cases/:caseId/interrogations` i `POST /api/cases/:caseId/interrogations`
-    koji cuvaju i vracaju stablo pitanja/odgovora po osobi uz validaciju strukture stabla,
+    `GET /api/cases/:caseId/interrogations` i `POST /api/cases/:caseId/interrogations`,
+    pri cemu GET podrzava `scope=solve` i vraca samo saslusanja za timeline-otkljucane osobe,
+    dok POST ostaje autorski endpoint koji cuva i vraca stablo pitanja/odgovora po osobi uz validaciju strukture stabla,
     ukljucujuci `questionReferenceKey` mehanizam za ponovno koriscenje pitanja i pravilo da
     isto pitanje ne moze biti ponovljeno u istoj grani saslusanja.
 
 - id: REQ-SW-034
   name: Creatorski editor saslusanja po osobi
-  status: In Review
+  status: Finished
   refines: REQ-020
   description: >
     Implementirati creatorski workflow u tabu `saslusanja` koji omogucava izbor osobe,
@@ -318,19 +329,45 @@
 
 - id: REQ-SW-035
   name: Pokretanje saslusanja kroz chat modal
-  status: In Review
+  status: Finished
   refines: REQ-016
   description: >
     Implementirati pregled i pokretanje saslusanja kroz zaseban chat modal u kome
     korisnik bira pitanje, dobija pripadajuci odgovor i nastavlja kroz sledece grane
     unapred pripremljenog stabla, uz unapredjeni chat-prikaz i akciju `Zakljuci saslusanje`
-    koja postaje dostupna kada se dodje do kraja izabrane grane.
+    koja postaje dostupna kada se dodje do kraja izabrane grane, pri cemu se u rezimu
+    resavanja prikazuju samo saslusanja za osobe koje su otkljucane kroz vremensku liniju.
 
 - id: REQ-SW-036
   name: Navigacija iz dosijea ka saslusanju osobe
-  status: In Review
+  status: Finished
   refines: REQ-015
   description: >
     Obezbediti da iz svakog dosijea postoji akcija `Saslusaj osobu` koja otvara
     tab `saslusanja` u rezimu pregleda i automatski pokusava da pokrene saslusanje
     za izabranu osobu.
+
+- id: REQ-SW-037
+  name: Backend API za vremensku liniju slucaja
+  status: Finished
+  refines: REQ-022
+  description: >
+    Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/timeline`,
+    `PUT /api/cases/:caseId/timeline` i `POST /api/cases/:caseId/timeline/advance`,
+    sa validacijom timeline stavki (tip, referenca, jedinstvenost, napomena,
+    datum/vreme otkljucavanja), atomskim cuvanjem redosleda, korisnickim
+    otkljucavanjem sledece stavke i odrzavanjem `case_user_progress` procenta
+    istrage na osnovu broja otkljucanih timeline stavki.
+
+- id: REQ-SW-038
+  name: Tab vremenska linija - kreiranje i pregled roadmap-a
+  status: Finished
+  refines: REQ-013
+  description: >
+    Implementirati funkcionalan tab `vremenska-linija` u case workspace-u koji u
+    creatorskom modu omogucava dodavanje osoba/dokumenata u redosled otkljucavanja,
+    pomeranje stavki gore-dole, uklanjanje, unos napomene i opcionalnog datuma/vremena,
+    kao i cuvanje cele sekvence kroz backend API, dok u rezimu resavanja omogucava
+    postepeno otkljucavanje kroz dugme `Dalje`, prikaz trenutnog datuma kao datuma
+    poslednje otkljucane stavke, obrnuti redosled prikaza (najnovije prvo) i prikaz
+    faze istrage prema procentu otkljucanih timeline stavki.

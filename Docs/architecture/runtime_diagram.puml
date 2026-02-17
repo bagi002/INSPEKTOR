@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Kreiranje i pregled dosijea, izjava, policijskih dokumenata i saslusanja
+title Runtime Diagram - Kreiranje i pregled vremenske linije, dosijea, izjava, policijskih dokumenata i saslusanja
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -10,11 +10,13 @@ participant "LoggedHomePage" as LoggedHome
 participant "CreateCasePage (/slucaj/novi)" as CreateCaseStart
 participant "CaseWorkspacePage" as Workspace
 participant "CreateCaseSidebar" as WorkspaceSidebar
+participant "CaseTimelineTab" as TimelineTab
 participant "CasePeopleTab" as PeopleTab
 participant "CaseStatementsTab" as StatementsTab
 participant "CasePoliceDocumentsTab" as DocsTab
 participant "CaseInterrogationsTab" as InterrogationsTab
 participant "Cases API Client" as CasesClient
+participant "Case Timeline API Client" as TimelineClient
 participant "Case People API Client" as PeopleClient
 participant "Case Documents API Client" as DocumentsClient
 participant "Case Interrogations API Client" as InterrogationsClient
@@ -23,10 +25,13 @@ participant "Express Auth API" as AuthApi
 participant "Express Cases API" as CasesApi
 participant "Auth Guard (JWT)" as JwtGuard
 participant "Cases Service" as CasesService
+participant "Case Timeline Service" as TimelineService
 participant "Case People Service" as PeopleService
 participant "Case Documents Service" as DocumentsService
 participant "Case Interrogations Service" as InterrogationsService
+participant "Case Solve Visibility Service" as SolveVisibility
 participant "Cases Repository" as CasesRepo
+participant "Case Timeline Repository" as TimelineRepo
 participant "Case People Repository" as PeopleRepo
 participant "Case Documents Repository" as DocumentsRepo
 participant "Case Interrogations Repository" as InterrogationsRepo
@@ -96,6 +101,42 @@ alt Desktop sirina
   CasesService --> CasesApi: response payload
   CasesApi --> CasesClient: JSON uspeh
   CasesClient --> Workspace: Osnovni podaci slucaja
+
+  User -> WorkspaceSidebar: Klik tab "Vremenska linija"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/vremenska-linija
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Render taba vremenska linija
+  Workspace -> TimelineTab: Prosledjuje caseId i mode
+  TimelineTab -> TimelineClient: GET /api/cases/{caseId}/timeline
+  TimelineClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> TimelineService: getCreatorCaseTimeline(caseId, userId)
+  TimelineService -> CasesRepo: findCaseById(caseId) + provera pristupa
+  TimelineService -> CasesStore: ensure case_user_progress za korisnika
+  TimelineService -> TimelineRepo: getCaseTimelineItemsByCaseId(caseId)
+  TimelineRepo -> CasesStore: SELECT case_timeline_items (redosled + napomene + datum/vreme)
+  TimelineRepo -> PeopleStore: SELECT direktorijum osoba za timeline
+  TimelineRepo -> DocumentsStore: SELECT direktorijum dokumenata za timeline
+  CasesStore --> TimelineRepo: timeline stavke
+  PeopleStore --> TimelineRepo: osobe
+  DocumentsStore --> TimelineRepo: dokumenti
+  TimelineRepo --> TimelineService: timeline payload
+  TimelineService --> CasesApi: response payload
+  CasesApi --> TimelineClient: JSON uspeh
+  TimelineClient --> TimelineTab: Prikaz roadmap-a i dostupnih izvora
+
+  User -> TimelineTab: Dodaje stavke i menja redosled otkljucavanja
+  TimelineTab -> TimelineClient: PUT /api/cases/{caseId}/timeline
+  TimelineClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> TimelineService: replaceCreatorCaseTimeline(caseId, payload, userId)
+  TimelineService -> TimelineRepo: DELETE postojecih + INSERT novih timeline stavki
+  TimelineRepo -> CasesStore: WRITE case_timeline_items
+  CasesStore --> TimelineRepo: potvrda upisa
+  TimelineRepo --> TimelineService: azurirana lista stavki
+  TimelineService --> CasesApi: 200 response
+  CasesApi --> TimelineClient: JSON uspeh
+  TimelineClient --> TimelineTab: Osvjezenje i potvrda cuvanja
 
   User -> WorkspaceSidebar: Klik tab "Osobe i dosijei"
   WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/osobe-i-dosijei
@@ -275,12 +316,67 @@ alt Desktop sirina
   InterrogationsTab --> User: Chat oznacava razgovor kao zakljucen
 
   User -> LoggedHome: Klik "Nastavi resavanje"
-  LoggedHome -> Router: /slucaj/{caseId}/resavanje/izjave
+  LoggedHome -> Router: /slucaj/{caseId}/resavanje/vremenska-linija
   Router -> Guard: Provera sesije
-  Guard -> Workspace: Solve mode (read-only)
-  Workspace -> StatementsTab: Prikaz bez forme za kreiranje
-  StatementsTab -> DocumentsClient: GET /api/cases/{caseId}/statements
-  DocumentsClient --> StatementsTab: Lista i formalni pregled izjava
+  Guard -> Workspace: Solve mode (postepeno otkljucavanje)
+  Workspace -> TimelineTab: Prikaz sa akcijom "Dalje"
+  TimelineTab -> TimelineClient: GET /api/cases/{caseId}/timeline
+  TimelineClient --> TimelineTab: Trenutno otkljucane stavke + procenat istrage
+  User -> TimelineTab: Klik "Dalje"
+  TimelineTab -> TimelineClient: POST /api/cases/{caseId}/timeline/advance
+  TimelineClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> TimelineService: advanceCaseTimeline(caseId, userId)
+  TimelineService -> CasesStore: UPDATE case_user_progress (unlocked_timeline_count, progress_percent)
+  TimelineService --> CasesApi: response payload
+  CasesApi --> TimelineClient: JSON uspeh
+  TimelineClient --> TimelineTab: Najnovije otkljucano na vrhu + trenutni datum
+
+  User -> WorkspaceSidebar: Klik tab "Osobe i dosijei" (solve)
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/resavanje/osobe-i-dosijei
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Solve mode prikaz osoba
+  Workspace -> PeopleTab: Prosledjuje caseId i mode
+  PeopleTab -> PeopleClient: GET /api/cases/{caseId}/people?scope=solve
+  PeopleClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> PeopleService: getCreatorCasePeople(caseId, userId, "solve")
+  PeopleService -> SolveVisibility: getSolveVisibilityForUser(caseId, userId)
+  SolveVisibility -> TimelineRepo: SELECT case_timeline_items ORDER BY unlock_order
+  SolveVisibility -> CasesStore: SELECT/ensure case_user_progress za korisnika
+  PeopleService --> CasesApi: filtrirane osobe (samo timeline-otkljucane)
+  CasesApi --> PeopleClient: JSON uspeh
+  PeopleClient --> PeopleTab: Prikaz samo otkljucanih osoba
+
+  User -> WorkspaceSidebar: Klik tab "Izjave" ili "Dokumenti" (solve)
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/resavanje/(izjave|dokumenti)
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Solve mode prikaz dokumentacije
+  Workspace -> StatementsTab: ili DocsTab
+  StatementsTab -> DocumentsClient: GET /api/cases/{caseId}/statements?scope=solve
+  DocsTab -> DocumentsClient: GET /api/cases/{caseId}/police-documents?scope=solve
+  DocumentsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> DocumentsService: getCreatorCaseStatements/PoliceDocuments(..., "solve")
+  DocumentsService -> SolveVisibility: getSolveVisibilityForUser(caseId, userId)
+  DocumentsService --> CasesApi: filtrirani dokumenti + filtrirane osobe
+  CasesApi --> DocumentsClient: JSON uspeh
+  DocumentsClient --> StatementsTab: Prikaz samo otkljucanih izjava
+  DocumentsClient --> DocsTab: Prikaz samo otkljucanih dokumenata
+
+  User -> WorkspaceSidebar: Klik tab "Saslusanja" (solve)
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/resavanje/saslusanja
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Solve mode prikaz saslusanja
+  Workspace -> InterrogationsTab: Prosledjuje caseId i mode
+  InterrogationsTab -> InterrogationsClient: GET /api/cases/{caseId}/interrogations?scope=solve
+  InterrogationsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> InterrogationsService: getCreatorCaseInterrogations(caseId, userId, "solve")
+  InterrogationsService -> SolveVisibility: getSolveVisibilityForUser(caseId, userId)
+  InterrogationsService --> CasesApi: filtrirana saslusanja + filtrirane osobe
+  CasesApi --> InterrogationsClient: JSON uspeh
+  InterrogationsClient --> InterrogationsTab: Samo saslusanja otkljucanih osoba
 else Manja sirina od desktop praga
   Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
   Notice --> User: Prikaz ogranicenog ekrana

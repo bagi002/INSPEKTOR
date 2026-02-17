@@ -63,18 +63,24 @@ Tok koriscenja:
 5. Klikni na `Kreiraj novi slucaj`, unesi naziv i opis, pa potvrdi kreiranje.
 6. Nakon uspesnog cuvanja draft-a aplikacija automatski otvara prvi tab u creatorskom modu:
    `/slucaj/:id/kreiranje/vremenska-linija`.
-7. U tabu `/slucaj/:id/kreiranje/osobe-i-dosijei` mozes kreirati osobu i njen dosije,
+7. U tabu `/slucaj/:id/kreiranje/vremenska-linija` mozes dodavati osobe i dokumente u
+   sekvencu otkljucavanja, menjati redosled, unositi napomene i opcioni datum/vreme, pa
+   snimiti celu roadmap konfiguraciju.
+8. U tabu `/slucaj/:id/kreiranje/osobe-i-dosijei` mozes kreirati osobu i njen dosije,
    a zatim iz liste pregledati detalje za svaku evidentiranu osobu, ukljucujuci
    linkove ka povezanim izjavama i dokumentima.
-8. U tabu `/slucaj/:id/kreiranje/izjave` mozes kreirati formalne izjave i otvoriti
+9. U tabu `/slucaj/:id/kreiranje/izjave` mozes kreirati formalne izjave i otvoriti
    svaku kroz policijski pregled dokumenta, uz dodatna polja koja se menjaju po tipu izjave.
-9. U tabu `/slucaj/:id/kreiranje/dokumenti` mozes kreirati policijske izvjestaje i
+10. U tabu `/slucaj/:id/kreiranje/dokumenti` mozes kreirati policijske izvjestaje i
    forenzicke nalaze, sa formalnim pregledom svakog dokumenta i podrskom za dodavanje slika.
-10. U tabu `/slucaj/:id/kreiranje/saslusanja` mozes izabrati osobu, kreirati stablo pitanja
+11. U tabu `/slucaj/:id/kreiranje/saslusanja` mozes izabrati osobu, kreirati stablo pitanja
     i odgovora uz vizuelni prikaz toka (tree preview), ponovo koristiti postojece pitanje
     u drugoj grani i odmah pokrenuti saslusanje kroz chat modal.
-11. Iz formalnog dosijea svake osobe mozes kliknuti `Saslusaj osobu`, sto otvara
+12. Iz formalnog dosijea svake osobe mozes kliknuti `Saslusaj osobu`, sto otvara
     `/slucaj/:id/resavanje/saslusanja` i pokusava automatski da pokrene chat za tu osobu.
+13. U tabu `/slucaj/:id/resavanje/vremenska-linija` koristi dugme `Dalje` za postepeno
+    otkljucavanje sledece stavke; lista prikazuje najnovije otkljucano na vrhu, a
+    `Trenutni datum` predstavlja datum poslednje otkljucane stavke.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
@@ -99,11 +105,27 @@ Napomena:
   - napomena: trenutno je podrzano cuvanje napretka za autora slucaja (ulogovanog korisnika)
 - `GET /api/cases/:caseId/creator` (autorizacija: `Bearer <JWT>`)
   - vraca slucaj za creatorski mod samo ako je ulogovani korisnik autor tog slucaja
+- `GET /api/cases/:caseId/timeline` (autorizacija: `Bearer <JWT>`)
+  - vraca vremensku liniju slucaja (redosled stavki + napomene + datum/vreme)
+    zajedno sa direktorijumom osoba i dokumenata dostupnih za timeline, kao i
+    korisnicki timeline napredak (`unlockedCount`, `progressPercent`, `lastUnlockedTimelineAt`)
+  - pristup imaju autor slucaja i korisnici koji imaju pravo pregleda slucaja
+- `PUT /api/cases/:caseId/timeline` (autorizacija: `Bearer <JWT>`)
+  - zamenjuje kompletnu vremensku liniju novim redosledom stavki kroz payload:
+    `items[]` sa poljima `itemType`, `sourceId`, `unlockNote`, `unlockAt`
+  - validira postojanje referenci, jedinstvenost stavki i format datuma/vremena
+  - pristup je trenutno ogranicen na autora slucaja
+- `POST /api/cases/:caseId/timeline/advance` (autorizacija: `Bearer <JWT>`)
+  - otkljucava sledecu timeline stavku za trenutno ulogovanog korisnika i azurira
+    `case_user_progress` (`unlocked_timeline_count`, `progress_percent`)
+  - vraca azuriran korisnicki timeline napredak i poslednju otkljucanu stavku
 - `GET /api/cases/:caseId/people` (autorizacija: `Bearer <JWT>`)
   - vraca listu osoba i njihove dosijee za trazeni slucaj
+  - opciono `?scope=solve` vraca samo osobe otkljucane do trenutnog korisnickog
+    progresa na vremenskoj liniji
   - dosije ukljucuje auto-generisane administrativne podatke (`dossierNumber`,
     `classificationLevel`, `revisionNumber`, `generatedAt`)
-  - pristup je trenutno ogranicen na autora slucaja
+  - bez `scope=solve` pristup je ogranicen na autora slucaja
 - `POST /api/cases/:caseId/people` (autorizacija: `Bearer <JWT>`)
   - kreira novu osobu i pripadajuci dosije u okviru slucaja
   - podrzana polja: `fullName`, `apparentRole`, `biography`, `phoneNumber`, `address`,
@@ -118,7 +140,9 @@ Napomena:
 - `GET /api/cases/:caseId/statements` (autorizacija: `Bearer <JWT>`)
   - vraca sve izjave u slucaju (`witness_statement`, `suspect_statement`, `victim_statement`)
     zajedno sa formalnim metapodacima i povezanim osobama
-  - pristup je trenutno ogranicen na autora slucaja
+  - opciono `?scope=solve` vraca samo timeline-otkljucane izjave i filtrira prikaz
+    povezanih osoba na timeline-otkljucane osobe
+  - bez `scope=solve` pristup je ogranicen na autora slucaja
 - `POST /api/cases/:caseId/statements` (autorizacija: `Bearer <JWT>`)
   - kreira novu izjavu sa formalnim poljima: `documentType`, `title`, `content`,
     `classificationLevel`, `recordedAt`, `location`, `officerName`, `badgeNumber`,
@@ -131,7 +155,9 @@ Napomena:
 - `GET /api/cases/:caseId/police-documents` (autorizacija: `Bearer <JWT>`)
   - vraca policijske izvjestaje i forenzicke nalaze sa formalnim metapodacima i
     povezanim osobama
-  - pristup je trenutno ogranicen na autora slucaja
+  - opciono `?scope=solve` vraca samo timeline-otkljucane dokumente i filtrira prikaz
+    povezanih osoba na timeline-otkljucane osobe
+  - bez `scope=solve` pristup je ogranicen na autora slucaja
 - `POST /api/cases/:caseId/police-documents` (autorizacija: `Bearer <JWT>`)
   - kreira novi policijski izvjestaj ili forenzicki nalaz sa istim formalnim setom
     metapodataka kao i kod izjava (osim obaveznog davaoca izjave),
@@ -144,7 +170,8 @@ Napomena:
 - `GET /api/cases/:caseId/interrogations` (autorizacija: `Bearer <JWT>`)
   - vraca sva saslusanja u slucaju zajedno sa stablom pitanja/odgovora i
     direktorijumom osoba
-  - pristup je trenutno ogranicen na autora slucaja
+  - opciono `?scope=solve` vraca samo saslusanja za osobe otkljucane kroz vremensku liniju
+  - bez `scope=solve` pristup je ogranicen na autora slucaja
 - `POST /api/cases/:caseId/interrogations` (autorizacija: `Bearer <JWT>`)
   - kreira ili azurira saslusanje za konkretnu osobu (`personId`) sa poljima:
     `title`, `openingPrompt`, `nodes[]`
@@ -199,10 +226,19 @@ Napomena:
     - `izjave`
     - `saslusanja`
     - `kviz`
+  - tab `vremenska-linija`:
+    - u creatorskom modu omogucava dodavanje osoba i dokumenata u redosled otkljucavanja,
+      pomeranje stavki gore/dole, uklanjanje, unos napomena i opcionalnog datuma/vremena
+    - cuvanje radi kroz `PUT /api/cases/:caseId/timeline`, a inicijalno ucitavanje kroz
+      `GET /api/cases/:caseId/timeline`
+    - u rezimu resavanja koristi dugme `Dalje` za postepeno otkljucavanje sledece stavke,
+      prikazuje najnovije otkljucano na vrhu i prikazuje trenutni datum kao datum
+      poslednje otkljucane stavke
   - tab `osobe-i-dosijei`:
     - na glavnom prikazu prikazuje listu osoba sa osnovnim podacima i prilagodjen uvodni panel po modu
     - klik na osobu otvara formalni dosije u iskacucem prozoru
     - u creatorskom modu kreiranje nove osobe i dosijea se radi kroz iskacuci prozor
+    - u rezimu resavanja prikazuje samo osobe koje su trenutno otkljucane na vremenskoj liniji
     - forma koristi padajuce liste za sva pogodna polja (ukljucujuci pol) i upload fotografije osobe
     - dosije prikazuje sve povezane izjave i dokumente kao direktne linkove ka formalnom prikazu
   - tab `izjave`:
@@ -210,20 +246,21 @@ Napomena:
     - u creatorskom modu omogucava modalno kreiranje formalne izjave sa tip-specificnim poljima po vrsti izjave
     - svaka izjava se otvara kroz formalni policijski pregled dokumenta
     - iz formalnog prikaza izjave moguce je otvoriti dosije svake povezane osobe
-    - u rezimu resavanja tab radi u read-only nacinu
+    - u rezimu resavanja tab radi u read-only nacinu i prikazuje samo timeline-otkljucane izjave
   - tab `dokumenti`:
     - prikazuje policijske izvjestaje i forenzicke nalaze sa pretragom/filterima
     - u creatorskom modu omogucava modalno kreiranje dokumenta sa tip-specificnim poljima
       i uploadom slika za forenzicke nalaze i policijske izvjestaje
     - pregled svakog dokumenta radi kroz formalni policijski prikaz sa sekcijom fotodokumentacije
     - iz formalnog prikaza dokumenta moguce je otvoriti dosije svake povezane osobe
-    - u rezimu resavanja tab radi u read-only nacinu
+    - u rezimu resavanja tab radi u read-only nacinu i prikazuje samo timeline-otkljucane dokumente
   - tab `saslusanja`:
     - prikazuje saslusanja po osobi i omogucava direktan izbor osobe za pokretanje saslusanja
     - u creatorskom modu omogucava modalno kreiranje stabla pitanja i odgovora
       za konkretnu osobu, sa vizuelnim prikazom stabla i reuse opcijom pitanja po granama
     - pokretanje saslusanja se vrsi kroz zaseban chat modal sa grananjem pitanja i
       opcijom `Zakljuci saslusanje` na kraju grane
+    - u rezimu resavanja prikazuje samo saslusanja osoba koje su trenutno otkljucane na vremenskoj liniji
     - iz svakog dosijea postoji akcija `Saslusaj osobu` koja vodi na ovaj tab
       u rezimu pregleda i pokusava auto-otvaranje chat modala
 - Opcija objave:
@@ -232,13 +269,15 @@ Napomena:
   - trenutno prikazuje placeholder status poruku (bez pune backend logike objave)
 - Creatorski workspace:
   - ucitava draft slucaj preko `GET /api/cases/:caseId/creator`
-  - prikazuje osnovne podatke slucaja i prazne tab stranice za dalji rad
+  - prikazuje osnovne podatke slucaja i funkcionalne operativne tabove
 - Resavacki workspace:
   - koristi isti set tabova i istu navigacionu strukturu kao creatorski workspace
-  - tab `osobe-i-dosijei` je dostupan za read-only pregled osoba i dosijea
-  - tabovi `izjave` i `dokumenti` su dostupni za read-only pregled formalnih dokumenata
-  - tab `saslusanja` je dostupan za read-only pokretanje i pregled chat saslusanja
-  - tabovi `vremenska-linija` i `kviz` su trenutno placeholder prikazi
+  - tab `vremenska-linija` je dostupan za postepeno otkljucavanje roadmap sekvence
+    kroz akciju `Dalje`, uz automatsko azuriranje faze istrage (procenta)
+  - tab `osobe-i-dosijei` je dostupan za read-only pregled samo timeline-otkljucanih osoba i dosijea
+  - tabovi `izjave` i `dokumenti` su dostupni za read-only pregled samo timeline-otkljucanih dokumenata
+  - tab `saslusanja` je dostupan za read-only pokretanje i pregled chat saslusanja samo za timeline-otkljucane osobe
+  - tab `kviz` je trenutno placeholder prikaz
 - Backend auth:
   - modularna Express struktura (routes/controller/service/repository)
   - SQLite migracije i maintenance podesavanja
@@ -248,5 +287,5 @@ Napomena:
     `case_interrogation_nodes`, `case_timeline_items`, `case_user_progress`
   - prosiren `case_documents` model sa `metadata_json` za formalna polja izjava i
     policijskih dokumenata
-  - JWT-zasticeni endpointi za cuvanje slucaja, prikaz ulogovane pocetne, osobe/dosijee,
-    izjave, policijska dokumenta i saslusanja
+  - JWT-zasticeni endpointi za cuvanje slucaja, prikaz ulogovane pocetne, vremensku liniju,
+    osobe/dosijee, izjave, policijska dokumenta i saslusanja

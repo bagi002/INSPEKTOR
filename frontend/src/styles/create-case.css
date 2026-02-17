@@ -6,10 +6,6 @@
   font-size: 1.5rem;
 }
 
-.create-case-note-panel {
-  border-style: solid;
-}
-
 .create-case-publish-panel {
   display: grid;
   gap: 0.55rem;
@@ -30,12 +26,6 @@
   font-size: 0.86rem;
   color: #4f6782;
   line-height: 1.45;
-}
-
-.create-case-active-title {
-  margin: 0 0 0.5rem;
-  font-weight: 800;
-  color: #173a61;
 }
 
 .create-case-exit-link {

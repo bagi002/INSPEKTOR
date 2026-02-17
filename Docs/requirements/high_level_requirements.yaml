@@ -41,7 +41,7 @@
 
 - id: REQ-005
   name: Pocetna stranica za ulogovane korisnike
-  status: In Progress
+  status: In Review
   description: >
     Treba da sadrzi pregled slucajja koji se trenutno rijesava 
     Treba da sadrzi pregled slucaja koji su rijeseni
@@ -53,7 +53,7 @@
 
 - id: REQ-006
   name: Meni
-  status: In Progress
+  status: In Review
   description: >
     Meni treba d a bude u vidu lijevog side bara sa opcijama menija priakzaom profila za ulogovanog korisnika
     U ne ulogovanom stanju treba da sadrzi opcije za pocetnu stranicu, registraciju i prijavu
@@ -131,7 +131,7 @@
     
 - id: REQ-013
   name: Vremenska linija
-  status: Draft
+  status: Finished
   description: >
     Vremenska linija treba da prikazuje redoslijed otkljucavanja osoba i dokumenata u slucaju
     Vremenska linija treba da bude vizuelno privlacna i intuitivna za koristenje u formi road mape
@@ -140,7 +140,7 @@
 
 - id: REQ-014
   name: Osobe u slucaju
-  status: In Review
+  status: Finished
   description: >
     Osobe u slucaju treba da budu prikazane u formi liste sa osnovnim informacijama o svakoj osobi, kao sto su ime, prezime i uloga u slucaju (osumnjiceni, zrtva, svjedok)
     Za svaku osobu treba da postoji opcija za pregled dosijea koji sadrzi sve informacije o toj osobi.
@@ -214,7 +214,7 @@
 
 - id: REQ-021
   name: Kreiranje dokumenata, Dosijea i Osoba
-  status: In Progress
+  status: Finished
   description: >
     Treba da sadrzi formu za kreiranje novih dokumenata, dosijea i osoba u slucaju
     Treba da sadrzi opciju za dodavanje svih relevantnih informacija o dokumentu, dosijeu ili osobi
@@ -225,7 +225,7 @@
 
 - id: REQ-022
   name: Kreiranje vremenske linije
-  status: Draft
+  status: Finished
   description: >
     Treba d asrzi formu gdje kreator sva kreianan dokument ai osobe rasporedjuje duz vremenske linije
     Treba da ima opciju da doda dokument ili osobu na vremensku liniju
@@ -292,3 +292,32 @@
     Koji izgleda manje vise kao prozor za resavanje slucajja site stavke menija su iste kao i kod resavanja slucaja ali sa opcijom za kreiranje novih dokumenata, osoba i dosijea i dodavanje istih na vremensku liniju
     Nakon sto ima slucaj u kreiranju moci ce sa pocetne stranice d amu pristupi i nastavi editovanje 
     Sve dok ga ne ne objavi i tek tada ce ga ostali korisnici vidjeti i rijesvati
+
+- id: REQ-030
+  name: WIKIPEDIA
+  status: draft
+  description: >
+    Treba d apsotoji stavka menija koja vodi na stranicu WIKIPWDIE ZA APP
+    Tu trebad a se nalazi GUIDE o koriscenju aplikacije i njenim funkcionalnostima
+
+- id: REQ-031
+  name: Stranica za podrsku
+  status: Draft
+  description: >
+    Nova stavka menija koja vodi na stranicu za podrsku
+    Na ovoj stranici se nalzi forma za kreirnje tickets za prijavu buga ili prijedloga za poboljsanje aplikacije
+    Tu mozete kreirati novi tickets koji sadrzi naziv i opis problema ili prijedloga kao i tacno mjesto gdje je problem ili predlog u app
+    Vi vidite sve vase tickets i njihov status (open, in progress, closed) 
+    Kreatori app vide sve to ali i datum prijave verziju app u tom moemntu nalog sa koga je prijavljeno..
+    Statusi su open , pregledan, in progres, odbacen, zaztvoren 
+
+- id: REQ-032
+  name: Admin panel
+  status: Draft
+  description: >
+    Treba da postoji admin panel koji je dostupan samo adminima aplikacije
+    Treba d abude na drugom portu od glavne aplikacije
+    KAda se admin prvi put tu prijavi unjece lozinku polje ce je unostii svaki put 
+    Na panelu trbea d amoze da s e vidi i uredjuje sve u bazi podatak sem lzoinka 
+    KAo i d abude pregled ticketsa koje su korisnici kreirali i opcija za promjenu njihovog statusa
+

@@ -42,7 +42,11 @@ function sortDocumentsBySequence(left, right) {
   return (left?.id || 0) - (right?.id || 0);
 }
 
-export function useCasePeopleLinkedDocumentsState({ caseId, onUnauthorized }) {
+export function useCasePeopleLinkedDocumentsState({
+  caseId,
+  onUnauthorized,
+  scope = "create",
+}) {
   const [linkedDocuments, setLinkedDocuments] = useState([]);
   const [linkedDocumentsError, setLinkedDocumentsError] = useState("");
 
@@ -50,8 +54,8 @@ export function useCasePeopleLinkedDocumentsState({ caseId, onUnauthorized }) {
     setLinkedDocumentsError("");
 
     const [statementsResult, policeDocumentsResult] = await Promise.all([
-      fetchCaseStatements(caseId),
-      fetchCasePoliceDocuments(caseId),
+      fetchCaseStatements(caseId, scope),
+      fetchCasePoliceDocuments(caseId, scope),
     ]);
 
     if (statementsResult.unauthorized || policeDocumentsResult.unauthorized) {
@@ -82,7 +86,7 @@ export function useCasePeopleLinkedDocumentsState({ caseId, onUnauthorized }) {
 
     setLinkedDocuments(nextDocuments);
     setLinkedDocumentsError(nonFatalErrors.join(" "));
-  }, [caseId, onUnauthorized]);
+  }, [caseId, onUnauthorized, scope]);
 
   useEffect(() => {
     void loadLinkedDocuments();

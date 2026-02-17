@@ -33,7 +33,7 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
   const loadPeople = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage("");
-    const result = await fetchCasePeople(caseId);
+    const result = await fetchCasePeople(caseId, isCreateMode ? "create" : "solve");
     if (!result.ok) {
       if (result.unauthorized) {
         setIsLoading(false);
@@ -51,7 +51,7 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
       nextPeople.some((person) => person.id === previousActiveId) ? previousActiveId : null
     );
     setIsLoading(false);
-  }, [caseId, onUnauthorized]);
+  }, [caseId, isCreateMode, onUnauthorized]);
   useEffect(() => {
     void loadPeople();
   }, [loadPeople]);

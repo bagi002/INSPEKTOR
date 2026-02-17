@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Case workspace dokumentacija (dosijei, izjave, policijski dokumenti, saslusanja)
+title Class Diagram - Case workspace dokumentacija (vremenska linija, dosijei, izjave, policijski dokumenti, saslusanja)
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -47,6 +47,48 @@ class CreateCaseSidebar {
   +onPublish()
   +onLogout()
   +render()
+}
+
+class CaseTimelineTab {
+  +loadTimeline()
+  +handleAddTimelineItem(event)
+  +handleAdvanceTimeline()
+  +handleSaveTimeline()
+  +render()
+}
+
+class UseCaseTimelineTabState {
+  +state
+  +loadTimeline()
+  +handleAddTimelineItem(event)
+  +handleAdvanceTimeline()
+  +handleMoveTimelineItem(localKey, direction)
+  +handleSaveTimeline()
+}
+
+class CaseTimelineCreateForm {
+  +formData
+  +onSubmit()
+  +render()
+}
+
+class CaseTimelineRoadmapItem {
+  +item
+  +onMove(localKey, direction)
+  +onRemove(localKey)
+  +render()
+}
+
+class CaseTimelineStatCard {
+  +value
+  +label
+  +render()
+}
+
+class CaseTimelineHelpers {
+  +validateTimelineItemForm(formData, existingItems)
+  +buildTimelineSavePayload(items)
+  +formatTimelineSourceOption(itemType, source)
 }
 
 class CasePeopleTab {
@@ -190,20 +232,26 @@ class CaseInterrogationsHelpers {
 }
 
 class CasePeopleApiClient {
-  +fetchCasePeople(caseId)
+  +fetchCasePeople(caseId, scope)
   +createCasePerson(caseId, payload)
 }
 
 class CaseDocumentsApiClient {
-  +fetchCaseStatements(caseId)
+  +fetchCaseStatements(caseId, scope)
   +createCaseStatement(caseId, payload)
-  +fetchCasePoliceDocuments(caseId)
+  +fetchCasePoliceDocuments(caseId, scope)
   +createCasePoliceDocument(caseId, payload)
 }
 
 class CaseInterrogationsApiClient {
-  +fetchCaseInterrogations(caseId)
+  +fetchCaseInterrogations(caseId, scope)
   +createCaseInterrogation(caseId, payload)
+}
+
+class CaseTimelineApiClient {
+  +fetchCaseTimeline(caseId)
+  +replaceCaseTimeline(caseId, payload)
+  +advanceCaseTimeline(caseId)
 }
 
 class CasesApiClient {
@@ -226,6 +274,9 @@ class CasesRoutes {
   +GET /home
   +POST /
   +GET /:caseId/creator
+  +GET /:caseId/timeline
+  +POST /:caseId/timeline/advance
+  +PUT /:caseId/timeline
   +GET /:caseId/people
   +POST /:caseId/people
   +GET /:caseId/statements
@@ -240,6 +291,9 @@ class CasesController {
   +getLoggedHomeOverviewController(req, res)
   +createCaseController(req, res)
   +getCreatorCaseController(req, res)
+  +getCreatorCaseTimelineController(req, res)
+  +advanceCaseTimelineController(req, res)
+  +replaceCreatorCaseTimelineController(req, res)
   +getCreatorCasePeopleController(req, res)
   +createCreatorCasePersonController(req, res)
   +getCreatorCaseStatementsController(req, res)
@@ -257,24 +311,39 @@ class CasesService {
 }
 
 class CasePeopleService {
-  +getCreatorCasePeople(caseId, userId)
+  +getCreatorCasePeople(caseId, userId, scope)
   +createCreatorCasePerson(caseId, payload, userId)
 }
 
+class CaseTimelineService {
+  +getCreatorCaseTimeline(caseId, userId)
+  +advanceCaseTimeline(caseId, userId)
+  +replaceCreatorCaseTimeline(caseId, payload, userId)
+}
+
 class CaseDocumentsService {
-  +getCreatorCaseStatements(caseId, userId)
+  +getCreatorCaseStatements(caseId, userId, scope)
   +createCreatorCaseStatement(caseId, payload, userId)
-  +getCreatorCasePoliceDocuments(caseId, userId)
+  +getCreatorCasePoliceDocuments(caseId, userId, scope)
   +createCreatorCasePoliceDocument(caseId, payload, userId)
 }
 
 class CaseInterrogationsService {
-  +getCreatorCaseInterrogations(caseId, userId)
+  +getCreatorCaseInterrogations(caseId, userId, scope)
   +createCreatorCaseInterrogation(caseId, payload, userId)
+}
+
+class CaseSolveVisibilityService {
+  +normalizeCaseReadScope(scope)
+  +getSolveVisibilityForUser(caseId, userId)
 }
 
 class CasePeopleValidation {
   +validateCreateCasePersonPayload(payload)
+}
+
+class CaseTimelineValidation {
+  +validateReplaceCaseTimelinePayload(payload, availableSources)
 }
 
 class CaseDocumentsValidation {
@@ -298,12 +367,26 @@ class CaseDocumentsValidationShared {
 class CasesRepository {
   +createCaseWithDetails(payload)
   +getHomeOverviewRows(userId)
+  +findCaseById(caseId)
   +findCaseByIdForAuthor(caseId, userId)
 }
 
 class CasePeopleRepository {
   +getCasePeopleByCaseId(caseId)
   +createCasePersonForCase(caseId, payload, userId)
+}
+
+class CaseTimelineRepository {
+  +getCaseTimelineItemsByCaseId(caseId)
+  +getCaseTimelinePeopleSourcesByCaseId(caseId)
+  +getCaseTimelineDocumentSourcesByCaseId(caseId)
+  +replaceCaseTimelineItems(caseId, items)
+}
+
+class CaseProgressRepository {
+  +ensureCaseUserProgressByCaseIdAndUserId(caseId, userId)
+  +upsertCaseUserProgress(caseId, userId, payload)
+  +normalizeCaseUserProgressForTimeline(caseId, totalTimelineItems)
 }
 
 class CaseDocumentsRepository {
@@ -351,10 +434,16 @@ DesktopGate --> CreateCasePage
 DesktopGate --> CaseWorkspacePage
 
 CaseWorkspacePage *-- CreateCaseSidebar
+CaseWorkspacePage *-- CaseTimelineTab
 CaseWorkspacePage *-- CasePeopleTab
 CaseWorkspacePage *-- CaseStatementsTab
 CaseWorkspacePage *-- CasePoliceDocumentsTab
 CaseWorkspacePage *-- CaseInterrogationsTab
+CaseTimelineTab ..> UseCaseTimelineTabState
+CaseTimelineTab *-- CaseTimelineCreateForm
+CaseTimelineTab *-- CaseTimelineRoadmapItem
+CaseTimelineTab *-- CaseTimelineStatCard
+UseCaseTimelineTabState ..> CaseTimelineHelpers
 CasePeopleTab *-- CasePersonDossierModal
 CaseStatementsTab *-- CaseDocumentsTab
 CasePoliceDocumentsTab *-- CaseDocumentsTab
@@ -381,6 +470,7 @@ CaseDocumentModal ..> CaseWorkspaceLinking
 CasePersonDossierModal ..> CaseWorkspaceLinking
 
 CasePeopleTab ..> CasePeopleApiClient
+CaseTimelineTab ..> CaseTimelineApiClient
 CaseStatementsTab ..> CaseDocumentsApiClient
 CasePoliceDocumentsTab ..> CaseDocumentsApiClient
 CaseInterrogationsTab ..> CaseInterrogationsApiClient
@@ -388,12 +478,14 @@ CaseWorkspacePage ..> CasesApiClient
 LoggedHomePage ..> CasesApiClient
 CreateCasePage ..> CasesApiClient
 CasePeopleApiClient ..> SessionStorageService
+CaseTimelineApiClient ..> SessionStorageService
 CaseDocumentsApiClient ..> SessionStorageService
 CaseInterrogationsApiClient ..> SessionStorageService
 CasesApiClient ..> SessionStorageService
 CasesApiClient ..> RouteUtils
 
 CasePeopleApiClient ..> ExpressApp
+CaseTimelineApiClient ..> ExpressApp
 CaseDocumentsApiClient ..> ExpressApp
 CaseInterrogationsApiClient ..> ExpressApp
 CasesApiClient ..> ExpressApp
@@ -401,24 +493,36 @@ ExpressApp --> CasesRoutes
 CasesRoutes --> AuthGuardMiddleware
 CasesRoutes --> CasesController
 CasesController --> CasesService
+CasesController --> CaseTimelineService
 CasesController --> CasePeopleService
 CasesController --> CaseDocumentsService
 CasesController --> CaseInterrogationsService
 CasesService --> CasesRepository
+CaseTimelineService --> CaseTimelineValidation
+CaseTimelineService --> CasesRepository
+CaseTimelineService --> CaseTimelineRepository
+CaseTimelineService --> CaseProgressRepository
 CasePeopleService --> CasePeopleValidation
 CasePeopleService --> CasesRepository
 CasePeopleService --> CasePeopleRepository
+CasePeopleService --> CaseSolveVisibilityService
 CaseDocumentsService --> CaseDocumentsValidation
 CaseDocumentsValidation --> CaseDocumentsTypeSpecificValidation
 CaseDocumentsValidation --> CaseDocumentsValidationShared
 CaseDocumentsService --> CasesRepository
 CaseDocumentsService --> CaseDocumentsRepository
+CaseDocumentsService --> CaseSolveVisibilityService
 CaseInterrogationsService --> CaseInterrogationsValidation
 CaseInterrogationsService --> CasesRepository
 CaseInterrogationsService --> CaseDocumentsRepository
 CaseInterrogationsService --> CaseInterrogationsRepository
+CaseInterrogationsService --> CaseSolveVisibilityService
+CaseSolveVisibilityService --> CaseTimelineRepository
+CaseSolveVisibilityService --> CaseProgressRepository
 CaseDocumentsRepository ..> CaseDocumentsValidationShared
 CasesRepository --> DatabaseModule
+CaseTimelineRepository --> DatabaseModule
+CaseProgressRepository --> DatabaseModule
 CasePeopleRepository --> DatabaseModule
 CaseDocumentsRepository --> DatabaseModule
 CaseInterrogationsRepository --> DatabaseModule

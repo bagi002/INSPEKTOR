@@ -74,10 +74,14 @@ async function requestCaseDocuments(caseId, endpointPath, method, payload, fallb
   }
 }
 
-export function fetchCaseStatements(caseId) {
+function withScope(endpointPath, scope) {
+  return scope === "solve" ? `${endpointPath}?scope=solve` : endpointPath;
+}
+
+export function fetchCaseStatements(caseId, scope = "create") {
   return requestCaseDocuments(
     caseId,
-    "statements",
+    withScope("statements", scope),
     "GET",
     null,
     "Ucitavanje izjava nije uspelo."
@@ -94,10 +98,10 @@ export function createCaseStatement(caseId, payload) {
   );
 }
 
-export function fetchCasePoliceDocuments(caseId) {
+export function fetchCasePoliceDocuments(caseId, scope = "create") {
   return requestCaseDocuments(
     caseId,
-    "police-documents",
+    withScope("police-documents", scope),
     "GET",
     null,
     "Ucitavanje policijskih dokumenata nije uspelo."
