@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Osobe i dosijei u case workspace-u
+title Class Diagram - Case workspace dokumentacija (dosijei, izjave, policijski dokumenti)
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -21,45 +21,12 @@ class DesktopGate {
   +render()
 }
 
-class LoginPage {
-  +formData
-  +errors
-  +handleSubmit()
-  +render()
-}
-
 class LoggedHomePage {
-  +user
-  +homeData
   +loadHomeData()
   +render()
 }
 
-class LoggedCaseSection {
-  +title
-  +items
-  +renderDetails()
-  +render()
-}
-
-class LoggedHomeData {
-  +normalizeHomeData(rawData)
-  +formatAverageRating(value)
-  +formatStatus(value)
-  +formatReviews(value)
-}
-
-class LoggedSidebar {
-  +activePath
-  +user
-  +onLogout()
-  +render()
-}
-
 class CreateCasePage {
-  +formData
-  +formErrors
-  +isSubmitting
   +handleCreateCase()
   +render()
 }
@@ -73,88 +40,120 @@ class CaseWorkspacePage {
   +render()
 }
 
-class CasePeopleTab {
-  +caseId
-  +mode
-  +people
-  +activePersonId
-  +openCreateModal()
-  +openDossierModal(personId)
-  +render()
-}
-
-class UseCasePeopleTabState {
-  +loadPeople()
-  +handleCreatePerson()
-  +closeCreateModal()
-  +closeDossierModal()
-  +buildPayload()
-  +state
-}
-
-class CasePersonDossierModal {
-  +person
-  +onClose()
-  +render()
-}
-
-class CasePeopleCreateTextareas {
-  +formData
-  +render()
-}
-
-class CasePeopleCreateBasics {
-  +formData
-  +onPhotoUpload()
-  +render()
-}
-
-class CasePeopleCreateForm {
-  +formData
-  +onSubmit()
-  +render()
-}
-
-class CasePeopleOptions {
-  +CASE_PERSON_*_OPTIONS
-}
-
-class CasePeopleStateUtils {
-  +buildCreatePersonPayload(formData)
-  +readPhotoDataUrl(file)
-}
-
 class CreateCaseSidebar {
   +mode
   +caseId
   +activeTabSlug
-  +publishDisabled
-  +publishStatusMessage
   +onPublish()
   +onLogout()
   +render()
 }
 
-class CaseWorkspaceTabs {
-  +CASE_WORKSPACE_TABS
-  +DEFAULT_CASE_WORKSPACE_TAB
-  +findCaseWorkspaceTab(tabSlug)
+class CasePeopleTab {
+  +loadPeople()
+  +openCreateModal()
+  +openDossierModal(personId)
+  +render()
 }
 
-class AuthApiClient {
-  +registerUser(payload)
-  +loginUser(payload)
+class CasePersonDossierModal {
+  +person
+  +linkedDocuments
+  +onClose()
+  +render()
+}
+
+class CaseStatementsTab {
+  +render()
+}
+
+class CasePoliceDocumentsTab {
+  +render()
+}
+
+class CaseDocumentsTab {
+  +category
+  +loadDocuments()
+  +openCreateModal()
+  +openPreviewModal(documentId)
+  +render()
+}
+
+class UseCaseDocumentsTabState {
+  +state
+  +loadDocuments()
+  +handleCreateDocument()
+  +handleRelatedPersonToggle()
+  +openCreateModal()
+  +openPreviewModal(documentId)
+}
+
+class UseCaseDocumentFormState {
+  +formData
+  +formErrors
+  +handleFieldChange(event)
+  +handleTypeSpecificFieldChange(fieldName, event)
+  +handleCreateDocument(event)
+}
+
+class UseCaseDocumentImageState {
+  +handleDocumentImageUpload(event)
+  +handleDocumentImageRemove(imageIndex)
+}
+
+class UseCasePeopleLinkedDocumentsState {
+  +loadLinkedDocuments()
+  +getLinkedDocumentsForPerson(personId)
+}
+
+class CaseWorkspaceLinking {
+  +buildPersonDossierHref(caseId, mode, personId)
+  +buildDocumentPreviewHref(caseId, mode, document)
+  +parsePersonIdFromLocationSearch(search)
+  +parseDocumentIdFromLocationSearch(search)
+}
+
+class CaseDocumentTypeSpecificConfig {
+  +getTypeSpecificFieldsForDocumentType(documentType)
+  +buildTypeSpecificDefaults(documentType)
+  +supportsImageEvidenceForDocumentType(documentType)
+}
+
+class CaseDocumentsOverviewPanel {
+  +searchValue
+  +typeFilter
+  +classificationFilter
+  +render()
+}
+
+class CaseDocumentCreateForm {
+  +formData
+  +onSubmit()
+  +render()
+}
+
+class CaseDocumentModal {
+  +document
+  +onClose()
+  +render()
+}
+
+class CasePeopleApiClient {
+  +fetchCasePeople(caseId)
+  +createCasePerson(caseId, payload)
+}
+
+class CaseDocumentsApiClient {
+  +fetchCaseStatements(caseId)
+  +createCaseStatement(caseId, payload)
+  +fetchCasePoliceDocuments(caseId)
+  +createCasePoliceDocument(caseId, payload)
 }
 
 class CasesApiClient {
   +fetchLoggedHomeCases()
   +createCase(payload)
   +fetchCreatorCase(caseId)
-}
-
-class CasePeopleApiClient {
-  +fetchCasePeople(caseId)
-  +createCasePerson(caseId, payload)
 }
 
 class SessionStorageService {
@@ -167,26 +166,16 @@ class ExpressApp {
   +mountRoutes()
 }
 
-class AuthRoutes {
-  +POST /register
-  +POST /login
-}
-
 class CasesRoutes {
   +GET /home
   +POST /
   +GET /:caseId/creator
   +GET /:caseId/people
   +POST /:caseId/people
-}
-
-class AuthGuardMiddleware {
-  +requireAuth(req, res, next)
-}
-
-class AuthController {
-  +registerController(req, res)
-  +loginController(req, res)
+  +GET /:caseId/statements
+  +POST /:caseId/statements
+  +GET /:caseId/police-documents
+  +POST /:caseId/police-documents
 }
 
 class CasesController {
@@ -195,11 +184,10 @@ class CasesController {
   +getCreatorCaseController(req, res)
   +getCreatorCasePeopleController(req, res)
   +createCreatorCasePersonController(req, res)
-}
-
-class AuthService {
-  +registerUser(payload)
-  +loginUser(payload)
+  +getCreatorCaseStatementsController(req, res)
+  +createCreatorCaseStatementController(req, res)
+  +getCreatorCasePoliceDocumentsController(req, res)
+  +createCreatorCasePoliceDocumentController(req, res)
 }
 
 class CasesService {
@@ -213,17 +201,29 @@ class CasePeopleService {
   +createCreatorCasePerson(caseId, payload, userId)
 }
 
-class CasesValidation {
-  +validateCreateCasePayload(payload)
+class CaseDocumentsService {
+  +getCreatorCaseStatements(caseId, userId)
+  +createCreatorCaseStatement(caseId, payload, userId)
+  +getCreatorCasePoliceDocuments(caseId, userId)
+  +createCreatorCasePoliceDocument(caseId, payload, userId)
 }
 
 class CasePeopleValidation {
   +validateCreateCasePersonPayload(payload)
 }
 
-class AuthRepository {
-  +findUserByEmail(email)
-  +createUser(userData)
+class CaseDocumentsValidation {
+  +validateCreateCaseStatementPayload(payload)
+  +validateCreateCasePoliceDocumentPayload(payload)
+}
+
+class CaseDocumentsTypeSpecificValidation {
+  +validateTypeSpecificMetadata(documentType, rawTypeSpecific, errors)
+}
+
+class CaseDocumentsValidationShared {
+  +sanitizeImageEvidence(value)
+  +sanitizeDocumentType(value, allowedTypes, fallbackType)
 }
 
 class CasesRepository {
@@ -233,9 +233,18 @@ class CasesRepository {
 }
 
 class CasePeopleRepository {
-  +findCasePersonById(personId)
   +getCasePeopleByCaseId(caseId)
-  +createCasePersonForCase(caseId, payload, authorUserId)
+  +createCasePersonForCase(caseId, payload, userId)
+}
+
+class CaseDocumentsRepository {
+  +getCaseDocumentsByCaseIdAndTypes(caseId, types)
+  +createCaseDocumentForCase(caseId, payload)
+  +getCasePeopleDirectoryByCaseId(caseId)
+}
+
+class AuthGuardMiddleware {
+  +requireAuth(req, res, next)
 }
 
 class DatabaseModule {
@@ -250,63 +259,72 @@ class SQLiteDatabase {
   +case_people
   +case_person_dossiers
   +case_person_dossier_profiles
-  +case_documents
+  +case_documents(metadata_json)
   +case_timeline_items
   +case_user_progress
 }
 
 App --> RouteUtils
 App --> DesktopGate
-DesktopGate --> LoginPage
 DesktopGate --> LoggedHomePage
 DesktopGate --> CreateCasePage
 DesktopGate --> CaseWorkspacePage
-LoggedHomePage *-- LoggedSidebar
-LoggedHomePage *-- LoggedCaseSection
-LoggedHomePage ..> LoggedHomeData
-CreateCasePage *-- CreateCaseSidebar
+
 CaseWorkspacePage *-- CreateCaseSidebar
 CaseWorkspacePage *-- CasePeopleTab
+CaseWorkspacePage *-- CaseStatementsTab
+CaseWorkspacePage *-- CasePoliceDocumentsTab
 CasePeopleTab *-- CasePersonDossierModal
-CaseWorkspacePage ..> CaseWorkspaceTabs
+CaseStatementsTab *-- CaseDocumentsTab
+CasePoliceDocumentsTab *-- CaseDocumentsTab
+CaseDocumentsTab ..> UseCaseDocumentsTabState
+UseCaseDocumentsTabState ..> UseCaseDocumentFormState
+UseCaseDocumentFormState ..> UseCaseDocumentImageState
+UseCaseDocumentsTabState ..> CaseWorkspaceLinking
+CasePeopleTab ..> UseCasePeopleLinkedDocumentsState
+CasePeopleTab ..> CaseWorkspaceLinking
+UseCasePeopleLinkedDocumentsState ..> CaseDocumentsApiClient
+UseCaseDocumentFormState ..> CaseDocumentTypeSpecificConfig
+CaseDocumentsTab *-- CaseDocumentsOverviewPanel
+CaseDocumentsTab *-- CaseDocumentCreateForm
+CaseDocumentsTab *-- CaseDocumentModal
+CaseDocumentCreateForm ..> CaseDocumentTypeSpecificConfig
+CaseDocumentModal ..> CaseDocumentTypeSpecificConfig
+CaseDocumentModal ..> CaseWorkspaceLinking
+CasePersonDossierModal ..> CaseWorkspaceLinking
 
-App ..> SessionStorageService
-LoginPage ..> AuthApiClient
+CasePeopleTab ..> CasePeopleApiClient
+CaseStatementsTab ..> CaseDocumentsApiClient
+CasePoliceDocumentsTab ..> CaseDocumentsApiClient
+CaseWorkspacePage ..> CasesApiClient
 LoggedHomePage ..> CasesApiClient
 CreateCasePage ..> CasesApiClient
-CaseWorkspacePage ..> CasesApiClient
-CasePeopleTab ..> CasePeopleApiClient
-CasePeopleTab ..> UseCasePeopleTabState
-UseCasePeopleTabState ..> CasePeopleStateUtils
-CasePeopleCreateForm ..> CasePeopleCreateBasics
-CasePeopleCreateForm ..> CasePeopleCreateTextareas
-CasePeopleCreateBasics ..> CasePeopleOptions
-AuthApiClient ..> SessionStorageService
-CasesApiClient ..> SessionStorageService
 CasePeopleApiClient ..> SessionStorageService
+CaseDocumentsApiClient ..> SessionStorageService
+CasesApiClient ..> SessionStorageService
 CasesApiClient ..> RouteUtils
-CreateCaseSidebar ..> CaseWorkspaceTabs
-CreateCaseSidebar ..> RouteUtils
 
-AuthApiClient ..> ExpressApp
-CasesApiClient ..> ExpressApp
 CasePeopleApiClient ..> ExpressApp
-ExpressApp --> AuthRoutes
+CaseDocumentsApiClient ..> ExpressApp
+CasesApiClient ..> ExpressApp
 ExpressApp --> CasesRoutes
 CasesRoutes --> AuthGuardMiddleware
-AuthRoutes --> AuthController
 CasesRoutes --> CasesController
-AuthController --> AuthService
 CasesController --> CasesService
 CasesController --> CasePeopleService
-CasesService --> CasesValidation
-CasePeopleService --> CasePeopleValidation
-AuthService --> AuthRepository
+CasesController --> CaseDocumentsService
 CasesService --> CasesRepository
+CasePeopleService --> CasePeopleValidation
 CasePeopleService --> CasesRepository
 CasePeopleService --> CasePeopleRepository
-AuthRepository --> DatabaseModule
+CaseDocumentsService --> CaseDocumentsValidation
+CaseDocumentsValidation --> CaseDocumentsTypeSpecificValidation
+CaseDocumentsValidation --> CaseDocumentsValidationShared
+CaseDocumentsService --> CasesRepository
+CaseDocumentsService --> CaseDocumentsRepository
+CaseDocumentsRepository ..> CaseDocumentsValidationShared
 CasesRepository --> DatabaseModule
 CasePeopleRepository --> DatabaseModule
+CaseDocumentsRepository --> DatabaseModule
 DatabaseModule --> SQLiteDatabase
 @enduml

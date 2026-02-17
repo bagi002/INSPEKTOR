@@ -150,7 +150,7 @@
 
 - id: REQ-015
   name: Dosije osobe
-  status: In Progress
+  status: finished
   description: >
     Dosije osobe treba da sadrzi sve informacije o toj osobi.
     Kao sto su ime prezime mjesto stanovanja broj telefona visina 
@@ -172,7 +172,7 @@
 
 - id: REQ-017
   name: Izjave svjedoka, osumnjicenog i zrtve
-  status: Draft
+  status: Finished
   description: >
     Veze se za konkretnu osbu koaj ga je dala
     Treba da ima nslov
@@ -182,7 +182,7 @@
 
 - id: REQ-018
   name: Policijski izvjestaji, forenzicki nalazi
-  status: Draft
+  status: Finished
   description: >
     Treba da sadrze sve neophodne informacije koje su potrebne da se razumije njihov sadrzaj
     Treba da imaju profesionalan izgled kao pravi policiski izvjestaji i forenzicki nalazi
@@ -214,7 +214,7 @@
 
 - id: REQ-021
   name: Kreiranje dokumenata, Dosijea i Osoba
-  status: Draft
+  status: In Progress
   description: >
     Treba da sadrzi formu za kreiranje novih dokumenata, dosijea i osoba u slucaju
     Treba da sadrzi opciju za dodavanje svih relevantnih informacija o dokumentu, dosijeu ili osobi

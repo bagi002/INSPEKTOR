@@ -1,7 +1,13 @@
+import { useEffect, useMemo } from "react";
 import CasePeopleCreateForm from "./CasePeopleCreateForm";
 import CasePeopleOverviewPanel from "./CasePeopleOverviewPanel";
 import CasePersonDossierModal from "./CasePersonDossierModal";
+import {
+  consumeWorkspaceLinkingQueryParams,
+  parsePersonIdFromLocationSearch,
+} from "./caseWorkspaceLinking";
 import { useCasePeopleTabState } from "./useCasePeopleTabState";
+import { useCasePeopleLinkedDocumentsState } from "./useCasePeopleLinkedDocumentsState";
 
 function CasePeopleTab({ caseId, mode, onUnauthorized }) {
   const {
@@ -27,6 +33,33 @@ function CasePeopleTab({ caseId, mode, onUnauthorized }) {
     openDossierModal,
     closeDossierModal,
   } = useCasePeopleTabState({ caseId, mode, onUnauthorized });
+
+  const { linkedDocumentsError, getLinkedDocumentsForPerson } =
+    useCasePeopleLinkedDocumentsState({ caseId, onUnauthorized });
+  const activePersonLinkedDocuments = useMemo(
+    () => getLinkedDocumentsForPerson(activePerson?.id),
+    [activePerson?.id, getLinkedDocumentsForPerson]
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined" || people.length === 0) {
+      return;
+    }
+
+    const linkedPersonId = parsePersonIdFromLocationSearch(window.location.search);
+    if (!linkedPersonId) {
+      return;
+    }
+
+    const exists = people.some((person) => person.id === linkedPersonId);
+    if (!exists) {
+      consumeWorkspaceLinkingQueryParams(["personId"]);
+      return;
+    }
+
+    openDossierModal(linkedPersonId);
+    consumeWorkspaceLinkingQueryParams(["personId"]);
+  }, [people, openDossierModal]);
 
   return (
     <>
@@ -74,7 +107,14 @@ function CasePeopleTab({ caseId, mode, onUnauthorized }) {
       ) : null}
 
       {!isLoading && !errorMessage && isDossierModalOpen ? (
-        <CasePersonDossierModal person={activePerson} onClose={closeDossierModal} />
+        <CasePersonDossierModal
+          caseId={caseId}
+          mode={mode}
+          person={activePerson}
+          linkedDocuments={activePersonLinkedDocuments}
+          linkedDocumentsError={linkedDocumentsError}
+          onClose={closeDossierModal}
+        />
       ) : null}
     </>
   );

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CreateCaseSidebar from "./CreateCaseSidebar";
 import CasePeopleTab from "./CasePeopleTab";
+import CasePoliceDocumentsTab from "./CasePoliceDocumentsTab";
+import CaseStatementsTab from "./CaseStatementsTab";
 import { CASE_WORKSPACE_TABS, findCaseWorkspaceTab } from "./caseWorkspaceTabs";
 import { fetchCreatorCase } from "../services/casesApi";
 import { AUTH_ROUTES, CASE_WORKSPACE_MODES } from "../utils/routes";
-
 function resolveModeTexts(mode) {
   if (mode === CASE_WORKSPACE_MODES.SOLVE) {
     return {
@@ -15,7 +16,6 @@ function resolveModeTexts(mode) {
         "Ovo je prazna stranica za ovaj tab u rezimu resavanja. Sadrzaj ce biti dodat u narednim fazama.",
     };
   }
-
   return {
     label: "Creatorski mod",
     description:
@@ -24,31 +24,40 @@ function resolveModeTexts(mode) {
       "Ovo je prazna stranica za ovaj tab u rezimu kreiranja. Konkretni editori ce biti dodati u narednim fazama.",
   };
 }
-
 function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   const [caseData, setCaseData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [publishStatusMessage, setPublishStatusMessage] = useState("");
-
   const activeTab = useMemo(
     () => findCaseWorkspaceTab(activeTabSlug) || CASE_WORKSPACE_TABS[0],
     [activeTabSlug]
   );
   const modeTexts = useMemo(() => resolveModeTexts(mode), [mode]);
   const isPeopleTab = activeTab.slug === "osobe-i-dosijei";
+  const isPoliceDocumentsTab = activeTab.slug === "dokumenti";
+  const isStatementsTab = activeTab.slug === "izjave";
   const modeDescription = useMemo(() => {
     if (!isPeopleTab) {
+      if (isPoliceDocumentsTab) {
+        if (mode === CASE_WORKSPACE_MODES.SOLVE) {
+          return "Pregled policijskih izvjestaja i forenzickih nalaza u read-only rezimu sa formalnim prikazom dokumenta.";
+        }
+        return "Operativni panel za kreiranje policijskih izvjestaja i forenzickih nalaza kroz formalni modalni workflow.";
+      }
+      if (isStatementsTab) {
+        if (mode === CASE_WORKSPACE_MODES.SOLVE) {
+          return "Pregled svih izjava u slucaju, povezivanje sa osobama i formalni read-only prikaz u policijskom formatu.";
+        }
+        return "Operativni panel za unos i pregled izjava svjedoka, osumnjicenih i zrtava kroz strukturisane dokumente.";
+      }
       return modeTexts.description;
     }
-
     if (mode === CASE_WORKSPACE_MODES.SOLVE) {
       return "Pregled formalnih dosijea lica u read-only rezimu, sa fokusom na evidenciju i detalje profila.";
     }
-
     return "Operativni panel za kreiranje, uredjivanje i pregled dosijea osoba kroz strukturisan modalni workflow.";
-  }, [isPeopleTab, mode, modeTexts.description]);
-
+  }, [isPeopleTab, isPoliceDocumentsTab, isStatementsTab, mode, modeTexts.description]);
   const loadCaseData = useCallback(async () => {
     if (mode === CASE_WORKSPACE_MODES.SOLVE) {
       setCaseData({
@@ -60,51 +69,47 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
       setIsLoading(false);
       return;
     }
-
     setIsLoading(true);
     setErrorMessage("");
-
     const result = await fetchCreatorCase(caseId);
     if (!result.ok) {
       if (result.unauthorized) {
         onLogout();
         return;
       }
-
       setErrorMessage(result.message || "Ucitavanje slucaja nije uspelo.");
       setIsLoading(false);
       return;
     }
-
     if (!result.data || !result.data.id) {
       setErrorMessage("Slucaj nije pronadjen ili vise nije dostupan.");
       setIsLoading(false);
       return;
     }
-
     setCaseData(result.data);
     setIsLoading(false);
   }, [caseId, mode, onLogout]);
-
   useEffect(() => {
     void loadCaseData();
   }, [loadCaseData]);
-
   useEffect(() => {
     setPublishStatusMessage("");
   }, [caseId, mode]);
-
   function handlePublishClick() {
     setPublishStatusMessage(
       "Objava slucaja je trenutno dostupna kao dugme u meniju. Potvrda objave i backend logika bice dodati u sledecoj fazi."
     );
   }
-
   function renderTabContent() {
     if (activeTab.slug === "osobe-i-dosijei") {
       return <CasePeopleTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
     }
-
+    if (activeTab.slug === "dokumenti") {
+      return <CasePoliceDocumentsTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
+    }
+    if (activeTab.slug === "izjave") {
+      return <CaseStatementsTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
+    }
     return (
       <section className="card reveal delay-3">
         <h3>Prazna stranica (placeholder)</h3>
@@ -112,10 +117,9 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
       </section>
     );
   }
-
   const showPublishButton = mode === CASE_WORKSPACE_MODES.CREATE;
   const publishDisabled = !showPublishButton || !caseData || isLoading || Boolean(errorMessage);
-
+  const showTabSummaryCard = !isPeopleTab && !isPoliceDocumentsTab && !isStatementsTab;
   return (
     <div className="app-shell app-shell-create-case">
       <CreateCaseSidebar
@@ -129,7 +133,6 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
         publishDisabled={publishDisabled}
         publishStatusMessage={showPublishButton ? publishStatusMessage : ""}
       />
-
       <main className="content create-case-content">
         {isLoading ? (
           <section className="card reveal delay-1">
@@ -138,7 +141,6 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
             <p>Pripremam prikaz trazenog taba.</p>
           </section>
         ) : null}
-
         {!isLoading && errorMessage ? (
           <section className="card reveal delay-1">
             <p className="error-banner">{errorMessage}</p>
@@ -152,7 +154,6 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
             </div>
           </section>
         ) : null}
-
         {!isLoading && !errorMessage && caseData ? (
           <>
             <section className="card logged-hero reveal delay-1">
@@ -160,15 +161,13 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
               <h2>{caseData.title}</h2>
               <p>{modeDescription}</p>
             </section>
-
-            {!isPeopleTab ? (
+            {showTabSummaryCard ? (
               <section className="card reveal delay-2">
                 <p className="eyebrow">Tab</p>
                 <h3>{activeTab.label}</h3>
                 <p className="create-case-summary">{activeTab.description}</p>
               </section>
             ) : null}
-
             {renderTabContent()}
           </>
         ) : null}
@@ -176,5 +175,4 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
     </div>
   );
 }
-
 export default CaseWorkspacePage;

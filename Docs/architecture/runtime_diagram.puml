@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Kreiranje i pregled osoba i dosijea u slucaju
+title Runtime Diagram - Kreiranje i pregled dosijea, izjava i policijskih dokumenata
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -11,20 +11,25 @@ participant "CreateCasePage (/slucaj/novi)" as CreateCaseStart
 participant "CaseWorkspacePage" as Workspace
 participant "CreateCaseSidebar" as WorkspaceSidebar
 participant "CasePeopleTab" as PeopleTab
+participant "CaseStatementsTab" as StatementsTab
+participant "CasePoliceDocumentsTab" as DocsTab
 participant "Cases API Client" as CasesClient
 participant "Case People API Client" as PeopleClient
+participant "Case Documents API Client" as DocumentsClient
 participant "Auth API Client" as AuthClient
 participant "Express Auth API" as AuthApi
 participant "Express Cases API" as CasesApi
 participant "Auth Guard (JWT)" as JwtGuard
-participant "Auth Service" as AuthService
 participant "Cases Service" as CasesService
 participant "Case People Service" as PeopleService
+participant "Case Documents Service" as DocumentsService
 participant "Cases Repository" as CasesRepo
 participant "Case People Repository" as PeopleRepo
-database "SQLite users tabela" as UsersStore
-database "SQLite cases/case_documents/case_timeline_items" as CasesStore
-database "SQLite case_people + case_person_dossiers + case_person_dossier_profiles" as PeopleStore
+participant "Case Documents Repository" as DocumentsRepo
+database "SQLite users" as UsersStore
+database "SQLite cases/timeline/progress" as CasesStore
+database "SQLite people + dossiers" as PeopleStore
+database "SQLite case_documents(metadata_json)" as DocumentsStore
 database "LocalStorage (session)" as SessionStore
 participant "Desktop Notice View" as Notice
 
@@ -36,10 +41,7 @@ alt Desktop sirina
   User -> Login: Unos kredencijala i submit
   Login -> AuthClient: POST /api/auth/login
   AuthClient -> AuthApi: HTTP zahtev
-  AuthApi -> AuthService: validate + login
-  AuthService -> UsersStore: Provera korisnika i lozinke
-  AuthService --> AuthApi: JWT token + user payload
-  AuthApi --> AuthClient: JSON uspeh
+  AuthApi --> AuthClient: JWT token + user payload
   AuthClient -> SessionStore: Upis tokena i korisnika
 
   Login -> Router: Navigacija na /app
@@ -53,10 +55,10 @@ alt Desktop sirina
   CasesService -> CasesRepo: getHomeOverviewRows(userId)
   CasesRepo -> CasesStore: SELECT sekcije + statistika
   CasesStore --> CasesRepo: podaci
-  CasesRepo --> CasesService: agregirani rezultati
+  CasesRepo --> CasesService: agregat
   CasesService --> CasesApi: response payload
   CasesApi --> CasesClient: JSON uspeh
-  CasesClient --> LoggedHome: Render kartica + akcije
+  CasesClient --> LoggedHome: Prikaz kartica slucajeva
 
   User -> LoggedHome: Klik "Kreiraj novi slucaj"
   LoggedHome -> Router: /slucaj/novi
@@ -69,7 +71,7 @@ alt Desktop sirina
   CasesApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> CasesService: createCase(payload, userId)
   CasesService -> CasesRepo: createCaseWithDetails(...)
-  CasesRepo -> CasesStore: INSERT case + povezani zapisi
+  CasesRepo -> CasesStore: INSERT case + inicijalni podaci
   CasesStore --> CasesRepo: novi caseId
   CasesRepo --> CasesService: case row
   CasesService --> CasesApi: 201 response
@@ -77,68 +79,149 @@ alt Desktop sirina
 
   CreateCaseStart -> Router: /slucaj/{caseId}/kreiranje/vremenska-linija
   Router -> Guard: Provera sesije
-  Guard -> Workspace: Render tabova slucaja
+  Guard -> Workspace: Ucitavanje case workspace-a
   Workspace -> CasesClient: GET /api/cases/{caseId}/creator
   CasesClient -> CasesApi: HTTP zahtev
   CasesApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> CasesService: getCreatorCase(caseId, userId)
   CasesService -> CasesRepo: findCaseByIdForAuthor(caseId, userId)
-  CasesRepo -> CasesStore: SELECT slucaj po id + author_user_id
+  CasesRepo -> CasesStore: SELECT slucaj po id + author
   CasesStore --> CasesRepo: case row
   CasesRepo --> CasesService: case row
   CasesService --> CasesApi: response payload
   CasesApi --> CasesClient: JSON uspeh
-  CasesClient --> Workspace: Podaci slucaja + aktivni tab
+  CasesClient --> Workspace: Osnovni podaci slucaja
 
   User -> WorkspaceSidebar: Klik tab "Osobe i dosijei"
   WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/osobe-i-dosijei
   Router -> Guard: Provera sesije
   Guard -> Workspace: Render taba osobe i dosijei
-  Workspace -> PeopleTab: Prosledjuje caseId, mode i auth callback
+  Workspace -> PeopleTab: Prosledjuje caseId i mode
   PeopleTab -> PeopleClient: GET /api/cases/{caseId}/people
   PeopleClient -> CasesApi: HTTP zahtev
   CasesApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> PeopleService: getCreatorCasePeople(caseId, userId)
   PeopleService -> CasesRepo: findCaseByIdForAuthor(caseId, userId)
-  CasesRepo -> CasesStore: Provera da je korisnik autor
-  CasesStore --> CasesRepo: case row
   PeopleService -> PeopleRepo: getCasePeopleByCaseId(caseId)
   PeopleRepo -> PeopleStore: SELECT osobe + dosijei
   PeopleStore --> PeopleRepo: lista osoba
   PeopleRepo --> PeopleService: mapirani podaci
   PeopleService --> CasesApi: response payload
   CasesApi --> PeopleClient: JSON uspeh
-  PeopleClient --> PeopleTab: Prikaz liste osoba sa osnovnim podacima
+  PeopleClient --> PeopleTab: Prikaz liste osoba
 
-  User -> PeopleTab: Klik na osobu u listi
-  PeopleTab --> PeopleTab: Otvara formalni dosije u iskacucem prozoru
+  PeopleTab -> DocumentsClient: GET /api/cases/{caseId}/statements + /police-documents
+  DocumentsClient -> CasesApi: HTTP zahtevi za povezane dokumente osobe
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> DocumentsService: Ucitavanje izjava i policijskih dokumenata
+  DocumentsService -> DocumentsRepo: SELECT case_documents + metadata_json
+  DocumentsRepo -> DocumentsStore: Citanje dokumenata slucaja
+  DocumentsStore --> DocumentsRepo: dokumenta za mapiranje veza po osobi
+  DocumentsRepo --> DocumentsService: mapirani dokumenti
+  DocumentsService --> CasesApi: response payload
+  CasesApi --> DocumentsClient: JSON uspeh
+  DocumentsClient --> PeopleTab: Mapa povezanih dokumenata po osobi
 
-  User -> PeopleTab: Klik "Kreiraj novu osobu"
-  PeopleTab --> PeopleTab: Otvara modal formu sa dropdown poljima i upload fotografije
-
-  User -> PeopleTab: Popunjava formu za osobu i dosije + upload slike
+  User -> PeopleTab: Kreira novu osobu/dosije
   PeopleTab -> PeopleClient: POST /api/cases/{caseId}/people
   PeopleClient -> CasesApi: HTTP zahtev
   CasesApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> PeopleService: createCreatorCasePerson(caseId, payload, userId)
-  PeopleService -> CasesRepo: findCaseByIdForAuthor(caseId, userId)
-  CasesRepo -> CasesStore: Provera da je korisnik autor
-  CasesStore --> CasesRepo: case row
-  PeopleService -> PeopleRepo: createCasePersonForCase(caseId, payload)
-  PeopleRepo -> PeopleStore: INSERT case_people + case_person_dossiers + case_person_dossier_profiles
-  PeopleStore --> PeopleRepo: upisani personId
-  PeopleRepo --> PeopleService: kreirana osoba i dosije
+  PeopleService -> PeopleRepo: INSERT osoba + dosije + profil
+  PeopleRepo -> PeopleStore: INSERT case_people + dossier tabele
+  PeopleStore --> PeopleRepo: personId/dossierId
+  PeopleRepo --> PeopleService: kreirana osoba
   PeopleService --> CasesApi: 201 response
   CasesApi --> PeopleClient: JSON uspeh
-  PeopleClient --> PeopleTab: Osvjezavanje liste + automatsko otvaranje novog dosijea u modalu sa slikom
+  PeopleClient --> PeopleTab: Osvjezenje liste + pregled dosijea
 
-  User -> LoggedHome: Klik "Nastavi resavanje" na aktivnom slucaju
-  LoggedHome -> Router: /slucaj/{caseId}/resavanje/osobe-i-dosijei
+  User -> PeopleTab: U dosijeu klik na povezanu izjavu/dokument
+  PeopleTab -> Router: /slucaj/{caseId}/kreiranje/(izjave|dokumenti)?documentId={id}
   Router -> Guard: Provera sesije
-  Guard -> Workspace: Render read-only prikaza osobe/dosijea sa prilagodjenim solve uvodom
-  Workspace -> PeopleTab: Rezim samo za pregled
-  PeopleTab -> PeopleClient: GET /api/cases/{caseId}/people
-  PeopleClient --> PeopleTab: Lista osoba, dosije dostupan kroz modal bez forme za kreiranje
+  Guard -> Workspace: Otvara trazeni tab dokumentacije
+  Workspace -> StatementsTab: ili DocsTab ucitava listu
+  StatementsTab -> DocumentsClient: GET /api/cases/{caseId}/statements (ako je izjava)
+  DocsTab -> DocumentsClient: GET /api/cases/{caseId}/police-documents (ako je dokument)
+  DocumentsClient --> Workspace: Ucitanje + auto-otvaranje preview modala po documentId
+
+  User -> StatementsTab: U formalnom prikazu klik na povezanu osobu
+  StatementsTab -> Router: /slucaj/{caseId}/kreiranje/osobe-i-dosijei?personId={id}
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Otvara tab osobe i dosijei
+  Workspace -> PeopleTab: Ucitava osobe i otvara dosije po personId
+
+  User -> WorkspaceSidebar: Klik tab "Izjave"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/izjave
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Render taba izjave
+  Workspace -> StatementsTab: Prosledjuje caseId i mode
+  StatementsTab -> DocumentsClient: GET /api/cases/{caseId}/statements
+  DocumentsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> DocumentsService: getCreatorCaseStatements(caseId, userId)
+  DocumentsService -> CasesRepo: Provera autorstva slucaja
+  DocumentsService -> DocumentsRepo: getCaseDocumentsByCaseIdAndTypes(caseId, statementTypes)
+  DocumentsRepo -> DocumentsStore: SELECT izjave + metadata_json
+  DocumentsStore --> DocumentsRepo: lista izjava
+  DocumentsRepo --> DocumentsService: mapirani dokumenti + direktorijum osoba
+  DocumentsService --> CasesApi: response payload
+  CasesApi --> DocumentsClient: JSON uspeh
+  DocumentsClient --> StatementsTab: Lista izjava + osobe
+
+  User -> StatementsTab: Popunjava i cuva novu izjavu (sa tip-specificnim poljima)
+  StatementsTab -> DocumentsClient: POST /api/cases/{caseId}/statements
+  DocumentsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> DocumentsService: createCreatorCaseStatement(caseId, payload, userId)
+  DocumentsService -> CasesRepo: Provera autorstva slucaja
+  DocumentsService -> DocumentsRepo: getCasePeopleDirectoryByCaseId(caseId)
+  DocumentsRepo -> PeopleStore: SELECT osobe u slucaju
+  PeopleStore --> DocumentsRepo: ljudi za validaciju
+  DocumentsService -> DocumentsRepo: createCaseDocumentForCase(caseId, payload + metadata.typeSpecific)
+  DocumentsRepo -> DocumentsStore: INSERT case_documents (tip izjave + metadata_json)
+  DocumentsStore --> DocumentsRepo: documentId
+  DocumentsRepo --> DocumentsService: kreirana izjava
+  DocumentsService --> CasesApi: 201 response
+  CasesApi --> DocumentsClient: JSON uspeh
+  DocumentsClient --> StatementsTab: Osvjezenje liste + formalni preview izjave
+
+  User -> WorkspaceSidebar: Klik tab "Dokumenti"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/dokumenti
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Render taba dokumenti
+  Workspace -> DocsTab: Prosledjuje caseId i mode
+  DocsTab -> DocumentsClient: GET /api/cases/{caseId}/police-documents
+  DocumentsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> DocumentsService: getCreatorCasePoliceDocuments(caseId, userId)
+  DocumentsService -> DocumentsRepo: SELECT police_report + forensic_report
+  DocumentsRepo -> DocumentsStore: SELECT case_documents + metadata_json
+  DocumentsStore --> DocumentsRepo: lista policijskih dokumenata
+  DocumentsRepo --> DocumentsService: mapirani dokumenti + osobe
+  DocumentsService --> CasesApi: response payload
+  CasesApi --> DocumentsClient: JSON uspeh
+  DocumentsClient --> DocsTab: Lista izvjestaja i nalaza
+
+  User -> DocsTab: Kreira policijski izvjestaj ili forenzicki nalaz (tip-specificna polja + slike)
+  DocsTab -> DocumentsClient: POST /api/cases/{caseId}/police-documents
+  DocumentsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> DocumentsService: createCreatorCasePoliceDocument(caseId, payload, userId)
+  DocumentsService -> DocumentsRepo: validacija osoba + tip-specificnih polja + imageEvidence
+  DocumentsRepo -> DocumentsStore: INSERT case_documents (metadata_json sa typeSpecific + imageEvidence)
+  DocumentsStore --> DocumentsRepo: documentId
+  DocumentsRepo --> DocumentsService: kreiran dokument
+  DocumentsService --> CasesApi: 201 response
+  CasesApi --> DocumentsClient: JSON uspeh
+  DocumentsClient --> DocsTab: Osvjezenje liste + formalni preview dokumenta
+
+  User -> LoggedHome: Klik "Nastavi resavanje"
+  LoggedHome -> Router: /slucaj/{caseId}/resavanje/izjave
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Solve mode (read-only)
+  Workspace -> StatementsTab: Prikaz bez forme za kreiranje
+  StatementsTab -> DocumentsClient: GET /api/cases/{caseId}/statements
+  DocumentsClient --> StatementsTab: Lista i formalni pregled izjava
 else Manja sirina od desktop praga
   Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
   Notice --> User: Prikaz ogranicenog ekrana

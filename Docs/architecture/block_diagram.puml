@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Osobe i dosijei u slucaju
+title Block Diagram - Dosijei, izjave i policijski dokumenti u slucaju
 
 package "Frontend" {
   [App Shell]
@@ -9,25 +9,31 @@ package "Frontend" {
   [Route Utils]
   [Public Auth Pages]
   [Logged Home Page]
-  [Logged Case Section]
-  [Logged Home Data Helpers]
   [Logged Sidebar]
   [Create Case Start Page]
   [Case Workspace Page]
   [Shared Case Sidebar]
   [Case Workspace Tabs]
   [Case People Tab]
+  [Case Statements Tab]
+  [Case Police Documents Tab]
   [People List View]
+  [Documents List View]
   [Create Person Modal]
-  [Dropdown Field Sets]
-  [Photo Upload Handler]
+  [Create Document Modal]
   [Dossier Modal View]
-  [Dossier Document Layout]
+  [Document Preview Modal]
+  [Photo Upload Handler]
+  [Document Image Upload Handler]
+  [Type-Specific Document Field Config]
+  [Case Workspace Cross-Link Helper]
   [Case People State Hook]
-  [Publish Action Button]
-  [Auth API Client]
-  [Cases API Client]
+  [Case People Linked Documents Hook]
+  [Case Documents State Hook]
   [Case People API Client]
+  [Case Documents API Client]
+  [Cases API Client]
+  [Auth API Client]
   [Session Storage]
   [Logout Action]
   [Desktop Warning View]
@@ -41,20 +47,25 @@ package "Backend (Node.js + Express)" {
   [Auth Service]
   [Cases Service]
   [Case People Service]
+  [Case Documents Service]
   [Cases Validation]
   [Case People Validation]
+  [Case Documents Validation]
+  [Type-Specific Document Validation]
   [JWT Token Service]
   [User Repository]
   [Cases Repository]
   [Case People Repository]
+  [Case Documents Repository]
   [SQLite Module]
   [Migration Runner]
   [Health Route]
 }
 
 database "SQLite Database" as Db
-database "cases + documents + timeline" as CasesDb
-database "case_people + case_person_dossiers + case_person_dossier_profiles" as PeopleDb
+database "cases + case_documents + timeline" as CasesDb
+database "case_people + dossier profiles" as PeopleDb
+database "metadata_json u case_documents" as MetadataDb
 
 [App Shell] --> [Desktop Policy Gate]
 [Desktop Policy Gate] --> [Route Resolver]
@@ -68,33 +79,52 @@ database "case_people + case_person_dossiers + case_person_dossier_profiles" as 
 [Public Auth Pages] --> [Auth API Client]
 
 [Logged Home Page] --> [Logged Sidebar]
-[Logged Home Page] --> [Logged Case Section]
 [Logged Home Page] --> [Cases API Client]
-[Logged Home Page] --> [Logged Home Data Helpers]
 
 [Create Case Start Page] --> [Shared Case Sidebar]
 [Create Case Start Page] --> [Cases API Client]
+
 [Case Workspace Page] --> [Shared Case Sidebar]
 [Case Workspace Page] --> [Case Workspace Tabs]
 [Case Workspace Page] --> [Cases API Client]
 [Case Workspace Page] --> [Case People Tab]
+[Case Workspace Page] --> [Case Statements Tab]
+[Case Workspace Page] --> [Case Police Documents Tab]
+
 [Case People Tab] --> [People List View]
 [Case People Tab] --> [Create Person Modal]
-[Create Person Modal] --> [Dropdown Field Sets]
-[Create Person Modal] --> [Photo Upload Handler]
 [Case People Tab] --> [Dossier Modal View]
+[Create Person Modal] --> [Photo Upload Handler]
 [Case People Tab] --> [Case People State Hook]
-[Dossier Modal View] --> [Dossier Document Layout]
+[Case People Tab] --> [Case People Linked Documents Hook]
 [Case People Tab] --> [Case People API Client]
+[Case People Linked Documents Hook] --> [Case Documents API Client]
+[Dossier Modal View] --> [Case Workspace Cross-Link Helper]
+
+[Case Statements Tab] --> [Documents List View]
+[Case Statements Tab] --> [Create Document Modal]
+[Case Statements Tab] --> [Document Preview Modal]
+[Case Statements Tab] --> [Case Documents State Hook]
+[Case Statements Tab] --> [Case Documents API Client]
+[Create Document Modal] --> [Type-Specific Document Field Config]
+
+[Case Police Documents Tab] --> [Documents List View]
+[Case Police Documents Tab] --> [Create Document Modal]
+[Case Police Documents Tab] --> [Document Preview Modal]
+[Case Police Documents Tab] --> [Case Documents State Hook]
+[Case Police Documents Tab] --> [Case Documents API Client]
+[Create Document Modal] --> [Document Image Upload Handler]
+[Document Preview Modal] --> [Type-Specific Document Field Config]
+[Document Preview Modal] --> [Case Workspace Cross-Link Helper]
+[Case Documents State Hook] --> [Case Workspace Cross-Link Helper]
+
 [Shared Case Sidebar] --> [Case Workspace Tabs]
 [Shared Case Sidebar] --> [Route Utils]
-[Shared Case Sidebar] --> [Publish Action Button]
-[Publish Action Button] --> [Case Workspace Page]
 
 [Auth API Client] --> [Session Storage]
 [Cases API Client] --> [Session Storage]
 [Case People API Client] --> [Session Storage]
-[Cases API Client] --> [Route Utils]
+[Case Documents API Client] --> [Session Storage]
 [Logout Action] --> [Session Storage]
 [Logged Sidebar] --> [Logout Action]
 [Shared Case Sidebar] --> [Logout Action]
@@ -102,13 +132,18 @@ database "case_people + case_person_dossiers + case_person_dossier_profiles" as 
 [Auth API Client] --> [Express App]
 [Cases API Client] --> [Express App]
 [Case People API Client] --> [Express App]
+[Case Documents API Client] --> [Express App]
+
 [Express App] --> [Auth Routes]
 [Express App] --> [Cases Routes]
 [Express App] --> [Health Route]
+
 [Auth Routes] --> [Auth Service]
 [Cases Routes] --> [Auth Guard Middleware]
 [Cases Routes] --> [Cases Service]
 [Cases Routes] --> [Case People Service]
+[Cases Routes] --> [Case Documents Service]
+
 [Auth Guard Middleware] --> [JWT Token Service]
 [Auth Service] --> [JWT Token Service]
 [Auth Service] --> [User Repository]
@@ -117,12 +152,20 @@ database "case_people + case_person_dossiers + case_person_dossier_profiles" as 
 [Case People Service] --> [Case People Validation]
 [Case People Service] --> [Cases Repository]
 [Case People Service] --> [Case People Repository]
+[Case Documents Service] --> [Case Documents Validation]
+[Case Documents Validation] --> [Type-Specific Document Validation]
+[Case Documents Service] --> [Cases Repository]
+[Case Documents Service] --> [Case Documents Repository]
+
 [User Repository] --> [SQLite Module]
 [Cases Repository] --> [SQLite Module]
 [Case People Repository] --> [SQLite Module]
+[Case Documents Repository] --> [SQLite Module]
+
 [SQLite Module] --> Db
 [SQLite Module] --> CasesDb
 [SQLite Module] --> PeopleDb
+[SQLite Module] --> MetadataDb
 [Migration Runner] --> Db
 [Health Route] --> [SQLite Module]
 @enduml

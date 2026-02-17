@@ -102,7 +102,7 @@
 
 - id: REQ-SW-013
   name: Pocetna stranica za ulogovanog korisnika - Realni podaci iz baze
-  status: In Review
+  status: Finished
   refines: REQ-005
   description: >
     Implementirati pocetnu stranicu za ulogovanog korisnika koja prikazuje dobrodoslicu sa imenom
@@ -112,7 +112,7 @@
 
 - id: REQ-SW-014
   name: Meni i routing za ulogovano stanje
-  status: In Review
+  status: Finished
   refines: REQ-006
   description: >
     Implementirati meni za ulogovane korisnike sa stavkama Pocetna, Kreiranje slucaja,
@@ -131,7 +131,7 @@
 
 - id: REQ-SW-016
   name: Backend API za kreiranje i cuvanje slucaja
-  status: In Review
+  status: Finished
   refines: REQ-010
   description: >
     Implementirati zasticeni backend endpoint za kreiranje slucaja koji prihvata osnovne podatke,
@@ -158,7 +158,7 @@
 
 - id: REQ-SW-019
   name: Kosturni prikaz prozora za kreiranje slucaja
-  status: In Review
+  status: Finished
   refines: REQ-029
   description: >
     Implementirati skeleton prikaz prozora creatorskog moda na ruti `/slucaj/:id/kreiranje`
@@ -167,7 +167,7 @@
 
 - id: REQ-SW-020
   name: Meni za rezim kreiranja slucaja
-  status: In Progress
+  status: Finished
   refines: REQ-029
   description: >
     Implementirati levi meni tokom kreiranja slucaja koji prikazuje tabove sekcija procesa
@@ -227,4 +227,66 @@
     prikazu pokazuje listu osoba sa osnovnim podacima, dok se kreiranje nove osobe/dosijea
     i pregled detaljnog formalnog dosijea obavljaju kroz iskacuce prozore (modale), uz
     padajuce liste za sva pogodna polja i posebno prilagodjen uvodni prikaz taba za
-    creatorski i rezim resavanja.
+    creatorski i rezim resavanja, kao i sekciju povezanih dokumenata/izjava sa direktnim
+    linkovima ka konkretnim stavkama.
+
+- id: REQ-SW-027
+  name: Backend API za izjave u slucaju
+  status: Finished
+  refines: REQ-017
+  description: >
+    Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/statements` i
+    `POST /api/cases/:caseId/statements` za autora slucaja, sa validacijom formalnih
+    polja izjave (tip, naslov, sadrzaj, klasifikacija, datum, lokacija, sluzbenik,
+    davalac izjave i povezane osobe), kao i tip-specificnih polja po vrsti izjave
+    (`witness_statement`, `suspect_statement`, `victim_statement`) uz cuvanje u metapodacima.
+
+- id: REQ-SW-028
+  name: Backend API za policijska dokumenta u slucaju
+  status: Finished
+  refines: REQ-018
+  description: >
+    Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/police-documents` i
+    `POST /api/cases/:caseId/police-documents` za autora slucaja, uz validaciju i cuvanje
+    policijskih izvjestaja i forenzickih nalaza sa formalnim metapodacima, tip-specificnim
+    poljima po tipu dokumenta i fotodokumentacijom (`imageEvidence`) za `police_report`
+    i `forensic_report`, zajedno sa vezama na osobe.
+
+- id: REQ-SW-029
+  name: Tab izjave - kreiranje i formalni pregled
+  status: Finished
+  refines: REQ-017
+  description: >
+    Implementirati funkcionalan tab `izjave` u case workspace-u koji prikazuje listu i filtere,
+    modal za kreiranje novih izjava i modal za formalni pregled svake izjave u ozbiljnom
+    policijskom stilu, uz dinamicna tip-specificna polja u formi po izabranom tipu izjave,
+    sa read-only rezimom u modu resavanja slucaja i linkovima ka dosijeima povezanih osoba.
+
+- id: REQ-SW-030
+  name: Tab dokumenti - kreiranje i formalni pregled
+  status: Finished
+  refines: REQ-018
+  description: >
+    Implementirati funkcionalan tab `dokumenti` u case workspace-u za policijske izvjestaje
+    i forenzicke nalaze, sa listom/filterima, modalnim kreiranjem i formalnim prikazom
+    dokumenta, uz dinamicna tip-specificna polja i upload slika za oba tipa dokumenta,
+    kao i read-only ogranicenje u rezimu resavanja i linkovima ka dosijeima povezanih osoba.
+
+- id: REQ-SW-031
+  name: Objedinjeni creatorski workflow za tri tipa dokumentacije
+  status: Finished
+  refines: REQ-021
+  description: >
+    Obezbediti konzistentan workflow kreiranja i pregleda sva tri tipa dokumentacije u slucaju
+    (dosije osobe, izjave i policijska dokumenta), sa istim obrascem rada kroz listu, modalni
+    unos i formalni dokument prikaz, uz prilagodjena polja po tipu dokumenta i prikaz
+    multimedijalnih dokaza tamo gde su podrzani.
+
+- id: REQ-SW-032
+  name: Dvosmerna navigacija osobe <-> dokumenti
+  status: Finished
+  refines: REQ-015
+  description: >
+    Obezbediti dvosmerne linkove izmedju dosijea osobe i dokumentacije slucaja:
+    iz dosijea ka svim povezanim izjavama i policijskim/forenzickim dokumentima, kao i
+    iz formalnog prikaza izjave/dokumenta ka dosijeima svih povezanih osoba.

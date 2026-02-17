@@ -1,4 +1,10 @@
 import { createCase, getCreatorCase, getLoggedHomeOverview } from "./cases.service.js";
+import {
+  createCreatorCasePoliceDocument,
+  createCreatorCaseStatement,
+  getCreatorCasePoliceDocuments,
+  getCreatorCaseStatements,
+} from "./cases.documents.service.js";
 import { createCreatorCasePerson, getCreatorCasePeople } from "./cases.people.service.js";
 
 export async function createCaseController(req, res) {
@@ -47,6 +53,46 @@ export async function createCreatorCasePersonController(req, res) {
   res.status(201).json({
     ok: true,
     message: "Osoba i dosije su uspesno sacuvani.",
+    data: result,
+  });
+}
+
+export async function getCreatorCaseStatementsController(req, res) {
+  const result = await getCreatorCaseStatements(req.params.caseId, req.auth.userId);
+
+  res.status(200).json({
+    ok: true,
+    message: "Izjave su uspesno ucitane.",
+    data: result,
+  });
+}
+
+export async function createCreatorCaseStatementController(req, res) {
+  const result = await createCreatorCaseStatement(req.params.caseId, req.body || {}, req.auth.userId);
+
+  res.status(201).json({
+    ok: true,
+    message: "Izjava je uspesno sacuvana.",
+    data: result,
+  });
+}
+
+export async function getCreatorCasePoliceDocumentsController(req, res) {
+  const result = await getCreatorCasePoliceDocuments(req.params.caseId, req.auth.userId);
+
+  res.status(200).json({
+    ok: true,
+    message: "Policijski dokumenti su uspesno ucitani.",
+    data: result,
+  });
+}
+
+export async function createCreatorCasePoliceDocumentController(req, res) {
+  const result = await createCreatorCasePoliceDocument(req.params.caseId, req.body || {}, req.auth.userId);
+
+  res.status(201).json({
+    ok: true,
+    message: "Policijski dokument je uspesno sacuvan.",
     data: result,
   });
 }

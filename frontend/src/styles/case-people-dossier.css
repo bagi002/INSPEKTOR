@@ -93,6 +93,56 @@
   padding: 0.75rem;
   display: grid;
   gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.dossier-document-linked-docs {
+  border: 1px solid #d2dce8;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.dossier-document-linked-docs h5 {
+  margin: 0 0 0.45rem;
+  color: #17385f;
+}
+
+.dossier-linked-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.dossier-linked-link {
+  display: grid;
+  gap: 0.15rem;
+  border: 1px solid #c7d6e6;
+  border-radius: 10px;
+  background: #f8fbff;
+  color: #1d4670;
+  text-decoration: none;
+  padding: 0.5rem 0.6rem;
+}
+
+.dossier-linked-link strong {
+  color: #183c61;
+}
+
+.dossier-linked-link span {
+  color: #466683;
+  font-size: 0.83rem;
+}
+
+.dossier-linked-link:hover {
+  border-color: #8ca6c2;
+  background: #eef5fd;
+}
+
+.dossier-linked-error {
+  margin-bottom: 0.5rem !important;
+  color: #9a2431 !important;
 }
 
 .dossier-document p {

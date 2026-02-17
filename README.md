@@ -64,7 +64,12 @@ Tok koriscenja:
 6. Nakon uspesnog cuvanja draft-a aplikacija automatski otvara prvi tab u creatorskom modu:
    `/slucaj/:id/kreiranje/vremenska-linija`.
 7. U tabu `/slucaj/:id/kreiranje/osobe-i-dosijei` mozes kreirati osobu i njen dosije,
-   a zatim iz liste pregledati detalje za svaku evidentiranu osobu.
+   a zatim iz liste pregledati detalje za svaku evidentiranu osobu, ukljucujuci
+   linkove ka povezanim izjavama i dokumentima.
+8. U tabu `/slucaj/:id/kreiranje/izjave` mozes kreirati formalne izjave i otvoriti
+   svaku kroz policijski pregled dokumenta, uz dodatna polja koja se menjaju po tipu izjave.
+9. U tabu `/slucaj/:id/kreiranje/dokumenti` mozes kreirati policijske izvjestaje i
+   forenzicke nalaze, sa formalnim pregledom svakog dokumenta i podrskom za dodavanje slika.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
@@ -104,6 +109,32 @@ Napomena:
   - polja kao `apparentRole`, `riskLevel`, `gender`, `maritalStatus`, `nationality`,
     `educationLevel`, `eyeColor` i `hairColor` se validiraju kao enum vrijednosti
   - `photoDataUrl` prihvata uploadovanu fotografiju osobe kao `data:image/...;base64,...`
+  - pristup je trenutno ogranicen na autora slucaja
+- `GET /api/cases/:caseId/statements` (autorizacija: `Bearer <JWT>`)
+  - vraca sve izjave u slucaju (`witness_statement`, `suspect_statement`, `victim_statement`)
+    zajedno sa formalnim metapodacima i povezanim osobama
+  - pristup je trenutno ogranicen na autora slucaja
+- `POST /api/cases/:caseId/statements` (autorizacija: `Bearer <JWT>`)
+  - kreira novu izjavu sa formalnim poljima: `documentType`, `title`, `content`,
+    `classificationLevel`, `recordedAt`, `location`, `officerName`, `badgeNumber`,
+    `department`, `evidenceReference`, `legalReference`, `notes`, `giverPersonId`,
+    `relatedPersonIds`, `sequenceOrder`, `isUnlockedByDefault`, `typeSpecific`
+  - `typeSpecific` je objekat sa poljima zavisno od tipa izjave
+    (`witness_statement`, `suspect_statement`, `victim_statement`)
+  - validira da referencirane osobe postoje u trazenom slucaju
+  - pristup je trenutno ogranicen na autora slucaja
+- `GET /api/cases/:caseId/police-documents` (autorizacija: `Bearer <JWT>`)
+  - vraca policijske izvjestaje i forenzicke nalaze sa formalnim metapodacima i
+    povezanim osobama
+  - pristup je trenutno ogranicen na autora slucaja
+- `POST /api/cases/:caseId/police-documents` (autorizacija: `Bearer <JWT>`)
+  - kreira novi policijski izvjestaj ili forenzicki nalaz sa istim formalnim setom
+    metapodataka kao i kod izjava (osim obaveznog davaoca izjave),
+    plus `typeSpecific` i `imageEvidence`
+  - `typeSpecific` je objekat sa poljima zavisno od tipa dokumenta
+    (`police_report`, `forensic_report`)
+  - `imageEvidence` je niz `data:image/...;base64,...` slika (JPEG/PNG/WEBP),
+    podrzan za policijske izvjestaje i forenzicke nalaze
   - pristup je trenutno ogranicen na autora slucaja
 - `GET /api/health`
   - provera dostupnosti API-ja i baze
@@ -155,6 +186,20 @@ Napomena:
     - klik na osobu otvara formalni dosije u iskacucem prozoru
     - u creatorskom modu kreiranje nove osobe i dosijea se radi kroz iskacuci prozor
     - forma koristi padajuce liste za sva pogodna polja (ukljucujuci pol) i upload fotografije osobe
+    - dosije prikazuje sve povezane izjave i dokumente kao direktne linkove ka formalnom prikazu
+  - tab `izjave`:
+    - prikazuje listu izjava sa pretragom/filterima i operativnom statistikom
+    - u creatorskom modu omogucava modalno kreiranje formalne izjave sa tip-specificnim poljima po vrsti izjave
+    - svaka izjava se otvara kroz formalni policijski pregled dokumenta
+    - iz formalnog prikaza izjave moguce je otvoriti dosije svake povezane osobe
+    - u rezimu resavanja tab radi u read-only nacinu
+  - tab `dokumenti`:
+    - prikazuje policijske izvjestaje i forenzicke nalaze sa pretragom/filterima
+    - u creatorskom modu omogucava modalno kreiranje dokumenta sa tip-specificnim poljima
+      i uploadom slika za forenzicke nalaze i policijske izvjestaje
+    - pregled svakog dokumenta radi kroz formalni policijski prikaz sa sekcijom fotodokumentacije
+    - iz formalnog prikaza dokumenta moguce je otvoriti dosije svake povezane osobe
+    - u rezimu resavanja tab radi u read-only nacinu
 - Opcija objave:
   - u meniju rezima kreiranja postoji `Objavi slucaj` kao dugme
   - dugme ne vodi na novu rutu/stranicu
@@ -165,7 +210,8 @@ Napomena:
 - Resavacki workspace:
   - koristi isti set tabova i istu navigacionu strukturu kao creatorski workspace
   - tab `osobe-i-dosijei` je dostupan za read-only pregled osoba i dosijea
-  - ostali tabovi su trenutno implementirani kao placeholder prikazi
+  - tabovi `izjave` i `dokumenti` su dostupni za read-only pregled formalnih dokumenata
+  - tabovi `vremenska-linija`, `saslusanja` i `kviz` su trenutno placeholder prikazi
 - Backend auth:
   - modularna Express struktura (routes/controller/service/repository)
   - SQLite migracije i maintenance podesavanja
@@ -173,4 +219,7 @@ Napomena:
   - SQLite model za `cases`, `case_people`, `case_person_dossiers`,
     `case_person_dossier_profiles`, `case_documents`, `case_timeline_items`,
     `case_user_progress`
-  - JWT-zasticeni endpointi za cuvanje slucaja i prikaz ulogovane pocetne
+  - prosiren `case_documents` model sa `metadata_json` za formalna polja izjava i
+    policijskih dokumenata
+  - JWT-zasticeni endpointi za cuvanje slucaja, prikaz ulogovane pocetne, osobe/dosijee,
+    izjave i policijska dokumenta

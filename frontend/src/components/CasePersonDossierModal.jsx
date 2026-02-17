@@ -8,6 +8,8 @@ import {
   toRiskLabel,
   toRoleLabel,
 } from "./casePeopleHelpers";
+import { formatRecordedAt, toDocumentTypeLabel } from "./caseDocumentHelpers";
+import { buildDocumentPreviewHref } from "./caseWorkspaceLinking";
 
 function renderField(label, value) {
   return (
@@ -17,12 +19,20 @@ function renderField(label, value) {
   );
 }
 
-function CasePersonDossierModal({ person, onClose }) {
+function CasePersonDossierModal({
+  caseId,
+  mode,
+  person,
+  linkedDocuments,
+  linkedDocumentsError,
+  onClose,
+}) {
   if (!person) {
     return null;
   }
 
   const dossier = person.dossier || {};
+  const safeLinkedDocuments = Array.isArray(linkedDocuments) ? linkedDocuments : [];
 
   return (
     <div className="case-people-modal-overlay" role="dialog" aria-modal="true">
@@ -90,6 +100,34 @@ function CasePersonDossierModal({ person, onClose }) {
             {renderField("Poznate veze", dossier.knownAssociates)}
             {renderField("Istorija dela", dossier.priorOffenses)}
             {renderField("Administrativne napomene", dossier.notes)}
+          </section>
+
+          <section className="dossier-document-linked-docs">
+            <h5>Povezani dokumenti i izjave</h5>
+            {linkedDocumentsError ? (
+              <p className="dossier-linked-error">{linkedDocumentsError}</p>
+            ) : null}
+            {safeLinkedDocuments.length === 0 ? (
+              <p>Nema povezanih dokumenata ili izjava za ovu osobu.</p>
+            ) : (
+              <ul className="dossier-linked-list">
+                {safeLinkedDocuments.map((document) => (
+                  <li key={document.id}>
+                    <a
+                      className="dossier-linked-link"
+                      href={buildDocumentPreviewHref(caseId, mode, document)}
+                    >
+                      <strong>{document.title || "Dokument bez naslova"}</strong>
+                      <span>
+                        {toDocumentTypeLabel(document.documentType)} |{" "}
+                        {document.metadata?.documentNumber || "N/A"} |{" "}
+                        {formatRecordedAt(document.metadata?.recordedAt)}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </article>
       </section>

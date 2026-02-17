@@ -149,6 +149,12 @@ async function applyColumnMigrations(database) {
     "photo_data_url",
     "TEXT NOT NULL DEFAULT ''"
   );
+  await ensureColumnExists(
+    database,
+    "case_documents",
+    "metadata_json",
+    "TEXT NOT NULL DEFAULT '{}'"
+  );
 }
 
 export async function applyMigrations(database) {

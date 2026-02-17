@@ -15,13 +15,13 @@ export const CASE_WORKSPACE_TABS = [
     slug: "dokumenti",
     label: "Dokumenti",
     description:
-      "Prazna stranica za policijske izvjestaje, forenzicke nalaze i ostale dokumente.",
+      "Kreiranje i pregled policijskih izvjestaja i forenzickih nalaza kroz formalne dokumente sa metapodacima.",
   },
   {
     slug: "izjave",
     label: "Izjave",
     description:
-      "Prazna stranica za sve izjave (svjedoka, osumnjicenih i zrtava) kao odvojen tab.",
+      "Kreiranje i pregled izjava svjedoka, osumnjicenih i zrtava sa povezivanjem na osobe u slucaju.",
   },
   {
     slug: "saslusanja",
