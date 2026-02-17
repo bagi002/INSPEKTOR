@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Jedinstveni case workspace tabovi + publish dugme
+title Block Diagram - Osobe i dosijei u slucaju
 
 package "Frontend" {
   [App Shell]
@@ -16,9 +16,18 @@ package "Frontend" {
   [Case Workspace Page]
   [Shared Case Sidebar]
   [Case Workspace Tabs]
+  [Case People Tab]
+  [People List View]
+  [Create Person Modal]
+  [Dropdown Field Sets]
+  [Photo Upload Handler]
+  [Dossier Modal View]
+  [Dossier Document Layout]
+  [Case People State Hook]
   [Publish Action Button]
   [Auth API Client]
   [Cases API Client]
+  [Case People API Client]
   [Session Storage]
   [Logout Action]
   [Desktop Warning View]
@@ -31,16 +40,21 @@ package "Backend (Node.js + Express)" {
   [Auth Guard Middleware]
   [Auth Service]
   [Cases Service]
+  [Case People Service]
   [Cases Validation]
+  [Case People Validation]
   [JWT Token Service]
   [User Repository]
   [Cases Repository]
+  [Case People Repository]
   [SQLite Module]
   [Migration Runner]
   [Health Route]
 }
 
 database "SQLite Database" as Db
+database "cases + documents + timeline" as CasesDb
+database "case_people + case_person_dossiers + case_person_dossier_profiles" as PeopleDb
 
 [App Shell] --> [Desktop Policy Gate]
 [Desktop Policy Gate] --> [Route Resolver]
@@ -63,6 +77,15 @@ database "SQLite Database" as Db
 [Case Workspace Page] --> [Shared Case Sidebar]
 [Case Workspace Page] --> [Case Workspace Tabs]
 [Case Workspace Page] --> [Cases API Client]
+[Case Workspace Page] --> [Case People Tab]
+[Case People Tab] --> [People List View]
+[Case People Tab] --> [Create Person Modal]
+[Create Person Modal] --> [Dropdown Field Sets]
+[Create Person Modal] --> [Photo Upload Handler]
+[Case People Tab] --> [Dossier Modal View]
+[Case People Tab] --> [Case People State Hook]
+[Dossier Modal View] --> [Dossier Document Layout]
+[Case People Tab] --> [Case People API Client]
 [Shared Case Sidebar] --> [Case Workspace Tabs]
 [Shared Case Sidebar] --> [Route Utils]
 [Shared Case Sidebar] --> [Publish Action Button]
@@ -70,6 +93,7 @@ database "SQLite Database" as Db
 
 [Auth API Client] --> [Session Storage]
 [Cases API Client] --> [Session Storage]
+[Case People API Client] --> [Session Storage]
 [Cases API Client] --> [Route Utils]
 [Logout Action] --> [Session Storage]
 [Logged Sidebar] --> [Logout Action]
@@ -77,20 +101,28 @@ database "SQLite Database" as Db
 
 [Auth API Client] --> [Express App]
 [Cases API Client] --> [Express App]
+[Case People API Client] --> [Express App]
 [Express App] --> [Auth Routes]
 [Express App] --> [Cases Routes]
 [Express App] --> [Health Route]
 [Auth Routes] --> [Auth Service]
 [Cases Routes] --> [Auth Guard Middleware]
 [Cases Routes] --> [Cases Service]
+[Cases Routes] --> [Case People Service]
 [Auth Guard Middleware] --> [JWT Token Service]
 [Auth Service] --> [JWT Token Service]
 [Auth Service] --> [User Repository]
 [Cases Service] --> [Cases Validation]
 [Cases Service] --> [Cases Repository]
+[Case People Service] --> [Case People Validation]
+[Case People Service] --> [Cases Repository]
+[Case People Service] --> [Case People Repository]
 [User Repository] --> [SQLite Module]
 [Cases Repository] --> [SQLite Module]
+[Case People Repository] --> [SQLite Module]
 [SQLite Module] --> Db
+[SQLite Module] --> CasesDb
+[SQLite Module] --> PeopleDb
 [Migration Runner] --> Db
 [Health Route] --> [SQLite Module]
 @enduml

@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Workspace tabovi + publish dugme u kreiranju
+title Class Diagram - Osobe i dosijei u case workspace-u
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -69,7 +69,59 @@ class CaseWorkspacePage {
   +mode
   +activeTabSlug
   +loadCaseData()
+  +renderTabContent()
   +render()
+}
+
+class CasePeopleTab {
+  +caseId
+  +mode
+  +people
+  +activePersonId
+  +openCreateModal()
+  +openDossierModal(personId)
+  +render()
+}
+
+class UseCasePeopleTabState {
+  +loadPeople()
+  +handleCreatePerson()
+  +closeCreateModal()
+  +closeDossierModal()
+  +buildPayload()
+  +state
+}
+
+class CasePersonDossierModal {
+  +person
+  +onClose()
+  +render()
+}
+
+class CasePeopleCreateTextareas {
+  +formData
+  +render()
+}
+
+class CasePeopleCreateBasics {
+  +formData
+  +onPhotoUpload()
+  +render()
+}
+
+class CasePeopleCreateForm {
+  +formData
+  +onSubmit()
+  +render()
+}
+
+class CasePeopleOptions {
+  +CASE_PERSON_*_OPTIONS
+}
+
+class CasePeopleStateUtils {
+  +buildCreatePersonPayload(formData)
+  +readPhotoDataUrl(file)
 }
 
 class CreateCaseSidebar {
@@ -100,6 +152,11 @@ class CasesApiClient {
   +fetchCreatorCase(caseId)
 }
 
+class CasePeopleApiClient {
+  +fetchCasePeople(caseId)
+  +createCasePerson(caseId, payload)
+}
+
 class SessionStorageService {
   +saveSession(token, user)
   +getSession()
@@ -119,6 +176,8 @@ class CasesRoutes {
   +GET /home
   +POST /
   +GET /:caseId/creator
+  +GET /:caseId/people
+  +POST /:caseId/people
 }
 
 class AuthGuardMiddleware {
@@ -134,6 +193,8 @@ class CasesController {
   +getLoggedHomeOverviewController(req, res)
   +createCaseController(req, res)
   +getCreatorCaseController(req, res)
+  +getCreatorCasePeopleController(req, res)
+  +createCreatorCasePersonController(req, res)
 }
 
 class AuthService {
@@ -147,8 +208,17 @@ class CasesService {
   +getCreatorCase(caseId, userId)
 }
 
+class CasePeopleService {
+  +getCreatorCasePeople(caseId, userId)
+  +createCreatorCasePerson(caseId, payload, userId)
+}
+
 class CasesValidation {
   +validateCreateCasePayload(payload)
+}
+
+class CasePeopleValidation {
+  +validateCreateCasePersonPayload(payload)
 }
 
 class AuthRepository {
@@ -162,6 +232,12 @@ class CasesRepository {
   +findCaseByIdForAuthor(caseId, userId)
 }
 
+class CasePeopleRepository {
+  +findCasePersonById(personId)
+  +getCasePeopleByCaseId(caseId)
+  +createCasePersonForCase(caseId, payload, authorUserId)
+}
+
 class DatabaseModule {
   +initializeDatabase()
   +getDatabase()
@@ -172,6 +248,8 @@ class SQLiteDatabase {
   +users
   +cases
   +case_people
+  +case_person_dossiers
+  +case_person_dossier_profiles
   +case_documents
   +case_timeline_items
   +case_user_progress
@@ -188,6 +266,8 @@ LoggedHomePage *-- LoggedCaseSection
 LoggedHomePage ..> LoggedHomeData
 CreateCasePage *-- CreateCaseSidebar
 CaseWorkspacePage *-- CreateCaseSidebar
+CaseWorkspacePage *-- CasePeopleTab
+CasePeopleTab *-- CasePersonDossierModal
 CaseWorkspacePage ..> CaseWorkspaceTabs
 
 App ..> SessionStorageService
@@ -195,14 +275,22 @@ LoginPage ..> AuthApiClient
 LoggedHomePage ..> CasesApiClient
 CreateCasePage ..> CasesApiClient
 CaseWorkspacePage ..> CasesApiClient
+CasePeopleTab ..> CasePeopleApiClient
+CasePeopleTab ..> UseCasePeopleTabState
+UseCasePeopleTabState ..> CasePeopleStateUtils
+CasePeopleCreateForm ..> CasePeopleCreateBasics
+CasePeopleCreateForm ..> CasePeopleCreateTextareas
+CasePeopleCreateBasics ..> CasePeopleOptions
 AuthApiClient ..> SessionStorageService
 CasesApiClient ..> SessionStorageService
+CasePeopleApiClient ..> SessionStorageService
 CasesApiClient ..> RouteUtils
 CreateCaseSidebar ..> CaseWorkspaceTabs
 CreateCaseSidebar ..> RouteUtils
 
 AuthApiClient ..> ExpressApp
 CasesApiClient ..> ExpressApp
+CasePeopleApiClient ..> ExpressApp
 ExpressApp --> AuthRoutes
 ExpressApp --> CasesRoutes
 CasesRoutes --> AuthGuardMiddleware
@@ -210,10 +298,15 @@ AuthRoutes --> AuthController
 CasesRoutes --> CasesController
 AuthController --> AuthService
 CasesController --> CasesService
+CasesController --> CasePeopleService
 CasesService --> CasesValidation
+CasePeopleService --> CasePeopleValidation
 AuthService --> AuthRepository
 CasesService --> CasesRepository
+CasePeopleService --> CasesRepository
+CasePeopleService --> CasePeopleRepository
 AuthRepository --> DatabaseModule
 CasesRepository --> DatabaseModule
+CasePeopleRepository --> DatabaseModule
 DatabaseModule --> SQLiteDatabase
 @enduml

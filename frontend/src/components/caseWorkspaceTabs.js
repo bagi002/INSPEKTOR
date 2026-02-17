@@ -9,7 +9,7 @@ export const CASE_WORKSPACE_TABS = [
     slug: "osobe-i-dosijei",
     label: "Osobe i dosijei",
     description:
-      "Prazna stranica za listu osoba i povezane dosijee unutar slucaja.",
+      "Lista osoba, prilagodjen uvod po modu i modalni formalni dosije sa fotografijom; kreiranje je modalno u creatorskom modu.",
   },
   {
     slug: "dokumenti",

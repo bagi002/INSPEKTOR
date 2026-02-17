@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CreateCaseSidebar from "./CreateCaseSidebar";
+import CasePeopleTab from "./CasePeopleTab";
 import { CASE_WORKSPACE_TABS, findCaseWorkspaceTab } from "./caseWorkspaceTabs";
 import { fetchCreatorCase } from "../services/casesApi";
 import { AUTH_ROUTES, CASE_WORKSPACE_MODES } from "../utils/routes";
@@ -12,7 +13,6 @@ function resolveModeTexts(mode) {
         "Otvori tragove, dokumente i izjave kroz iste tabove kao u kreiranju, ali u modu resavanja.",
       placeholder:
         "Ovo je prazna stranica za ovaj tab u rezimu resavanja. Sadrzaj ce biti dodat u narednim fazama.",
-      missingCase: "Slucaj #",
     };
   }
 
@@ -22,7 +22,6 @@ function resolveModeTexts(mode) {
       "U istom setu tabova pripremas strukturu slucaja, dokumente, izjave, saslusanja i kviz.",
     placeholder:
       "Ovo je prazna stranica za ovaj tab u rezimu kreiranja. Konkretni editori ce biti dodati u narednim fazama.",
-    missingCase: "Draft slucaj #",
   };
 }
 
@@ -37,12 +36,24 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
     [activeTabSlug]
   );
   const modeTexts = useMemo(() => resolveModeTexts(mode), [mode]);
+  const isPeopleTab = activeTab.slug === "osobe-i-dosijei";
+  const modeDescription = useMemo(() => {
+    if (!isPeopleTab) {
+      return modeTexts.description;
+    }
+
+    if (mode === CASE_WORKSPACE_MODES.SOLVE) {
+      return "Pregled formalnih dosijea lica u read-only rezimu, sa fokusom na evidenciju i detalje profila.";
+    }
+
+    return "Operativni panel za kreiranje, uredjivanje i pregled dosijea osoba kroz strukturisan modalni workflow.";
+  }, [isPeopleTab, mode, modeTexts.description]);
 
   const loadCaseData = useCallback(async () => {
     if (mode === CASE_WORKSPACE_MODES.SOLVE) {
       setCaseData({
         id: caseId,
-        title: `${modeTexts.missingCase}${caseId}`,
+        title: `Slucaj #${caseId}`,
         description: "Pocetna verzija prikaza za rezim resavanja slucaja.",
       });
       setErrorMessage("");
@@ -73,7 +84,7 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
 
     setCaseData(result.data);
     setIsLoading(false);
-  }, [caseId, mode, modeTexts.missingCase, onLogout]);
+  }, [caseId, mode, onLogout]);
 
   useEffect(() => {
     void loadCaseData();
@@ -86,6 +97,19 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   function handlePublishClick() {
     setPublishStatusMessage(
       "Objava slucaja je trenutno dostupna kao dugme u meniju. Potvrda objave i backend logika bice dodati u sledecoj fazi."
+    );
+  }
+
+  function renderTabContent() {
+    if (activeTab.slug === "osobe-i-dosijei") {
+      return <CasePeopleTab caseId={caseId} mode={mode} onUnauthorized={onLogout} />;
+    }
+
+    return (
+      <section className="card reveal delay-3">
+        <h3>Prazna stranica (placeholder)</h3>
+        <p className="create-case-summary">{modeTexts.placeholder}</p>
+      </section>
     );
   }
 
@@ -134,19 +158,18 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
             <section className="card logged-hero reveal delay-1">
               <p className="eyebrow">{modeTexts.label}</p>
               <h2>{caseData.title}</h2>
-              <p>{modeTexts.description}</p>
+              <p>{modeDescription}</p>
             </section>
 
-            <section className="card reveal delay-2">
-              <p className="eyebrow">Tab</p>
-              <h3>{activeTab.label}</h3>
-              <p className="create-case-summary">{activeTab.description}</p>
-            </section>
+            {!isPeopleTab ? (
+              <section className="card reveal delay-2">
+                <p className="eyebrow">Tab</p>
+                <h3>{activeTab.label}</h3>
+                <p className="create-case-summary">{activeTab.description}</p>
+              </section>
+            ) : null}
 
-            <section className="card reveal delay-3">
-              <h3>Prazna stranica (placeholder)</h3>
-              <p className="create-case-summary">{modeTexts.placeholder}</p>
-            </section>
+            {renderTabContent()}
           </>
         ) : null}
       </main>

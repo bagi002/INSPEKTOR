@@ -63,6 +63,8 @@ Tok koriscenja:
 5. Klikni na `Kreiraj novi slucaj`, unesi naziv i opis, pa potvrdi kreiranje.
 6. Nakon uspesnog cuvanja draft-a aplikacija automatski otvara prvi tab u creatorskom modu:
    `/slucaj/:id/kreiranje/vremenska-linija`.
+7. U tabu `/slucaj/:id/kreiranje/osobe-i-dosijei` mozes kreirati osobu i njen dosije,
+   a zatim iz liste pregledati detalje za svaku evidentiranu osobu.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
@@ -87,6 +89,22 @@ Napomena:
   - napomena: trenutno je podrzano cuvanje napretka za autora slucaja (ulogovanog korisnika)
 - `GET /api/cases/:caseId/creator` (autorizacija: `Bearer <JWT>`)
   - vraca slucaj za creatorski mod samo ako je ulogovani korisnik autor tog slucaja
+- `GET /api/cases/:caseId/people` (autorizacija: `Bearer <JWT>`)
+  - vraca listu osoba i njihove dosijee za trazeni slucaj
+  - dosije ukljucuje auto-generisane administrativne podatke (`dossierNumber`,
+    `classificationLevel`, `revisionNumber`, `generatedAt`)
+  - pristup je trenutno ogranicen na autora slucaja
+- `POST /api/cases/:caseId/people` (autorizacija: `Bearer <JWT>`)
+  - kreira novu osobu i pripadajuci dosije u okviru slucaja
+  - podrzana polja: `fullName`, `apparentRole`, `biography`, `phoneNumber`, `address`,
+    `birthDate`, `birthPlace`, `nationality`, `gender`, `maritalStatus`, `occupation`,
+    `employer`, `educationLevel`, `eyeColor`, `hairColor`, `heightCm`, `weightKg`,
+    `isAlive`, `identifyingMarks`, `knownAssociates`, `riskLevel`, `photoDataUrl`,
+    `lastKnownLocation`, `priorOffenses`, `notes`
+  - polja kao `apparentRole`, `riskLevel`, `gender`, `maritalStatus`, `nationality`,
+    `educationLevel`, `eyeColor` i `hairColor` se validiraju kao enum vrijednosti
+  - `photoDataUrl` prihvata uploadovanu fotografiju osobe kao `data:image/...;base64,...`
+  - pristup je trenutno ogranicen na autora slucaja
 - `GET /api/health`
   - provera dostupnosti API-ja i baze
 
@@ -132,6 +150,11 @@ Napomena:
     - `izjave`
     - `saslusanja`
     - `kviz`
+  - tab `osobe-i-dosijei`:
+    - na glavnom prikazu prikazuje listu osoba sa osnovnim podacima i prilagodjen uvodni panel po modu
+    - klik na osobu otvara formalni dosije u iskacucem prozoru
+    - u creatorskom modu kreiranje nove osobe i dosijea se radi kroz iskacuci prozor
+    - forma koristi padajuce liste za sva pogodna polja (ukljucujuci pol) i upload fotografije osobe
 - Opcija objave:
   - u meniju rezima kreiranja postoji `Objavi slucaj` kao dugme
   - dugme ne vodi na novu rutu/stranicu
@@ -141,10 +164,13 @@ Napomena:
   - prikazuje osnovne podatke slucaja i prazne tab stranice za dalji rad
 - Resavacki workspace:
   - koristi isti set tabova i istu navigacionu strukturu kao creatorski workspace
-  - trenutno su tab stranice implementirane kao placeholder (prazan prikaz)
+  - tab `osobe-i-dosijei` je dostupan za read-only pregled osoba i dosijea
+  - ostali tabovi su trenutno implementirani kao placeholder prikazi
 - Backend auth:
   - modularna Express struktura (routes/controller/service/repository)
   - SQLite migracije i maintenance podesavanja
 - Backend slucajevi:
-  - SQLite model za `cases`, `case_people`, `case_documents`, `case_timeline_items`, `case_user_progress`
+  - SQLite model za `cases`, `case_people`, `case_person_dossiers`,
+    `case_person_dossier_profiles`, `case_documents`, `case_timeline_items`,
+    `case_user_progress`
   - JWT-zasticeni endpointi za cuvanje slucaja i prikaz ulogovane pocetne

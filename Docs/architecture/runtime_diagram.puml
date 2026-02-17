@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Jedinstveni tabovi za kreiranje i resavanje slucaja
+title Runtime Diagram - Kreiranje i pregled osoba i dosijea u slucaju
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -9,17 +9,22 @@ participant "App Route Guard" as Guard
 participant "LoggedHomePage" as LoggedHome
 participant "CreateCasePage (/slucaj/novi)" as CreateCaseStart
 participant "CaseWorkspacePage" as Workspace
-participant "CreateCaseSidebar (shared tabs)" as WorkspaceSidebar
+participant "CreateCaseSidebar" as WorkspaceSidebar
+participant "CasePeopleTab" as PeopleTab
 participant "Cases API Client" as CasesClient
+participant "Case People API Client" as PeopleClient
 participant "Auth API Client" as AuthClient
 participant "Express Auth API" as AuthApi
 participant "Express Cases API" as CasesApi
 participant "Auth Guard (JWT)" as JwtGuard
 participant "Auth Service" as AuthService
 participant "Cases Service" as CasesService
+participant "Case People Service" as PeopleService
 participant "Cases Repository" as CasesRepo
+participant "Case People Repository" as PeopleRepo
 database "SQLite users tabela" as UsersStore
-database "SQLite case_* tabele" as CasesStore
+database "SQLite cases/case_documents/case_timeline_items" as CasesStore
+database "SQLite case_people + case_person_dossiers + case_person_dossier_profiles" as PeopleStore
 database "LocalStorage (session)" as SessionStore
 participant "Desktop Notice View" as Notice
 
@@ -45,8 +50,8 @@ alt Desktop sirina
   CasesClient -> CasesApi: HTTP zahtev
   CasesApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> CasesService: getLoggedHomeOverview(userId)
-  CasesService -> CasesRepo: upit sekcija + statistika
-  CasesRepo -> CasesStore: SELECT active/resolved/top-rated/created
+  CasesService -> CasesRepo: getHomeOverviewRows(userId)
+  CasesRepo -> CasesStore: SELECT sekcije + statistika
   CasesStore --> CasesRepo: podaci
   CasesRepo --> CasesService: agregirani rezultati
   CasesService --> CasesApi: response payload
@@ -59,7 +64,7 @@ alt Desktop sirina
   Guard -> CreateCaseStart: Forma naziv + opis
 
   User -> CreateCaseStart: Klik "Kreiraj slucaj"
-  CreateCaseStart -> CasesClient: POST /api/cases (draft)
+  CreateCaseStart -> CasesClient: POST /api/cases
   CasesClient -> CasesApi: HTTP zahtev
   CasesApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> CasesService: createCase(payload, userId)
@@ -72,7 +77,7 @@ alt Desktop sirina
 
   CreateCaseStart -> Router: /slucaj/{caseId}/kreiranje/vremenska-linija
   Router -> Guard: Provera sesije
-  Guard -> Workspace: Render tab stranice (kreiranje)
+  Guard -> Workspace: Render tabova slucaja
   Workspace -> CasesClient: GET /api/cases/{caseId}/creator
   CasesClient -> CasesApi: HTTP zahtev
   CasesApi -> JwtGuard: Verifikacija tokena
@@ -85,33 +90,55 @@ alt Desktop sirina
   CasesApi --> CasesClient: JSON uspeh
   CasesClient --> Workspace: Podaci slucaja + aktivni tab
 
-  User -> WorkspaceSidebar: Klik tab "Dokumenti"
-  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/dokumenti
+  User -> WorkspaceSidebar: Klik tab "Osobe i dosijei"
+  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/osobe-i-dosijei
   Router -> Guard: Provera sesije
-  Guard -> Workspace: Render prazne stranice za tab
+  Guard -> Workspace: Render taba osobe i dosijei
+  Workspace -> PeopleTab: Prosledjuje caseId, mode i auth callback
+  PeopleTab -> PeopleClient: GET /api/cases/{caseId}/people
+  PeopleClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> PeopleService: getCreatorCasePeople(caseId, userId)
+  PeopleService -> CasesRepo: findCaseByIdForAuthor(caseId, userId)
+  CasesRepo -> CasesStore: Provera da je korisnik autor
+  CasesStore --> CasesRepo: case row
+  PeopleService -> PeopleRepo: getCasePeopleByCaseId(caseId)
+  PeopleRepo -> PeopleStore: SELECT osobe + dosijei
+  PeopleStore --> PeopleRepo: lista osoba
+  PeopleRepo --> PeopleService: mapirani podaci
+  PeopleService --> CasesApi: response payload
+  CasesApi --> PeopleClient: JSON uspeh
+  PeopleClient --> PeopleTab: Prikaz liste osoba sa osnovnim podacima
 
-  User -> WorkspaceSidebar: Klik tab "Izjave"
-  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/izjave
-  Router -> Guard: Provera sesije
-  Guard -> Workspace: Render prazne stranice za tab
+  User -> PeopleTab: Klik na osobu u listi
+  PeopleTab --> PeopleTab: Otvara formalni dosije u iskacucem prozoru
 
-  User -> WorkspaceSidebar: Klik tab "Kviz"
-  WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/kviz
-  Router -> Guard: Provera sesije
-  Guard -> Workspace: Render prazne stranice za tab
+  User -> PeopleTab: Klik "Kreiraj novu osobu"
+  PeopleTab --> PeopleTab: Otvara modal formu sa dropdown poljima i upload fotografije
 
-  User -> WorkspaceSidebar: Klik dugme "Objavi slucaj"
-  WorkspaceSidebar --> Workspace: Aktivira publish akciju bez navigacije na novu stranicu
+  User -> PeopleTab: Popunjava formu za osobu i dosije + upload slike
+  PeopleTab -> PeopleClient: POST /api/cases/{caseId}/people
+  PeopleClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> PeopleService: createCreatorCasePerson(caseId, payload, userId)
+  PeopleService -> CasesRepo: findCaseByIdForAuthor(caseId, userId)
+  CasesRepo -> CasesStore: Provera da je korisnik autor
+  CasesStore --> CasesRepo: case row
+  PeopleService -> PeopleRepo: createCasePersonForCase(caseId, payload)
+  PeopleRepo -> PeopleStore: INSERT case_people + case_person_dossiers + case_person_dossier_profiles
+  PeopleStore --> PeopleRepo: upisani personId
+  PeopleRepo --> PeopleService: kreirana osoba i dosije
+  PeopleService --> CasesApi: 201 response
+  CasesApi --> PeopleClient: JSON uspeh
+  PeopleClient --> PeopleTab: Osvjezavanje liste + automatsko otvaranje novog dosijea u modalu sa slikom
 
   User -> LoggedHome: Klik "Nastavi resavanje" na aktivnom slucaju
-  LoggedHome -> Router: /slucaj/{caseId}/resavanje/vremenska-linija
+  LoggedHome -> Router: /slucaj/{caseId}/resavanje/osobe-i-dosijei
   Router -> Guard: Provera sesije
-  Guard -> Workspace: Render tab stranice (resavanje)
-
-  User -> WorkspaceSidebar: Klik tab "Saslusanja"
-  WorkspaceSidebar -> Router: /slucaj/{caseId}/resavanje/saslusanja
-  Router -> Guard: Provera sesije
-  Guard -> Workspace: Isti tab meni, drugi mod prikaza
+  Guard -> Workspace: Render read-only prikaza osobe/dosijea sa prilagodjenim solve uvodom
+  Workspace -> PeopleTab: Rezim samo za pregled
+  PeopleTab -> PeopleClient: GET /api/cases/{caseId}/people
+  PeopleClient --> PeopleTab: Lista osoba, dosije dostupan kroz modal bez forme za kreiranje
 else Manja sirina od desktop praga
   Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
   Notice --> User: Prikaz ogranicenog ekrana

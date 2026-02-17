@@ -140,7 +140,7 @@
 
 - id: REQ-SW-017
   name: Backend pregled slucajeva za ulogovanu pocetnu
-  status: In Review
+  status: Finished
   refines: REQ-005
   description: >
     Implementirati zasticeni backend endpoint za prikaz ulogovane pocetne stranice koji vraca
@@ -149,7 +149,7 @@
 
 - id: REQ-SW-018
   name: Pocetna forma za zapocinjanje kreiranja slucaja
-  status: In Review
+  status: In Progress
   refines: REQ-019
   description: >
     Implementirati frontend formu na ruti `/slucaj/novi` sa obaveznim poljima za naziv i opis
@@ -167,7 +167,7 @@
 
 - id: REQ-SW-020
   name: Meni za rezim kreiranja slucaja
-  status: In Review
+  status: In Progress
   refines: REQ-029
   description: >
     Implementirati levi meni tokom kreiranja slucaja koji prikazuje tabove sekcija procesa
@@ -176,7 +176,7 @@
 
 - id: REQ-SW-021
   name: Backend endpoint za creatorski prikaz pojedinacnog slucaja
-  status: In Review
+  status: Finished
   refines: REQ-029
   description: >
     Implementirati JWT-zasticeni endpoint `GET /api/cases/:caseId/creator` koji vraca podatke
@@ -184,7 +184,7 @@
 
 - id: REQ-SW-022
   name: Routing za creatorski mod po identifikatoru slucaja
-  status: In Review
+  status: Finished
   refines: REQ-029
   description: >
     Implementirati frontend podrsku za dinamicke rute po identifikatoru slucaja za oba moda
@@ -193,7 +193,7 @@
 
 - id: REQ-SW-023
   name: Ujednacen set tabova za kreiranje i resavanje slucaja
-  status: In Review
+  status: Finished
   refines: REQ-012
   description: >
     Obezbediti da prozor slucaja koristi isti set tabova menija u oba moda (kreiranje i
@@ -201,8 +201,30 @@
 
 - id: REQ-SW-024
   name: Dugme za objavu u rezimu kreiranja
-  status: In Review
+  status: Finished
   refines: REQ-027
   description: >
     Obezbediti da opcija `Objavi slucaj` stoji u meniju rezima kreiranja kao posebno dugme
     bez navigacije na novu stranicu/tab, dok se puna logika potvrde i backend objave ne uvedu.
+
+- id: REQ-SW-025
+  name: Backend model i API za osobe i dosijee u slucaju
+  status: Finished
+  refines: REQ-015
+  description: >
+    Implementirati prosiren SQLite model dosijea osobe (ukljucujuci administrativne
+    auto-generisane podatke kao broj dosijea, klasifikaciju i reviziju), podrsku za cuvanje
+    fotografije osobe, kao i JWT-zasticene
+    endpointe `GET /api/cases/:caseId/people` i `POST /api/cases/:caseId/people` za autora
+    slucaja, uz validaciju ulaza i vracanje strukturisanih podataka osobe i formalnog dosijea.
+
+- id: REQ-SW-026
+  name: Tab osobe i dosijei - kreiranje i pregled
+  status: Finished
+  refines: REQ-014
+  description: >
+    Implementirati funkcionalan tab `osobe-i-dosijei` u case workspace-u koji na glavnom
+    prikazu pokazuje listu osoba sa osnovnim podacima, dok se kreiranje nove osobe/dosijea
+    i pregled detaljnog formalnog dosijea obavljaju kroz iskacuce prozore (modale), uz
+    padajuce liste za sva pogodna polja i posebno prilagodjen uvodni prikaz taba za
+    creatorski i rezim resavanja.

@@ -1,4 +1,5 @@
-import { runQuery } from "./sqliteClient.js";
+import { getMany, runQuery } from "./sqliteClient.js";
+import { CASE_PEOPLE_MIGRATIONS } from "./migrations.casePeople.js";
 
 const MIGRATIONS = [
   `
@@ -45,23 +46,7 @@ const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_cases_publication_status
     ON cases(publication_status);
   `,
-  `
-    CREATE TABLE IF NOT EXISTS case_people (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      case_id INTEGER NOT NULL,
-      full_name TEXT NOT NULL,
-      apparent_role TEXT NOT NULL DEFAULT 'unknown'
-        CHECK (apparent_role IN ('unknown', 'suspect', 'victim', 'witness')),
-      biography TEXT NOT NULL DEFAULT '',
-      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (case_id) REFERENCES cases(id) ON DELETE CASCADE
-    );
-  `,
-  `
-    CREATE INDEX IF NOT EXISTS idx_case_people_case_id
-    ON case_people(case_id);
-  `,
+  ...CASE_PEOPLE_MIGRATIONS,
   `
     CREATE TABLE IF NOT EXISTS case_documents (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -147,8 +132,29 @@ const MIGRATIONS = [
   `,
 ];
 
+async function ensureColumnExists(database, tableName, columnName, definitionSql) {
+  const rows = await getMany(database, `PRAGMA table_info(${tableName})`);
+  const hasColumn = rows.some((row) => row?.name === columnName);
+  if (hasColumn) {
+    return;
+  }
+
+  await runQuery(database, `ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definitionSql}`);
+}
+
+async function applyColumnMigrations(database) {
+  await ensureColumnExists(
+    database,
+    "case_person_dossier_profiles",
+    "photo_data_url",
+    "TEXT NOT NULL DEFAULT ''"
+  );
+}
+
 export async function applyMigrations(database) {
   for (const statement of MIGRATIONS) {
     await runQuery(database, statement);
   }
+
+  await applyColumnMigrations(database);
 }

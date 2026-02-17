@@ -41,7 +41,7 @@
 
 - id: REQ-005
   name: Pocetna stranica za ulogovane korisnike
-  status: In Review
+  status: In Progress
   description: >
     Treba da sadrzi pregled slucajja koji se trenutno rijesava 
     Treba da sadrzi pregled slucaja koji su rijeseni
@@ -53,7 +53,7 @@
 
 - id: REQ-006
   name: Meni
-  status: In Review
+  status: In Progress
   description: >
     Meni treba d a bude u vidu lijevog side bara sa opcijama menija priakzaom profila za ulogovanog korisnika
     U ne ulogovanom stanju treba da sadrzi opcije za pocetnu stranicu, registraciju i prijavu
@@ -118,7 +118,7 @@
 
 - id: REQ-012
   name: Izgled prozora za slucaj
-  status: In Review
+  status: In Progress
   description: >
     U meniju ce se nakon sto korisnik udje u slucaj pojaviti pored opcije za izlazak iz slucajja i 
     Pocetna ( cini osnovne informacije o slucaju kao sto su naziv, opis, ocjena, broj recenzija i autor)
@@ -140,7 +140,7 @@
 
 - id: REQ-014
   name: Osobe u slucaju
-  status: Draft
+  status: In Progress
   description: >
     Osobe u slucaju treba da budu prikazane u formi liste sa osnovnim informacijama o svakoj osobi, kao sto su ime, prezime i uloga u slucaju (osumnjiceni, zrtva, svjedok)
     Za svaku osobu treba da postoji opcija za pregled dosijea koji sadrzi sve informacije o toj osobi.
@@ -150,7 +150,7 @@
 
 - id: REQ-015
   name: Dosije osobe
-  status: Draft
+  status: In Progress
   description: >
     Dosije osobe treba da sadrzi sve informacije o toj osobi.
     Kao sto su ime prezime mjesto stanovanja broj telefona visina 
@@ -192,7 +192,7 @@
 
 - id: REQ-019
   name: Kreiranje slucaja
-  status: In Review
+  status: In Progress
   description: >
     Treba da sadrzi formu za kreiranje novog slucajja koji ukljucuje kreiranje osoba 
     kreiranje svih dosijea za te osobe
@@ -269,7 +269,7 @@
 
 - id: REQ-027
   name: Objavljivanje slucajja 
-  status: In Review
+  status: In Progress
   description: >
     Nakon sto kretor zavrsi uredjivanje slucajja moze da ga objavi i tek tada ce ga ostali korisnici vidjeti i rijesvati
     Takdoej kreator za vrijemme kreiranja slucajja mzoe preci u mod za pregled d avidi kkao ce izgledati u pregledu za korisnika 
@@ -285,7 +285,7 @@
 
 - id: REQ-029
   name: Prozor za kreiranje slucaja
-  status: In Review
+  status: In Progress
   description: >
     Kada krenne u kreiranje slucaja, korisnik prvo popuni ime slucajja i njegov opis
     Zatim ce biti preusmjeren na prozor gdje ce kreirati sucaj 
