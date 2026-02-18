@@ -3,6 +3,10 @@ import {
   listAdminAnnouncements,
 } from "./admin.announcements.service.js";
 import {
+  getAdminSettings,
+  patchAdminActiveAppVersion,
+} from "./admin.settings.service.js";
+import {
   deleteAdminUser,
   getAdminOverview,
   getAdminTickets,
@@ -44,6 +48,16 @@ export async function adminTicketsController(req, res) {
   });
 }
 
+export async function adminSettingsController(req, res) {
+  const result = await getAdminSettings();
+
+  res.status(200).json({
+    ok: true,
+    message: "Admin podešavanja su uspešno učitana.",
+    data: result,
+  });
+}
+
 export async function adminAnnouncementsController(req, res) {
   const result = await listAdminAnnouncements();
 
@@ -73,6 +87,16 @@ export async function adminUpdateTicketStatusController(req, res) {
   res.status(200).json({
     ok: true,
     message: "Status tiketa je uspešno izmenjen.",
+    data: result,
+  });
+}
+
+export async function adminUpdateActiveAppVersionController(req, res) {
+  const result = await patchAdminActiveAppVersion(req.body || {});
+
+  res.status(200).json({
+    ok: true,
+    message: "Aktivna verzija aplikacije je uspešno izmenjena.",
     data: result,
   });
 }

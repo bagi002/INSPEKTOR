@@ -375,7 +375,7 @@
 
 - id: REQ-SW-039
   name: Backend model i API za korisnicke support tickete
-  status: Finished
+  status: In Review
   refines: REQ-031
   description: >
     Uvesti SQLite tabelu `support_tickets` i JWT-zasticene endpointe
@@ -386,7 +386,7 @@
 
 - id: REQ-SW-040
   name: Korisnicki panel za podrsku u glavnoj aplikaciji
-  status: Finished
+  status: In Review
   refines: REQ-031
   description: >
     Implementirati novu stranicu `/podrska` u ulogovanom meniju, sa formom za prijavu
@@ -395,7 +395,7 @@
 
 - id: REQ-SW-041
   name: Admin autentifikacija i backend API za administraciju
-  status: Finished
+  status: In Review
   refines: REQ-032
   description: >
     Implementirati admin autentifikaciju preko endpointa `POST /api/admin/login`
@@ -405,7 +405,7 @@
 
 - id: REQ-SW-042
   name: Odvojen admin panel na zasebnom portu
-  status: Finished
+  status: In Review
   refines: REQ-032
   description: >
     Implementirati poseban React + Vite admin frontend (`admin-frontend`) koji radi
@@ -613,3 +613,32 @@
     Obezbediti da timeline poruke prikazuju labelu `Dalje` bez escape/navodnickih
     debug artefakata i ukloniti debug stack detalje iz backend error response-a
     kako bi korisnicke greske bile jasne, kratke i pogodne za produkcioni prikaz.
+
+- id: REQ-SW-062
+  name: Tabovani admin dashboard sa odvojenim karticama sekcija
+  status: In Review
+  refines: REQ-032
+  description: >
+    U admin panelu uvesti tabovani dashboard koji razdvaja funkcionalnosti na
+    posebne kartice/sekcije (`Pregled`, `Ticketi`, `Obavjestenja`, `Korisnici`,
+    `Slucajevi`, `Podesavanja`) radi preglednijeg rada i brzeg pristupa
+    administrativnim akcijama.
+
+- id: REQ-SW-063
+  name: Grupisanje i sortiranje support tiketa po statusu u admin panelu
+  status: In Review
+  refines: REQ-032
+  description: >
+    U sekciji admin tiketa obezbediti statusno razdvajanje tiketa (`open`,
+    `reviewed`, `in_progress`, `rejected`, `closed`) u odvojene kartice/grupe i
+    sortiranje tiketa po datumu prijave (najnoviji prvo) unutar svake statusne grupe.
+
+- id: REQ-SW-064
+  name: Centralna aktivna verzija aplikacije za support tiket workflow
+  status: In Review
+  refines: REQ-031
+  description: >
+    Implementirati centralnu postavku `active_app_version` koju admin unosi i menja
+    u admin panelu, tako da korisnicka forma za kreiranje support tiketa automatski
+    preuzima ovu vrednost i unapred popunjava polje `Verzija aplikacije`, uz backend
+    fallback da se aktivna verzija koristi i kada klijent ne posalje verziju.

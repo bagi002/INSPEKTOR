@@ -30,6 +30,19 @@ export const SUPPORT_ADMIN_MIGRATIONS = [
     ON support_tickets(created_at);
   `,
   `
+    CREATE TABLE IF NOT EXISTS app_settings (
+      setting_key TEXT PRIMARY KEY,
+      setting_value TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+  `,
+  `
+    INSERT INTO app_settings (setting_key, setting_value)
+    VALUES ('active_app_version', 'main-web-frontend')
+    ON CONFLICT(setting_key) DO NOTHING;
+  `,
+  `
     CREATE TABLE IF NOT EXISTS admin_announcements (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,

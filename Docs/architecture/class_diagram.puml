@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel + admin popup obavjestenja
+title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel (tabovi + aktivna verzija) + admin popup obavjestenja
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -69,6 +69,7 @@ class AdminAnnouncementPopup {
 }
 
 class SupportPage {
+  +loadTicketDefaults()
   +loadTickets()
   +handleSubmit(event)
   +render()
@@ -406,6 +407,7 @@ class CaseProgressApiClient {
 }
 
 class SupportApiClient {
+  +fetchSupportTicketDefaults()
   +fetchMySupportTickets()
   +createSupportTicket(payload)
 }
@@ -425,8 +427,10 @@ class ProfileApiClient {
 class AdminApiClient {
   +loginAdmin(payload)
   +fetchAdminOverview()
+  +fetchAdminSettings()
   +fetchAdminTickets()
   +updateAdminTicketStatus(ticketId, payload)
+  +updateAdminActiveAppVersion(payload)
   +fetchAdminAnnouncements()
   +createAdminAnnouncement(payload)
   +fetchAdminUsers()
@@ -460,12 +464,8 @@ class AdminLoginView {
 }
 
 class AdminDashboard {
-  +loadDashboardData()
-  +handleUpdateTicket(ticketId, payload)
-  +handleCreateAnnouncement(payload)
-  +handleUpdateUser(userId, payload)
-  +handleDeleteUser(userId)
-  +handleUpdateCase(caseId, payload)
+  +activeTab
+  +renderTabSection()
   +render()
 }
 
@@ -488,6 +488,25 @@ class AdminUsersSection {
 class AdminCasesSection {
   +handleSave()
   +render()
+}
+
+class AdminOverviewSection {
+  +render()
+}
+
+class AdminSettingsSection {
+  +handleSubmit(event)
+  +render()
+}
+
+class UseAdminDashboardData {
+  +loadDashboardData()
+  +handleUpdateTicket(ticketId, payload)
+  +handleUpdateActiveAppVersion(payload)
+  +handleCreateAnnouncement(payload)
+  +handleUpdateUser(userId, payload)
+  +handleDeleteUser(userId)
+  +handleUpdateCase(caseId, payload)
 }
 
 class ExpressApp {
@@ -521,6 +540,7 @@ class CasesRoutes {
 }
 
 class SupportRoutes {
+  +GET /ticket-defaults
   +GET /tickets/me
   +POST /tickets
 }
@@ -535,8 +555,10 @@ class ProfileRoutes {
 class AdminRoutes {
   +POST /login
   +GET /overview
+  +GET /settings
   +GET /tickets
   +PATCH /tickets/:ticketId/status
+  +PATCH /settings/active-app-version
   +GET /announcements
   +POST /announcements
   +GET /users
@@ -590,6 +612,7 @@ class CaseProgressController {
 }
 
 class SupportController {
+  +getSupportTicketDefaultsController(req, res)
   +getMySupportTicketsController(req, res)
   +createSupportTicketController(req, res)
 }
@@ -609,10 +632,12 @@ class AnnouncementsController {
 class AdminController {
   +adminLoginController(req, res)
   +adminOverviewController(req, res)
+  +adminSettingsController(req, res)
   +adminTicketsController(req, res)
   +adminAnnouncementsController(req, res)
   +adminCreateAnnouncementController(req, res)
   +adminUpdateTicketStatusController(req, res)
+  +adminUpdateActiveAppVersionController(req, res)
   +adminUsersController(req, res)
   +adminUpdateUserController(req, res)
   +adminDeleteUserController(req, res)
@@ -671,6 +696,7 @@ class CasePublishService {
 }
 
 class SupportService {
+  +getSupportTicketDefaults()
   +getMySupportTickets(userId)
   +createSupportTicketForUser(payload, userId)
 }
@@ -697,6 +723,11 @@ class AdminService {
   +deleteAdminUser(userId, requesterAdminUserId)
   +listAdminCases()
   +patchAdminCase(caseId, payload)
+}
+
+class AdminSettingsService {
+  +getAdminSettings()
+  +patchAdminActiveAppVersion(payload)
 }
 
 class AdminAnnouncementsService {
@@ -754,6 +785,7 @@ class AdminValidation {
   +validateAdminTicketStatusPayload(payload)
   +validateAdminUserPatchPayload(payload)
   +validateAdminCasePatchPayload(payload)
+  +validateAdminActiveAppVersionPayload(payload)
 }
 
 class AdminAnnouncementsValidation {
@@ -868,6 +900,11 @@ class AdminAnnouncementsRepository {
   +dismissAdminAnnouncementForUser(announcementId, userId)
 }
 
+class AppSettingsRepository {
+  +getActiveAppVersionSetting()
+  +setActiveAppVersionSetting(activeVersion)
+}
+
 UseCaseInterrogationCreateState --> CaseInterrogationCreateStateUtils
 CaseInterrogationCreateModal --> CaseInterrogationNodeBuilderSection
 CaseInterrogationNodeBuilderSection --> CaseInterrogationTreePreview
@@ -906,6 +943,7 @@ class SQLiteDatabase {
   +case_quiz_options
   +case_quiz_user_results
   +support_tickets
+  +app_settings
   +admin_announcements
   +admin_announcement_dismissals
 }
@@ -1017,13 +1055,16 @@ AnnouncementsApiClient ..> SessionStorageService
 CasesApiClient ..> RouteUtils
 AdminApp --> AdminLoginView
 AdminApp --> AdminDashboard
+AdminDashboard *-- AdminOverviewSection
 AdminDashboard *-- AdminTicketsSection
 AdminDashboard *-- AdminAnnouncementsSection
 AdminDashboard *-- AdminUsersSection
 AdminDashboard *-- AdminCasesSection
+AdminDashboard *-- AdminSettingsSection
+AdminDashboard ..> UseAdminDashboardData
 AdminLoginView ..> AdminApiClient
-AdminDashboard ..> AdminApiClient
 AdminAnnouncementsSection ..> AdminApiClient
+UseAdminDashboardData ..> AdminApiClient
 AdminApiClient ..> AdminSessionStorageService
 
 CasePeopleApiClient ..> ExpressApp
@@ -1073,6 +1114,7 @@ ProfileController --> ProfileService
 SupportController --> SupportService
 AnnouncementsController --> AnnouncementsService
 AdminController --> AdminService
+AdminController --> AdminSettingsService
 AdminController --> AdminAnnouncementsService
 CasesService --> CasesRepository
 CasesService --> CaseSolveVisibilityService
@@ -1117,10 +1159,13 @@ ProfileService --> ProfileValidation
 ProfileService --> ProfileRepository
 SupportService --> SupportValidation
 SupportService --> SupportRepository
+SupportService --> AppSettingsRepository
 AnnouncementsService --> AdminAnnouncementsRepository
 AdminService --> AdminValidation
 AdminService --> AdminRepository
 AdminService --> SupportRepository
+AdminSettingsService --> AdminValidation
+AdminSettingsService --> AppSettingsRepository
 AdminAnnouncementsService --> AdminAnnouncementsValidation
 AdminAnnouncementsService --> AdminAnnouncementsRepository
 CaseSolveVisibilityService --> CaseTimelineRepository
@@ -1142,6 +1187,7 @@ ProfileRepository --> DatabaseModule
 SupportRepository --> DatabaseModule
 AdminRepository --> DatabaseModule
 AdminAnnouncementsRepository --> DatabaseModule
+AppSettingsRepository --> DatabaseModule
 AdminBootstrap --> DatabaseModule
 DatabaseModule --> SQLiteDatabase
 @enduml

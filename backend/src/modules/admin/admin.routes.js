@@ -8,7 +8,9 @@ import {
   adminDeleteUserController,
   adminLoginController,
   adminOverviewController,
+  adminSettingsController,
   adminTicketsController,
+  adminUpdateActiveAppVersionController,
   adminUpdateCaseController,
   adminUpdateTicketStatusController,
   adminUpdateUserController,
@@ -21,8 +23,13 @@ adminRoutes.post("/login", asyncHandler(adminLoginController));
 
 adminRoutes.use(requireAdminPanelAuth);
 adminRoutes.get("/overview", asyncHandler(adminOverviewController));
+adminRoutes.get("/settings", asyncHandler(adminSettingsController));
 adminRoutes.get("/tickets", asyncHandler(adminTicketsController));
 adminRoutes.patch("/tickets/:ticketId/status", asyncHandler(adminUpdateTicketStatusController));
+adminRoutes.patch(
+  "/settings/active-app-version",
+  asyncHandler(adminUpdateActiveAppVersionController)
+);
 adminRoutes.get("/announcements", asyncHandler(adminAnnouncementsController));
 adminRoutes.post("/announcements", asyncHandler(adminCreateAnnouncementController));
 adminRoutes.get("/users", asyncHandler(adminUsersController));

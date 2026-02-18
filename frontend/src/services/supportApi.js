@@ -63,6 +63,50 @@ export async function fetchMySupportTickets() {
   }
 }
 
+export async function fetchSupportTicketDefaults() {
+  const authorizationHeader = buildAuthorizationHeader();
+  if (!authorizationHeader) {
+    return {
+      ok: false,
+      unauthorized: true,
+      message: "Sesija nije aktivna. Prijavi se ponovo.",
+      data: null,
+    };
+  }
+
+  try {
+    const response = await fetch(`${SUPPORT_API_BASE}/ticket-defaults`, {
+      method: "GET",
+      headers: {
+        Authorization: authorizationHeader,
+      },
+    });
+    const payload = await parseResponseBody(response);
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        unauthorized: response.status === 401,
+        message: resolveMessage(payload, "Učitavanje podrazumevanih vrednosti nije uspelo."),
+        data: null,
+      };
+    }
+
+    return {
+      ok: true,
+      unauthorized: false,
+      data: payload?.data || null,
+    };
+  } catch {
+    return {
+      ok: false,
+      unauthorized: false,
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
+      data: null,
+    };
+  }
+}
+
 export async function createSupportTicket(payload) {
   const authorizationHeader = buildAuthorizationHeader();
   if (!authorizationHeader) {

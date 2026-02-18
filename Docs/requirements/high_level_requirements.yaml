@@ -304,7 +304,7 @@
 
 - id: REQ-031
   name: Stranica za podrsku
-  status: Finished
+  status: In Review
   description: >
     Nova stavka menija koja vodi na stranicu za podrsku
     Na ovoj stranici se nalzi forma za kreirnje tickets za prijavu buga ili prijedloga za poboljsanje aplikacije
@@ -315,7 +315,7 @@
 
 - id: REQ-032
   name: Admin panel
-  status: Finished
+  status: In Review
   description: >
     Treba da postoji admin panel koji je dostupan samo adminima aplikacije
     Treba d abude na drugom portu od glavne aplikacije

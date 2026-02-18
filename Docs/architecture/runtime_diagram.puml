@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + korisnicka podrska + admin panel + admin popup obavjestenja
+title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + korisnicka podrska + admin panel (tabovi + aktivna verzija) + admin popup obavjestenja
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -53,6 +53,7 @@ participant "Case Publish Service" as PublishService
 participant "Profile Service" as ProfileService
 participant "Support Service" as SupportService
 participant "Admin Service" as AdminService
+participant "Admin Settings Service" as AdminSettingsService
 participant "Announcements Service" as AnnouncementsService
 participant "Admin Announcements Service" as AdminAnnouncementsService
 participant "Case Solve Visibility Service" as SolveVisibility
@@ -70,6 +71,7 @@ participant "Profile Repository" as ProfileRepo
 participant "Support Repository" as SupportRepo
 participant "Admin Repository" as AdminRepo
 participant "Admin Announcements Repository" as AdminAnnouncementsRepo
+participant "App Settings Repository" as AppSettingsRepo
 actor "Administrator" as Admin
 participant "Admin Login View" as AdminLoginView
 participant "Admin Dashboard" as AdminDashboard
@@ -82,6 +84,7 @@ database "SQLite case_interrogations + nodes" as InterrogationsStore
 database "SQLite case_quiz_questions/options/results" as QuizStore
 database "SQLite support_tickets" as SupportStore
 database "SQLite admin_announcements + dismissals" as AdminAnnouncementsStore
+database "SQLite app_settings" as AppSettingsStore
 database "LocalStorage (session)" as SessionStore
 database "LocalStorage (admin session)" as AdminSessionStore
 participant "Desktop Notice View" as Notice
@@ -733,6 +736,18 @@ alt Desktop sirina
   LoggedHome -> Router: /podrska
   Router -> Guard: Provera sesije
   Guard -> SupportPage: Render stranice za podrsku
+  SupportPage -> SupportClient: GET /api/support/ticket-defaults
+  SupportClient -> SupportApi: HTTP zahtev
+  SupportApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> SupportService: getSupportTicketDefaults()
+  SupportService -> AppSettingsRepo: getActiveAppVersionSetting()
+  AppSettingsRepo -> AppSettingsStore: SELECT active_app_version
+  AppSettingsStore --> AppSettingsRepo: aktivna verzija
+  AppSettingsRepo --> SupportService: aktivna verzija
+  SupportService --> SupportApi: response payload
+  SupportApi --> SupportClient: JSON uspeh
+  SupportClient --> SupportPage: Auto-popuna polja verzije
+
   SupportPage -> SupportClient: GET /api/support/tickets/me
   SupportClient -> SupportApi: HTTP zahtev
   SupportApi -> JwtGuard: Verifikacija tokena
@@ -752,6 +767,9 @@ alt Desktop sirina
   SupportClient -> SupportApi: HTTP zahtev
   SupportApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> SupportService: createSupportTicketForUser(payload, userId)
+  SupportService -> AppSettingsRepo: getActiveAppVersionSetting() kao fallback
+  AppSettingsRepo -> AppSettingsStore: SELECT active_app_version
+  AppSettingsStore --> AppSettingsRepo: aktivna verzija
   SupportService -> SupportRepo: INSERT support_tickets
   SupportRepo -> SupportStore: INSERT (tip, naslov, opis, lokacija, verzija, status=open)
   SupportStore --> SupportRepo: ticketId
@@ -786,7 +804,7 @@ alt Desktop sirina
   AdminService --> AdminApi: admin JWT token + admin user
   AdminApi --> AdminClient: JSON uspeh
   AdminClient -> AdminSessionStore: Upis admin tokena
-  AdminLoginView -> AdminDashboard: Render dashboard prikaza
+  AdminLoginView -> AdminDashboard: Render tabovanog dashboard prikaza
 
   AdminDashboard -> AdminClient: GET /api/admin/overview
   AdminClient -> AdminApi: HTTP zahtev
@@ -801,6 +819,18 @@ alt Desktop sirina
   AdminApi --> AdminClient: JSON uspeh
   AdminClient --> AdminDashboard: Brzi pregled metrika
 
+  AdminDashboard -> AdminClient: GET /api/admin/settings
+  AdminClient -> AdminApi: HTTP zahtev
+  AdminApi -> AdminGuard: Verifikacija admin tokena
+  AdminGuard -> AdminSettingsService: getAdminSettings()
+  AdminSettingsService -> AppSettingsRepo: getActiveAppVersionSetting()
+  AppSettingsRepo -> AppSettingsStore: SELECT active_app_version
+  AppSettingsStore --> AppSettingsRepo: aktivna verzija
+  AppSettingsRepo --> AdminSettingsService: aktivna verzija
+  AdminSettingsService --> AdminApi: response payload
+  AdminApi --> AdminClient: JSON uspeh
+  AdminClient --> AdminDashboard: Prikaz aktivne verzije u tabu "Podesavanja"
+
   AdminDashboard -> AdminClient: GET /api/admin/tickets
   AdminClient -> AdminApi: HTTP zahtev
   AdminApi -> AdminGuard: Verifikacija admin tokena
@@ -811,7 +841,7 @@ alt Desktop sirina
   SupportRepo --> AdminService: ticketi + reporter podaci
   AdminService --> AdminApi: response payload
   AdminApi --> AdminClient: JSON uspeh
-  AdminClient --> AdminDashboard: Lista tiketa
+  AdminClient --> AdminDashboard: Lista tiketa grupisana po statusu
 
   AdminDashboard -> AdminClient: GET /api/admin/announcements
   AdminClient -> AdminApi: HTTP zahtev
@@ -852,6 +882,19 @@ alt Desktop sirina
   AdminService --> AdminApi: 200 response
   AdminApi --> AdminClient: JSON uspeh
   AdminClient --> AdminDashboard: Osvjezen status tiketa
+
+  Admin -> AdminDashboard: Menja aktivnu verziju aplikacije
+  AdminDashboard -> AdminClient: PATCH /api/admin/settings/active-app-version
+  AdminClient -> AdminApi: HTTP zahtev
+  AdminApi -> AdminGuard: Verifikacija admin tokena
+  AdminGuard -> AdminSettingsService: patchAdminActiveAppVersion(payload)
+  AdminSettingsService -> AppSettingsRepo: setActiveAppVersionSetting(version)
+  AppSettingsRepo -> AppSettingsStore: UPSERT active_app_version + updated_at
+  AppSettingsStore --> AppSettingsRepo: potvrda izmene
+  AppSettingsRepo --> AdminSettingsService: nova aktivna verzija
+  AdminSettingsService --> AdminApi: 200 response
+  AdminApi --> AdminClient: JSON uspeh
+  AdminClient --> AdminDashboard: Osvjezen prikaz aktivne verzije
 
   AdminDashboard -> AdminClient: GET /api/admin/users + /api/admin/cases
   AdminClient -> AdminApi: HTTP zahtevi

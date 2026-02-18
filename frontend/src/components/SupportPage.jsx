@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { createSupportTicket, fetchMySupportTickets } from "../services/supportApi";
+import {
+  createSupportTicket,
+  fetchMySupportTickets,
+  fetchSupportTicketDefaults,
+} from "../services/supportApi";
 import { AUTH_ROUTES } from "../utils/routes";
 import LoggedSidebar from "./LoggedSidebar";
 import SupportTicketForm from "./SupportTicketForm";
@@ -10,7 +14,7 @@ const initialFormData = {
   title: "",
   description: "",
   appLocation: "",
-  appVersion: "main-web-frontend",
+  appVersion: "",
 };
 
 function SupportPage({ user, onLogout }) {
@@ -21,6 +25,7 @@ function SupportPage({ user, onLogout }) {
   const [isLoadingTickets, setIsLoadingTickets] = useState(true);
   const [ticketErrorMessage, setTicketErrorMessage] = useState("");
   const [tickets, setTickets] = useState([]);
+  const [activeAppVersion, setActiveAppVersion] = useState("");
 
   const loadTickets = useCallback(async () => {
     setIsLoadingTickets(true);
@@ -42,9 +47,33 @@ function SupportPage({ user, onLogout }) {
     setIsLoadingTickets(false);
   }, [onLogout]);
 
+  const loadTicketDefaults = useCallback(async () => {
+    const result = await fetchSupportTicketDefaults();
+    if (!result.ok) {
+      if (result.unauthorized) {
+        onLogout();
+      }
+      return;
+    }
+
+    const resolvedVersion = typeof result.data?.activeAppVersion === "string"
+      ? result.data.activeAppVersion.trim()
+      : "";
+    if (!resolvedVersion) {
+      return;
+    }
+
+    setActiveAppVersion(resolvedVersion);
+    setFormData((previous) => ({
+      ...previous,
+      appVersion: previous.appVersion || resolvedVersion,
+    }));
+  }, [onLogout]);
+
   useEffect(() => {
+    void loadTicketDefaults();
     void loadTickets();
-  }, [loadTickets]);
+  }, [loadTicketDefaults, loadTickets]);
 
   function handleFieldChange(event) {
     const { name, value } = event.target;
@@ -77,6 +106,7 @@ function SupportPage({ user, onLogout }) {
       title: "",
       description: "",
       appLocation: "",
+      appVersion: activeAppVersion || previous.appVersion,
     }));
     setFormMessage(result.message || "Tiket je uspešno kreiran.");
     void loadTickets();

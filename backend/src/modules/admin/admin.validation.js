@@ -178,3 +178,21 @@ export function validateAdminCasePatchPayload(payload) {
   }
   return { errors, sanitized: updates };
 }
+
+export function validateAdminActiveAppVersionPayload(payload) {
+  const errors = {};
+  const activeAppVersion = toText(payload?.activeAppVersion);
+
+  if (activeAppVersion.length < 2) {
+    errors.activeAppVersion = "Aktivna verzija aplikacije mora imati najmanje 2 karaktera.";
+  } else if (activeAppVersion.length > 40) {
+    errors.activeAppVersion = "Aktivna verzija aplikacije može imati najviše 40 karaktera.";
+  }
+
+  return {
+    errors,
+    sanitized: {
+      activeAppVersion,
+    },
+  };
+}

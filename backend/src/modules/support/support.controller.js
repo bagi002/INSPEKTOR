@@ -1,5 +1,6 @@
 import {
   createSupportTicketForUser,
+  getSupportTicketDefaults,
   getMySupportTickets,
 } from "./support.service.js";
 
@@ -19,6 +20,16 @@ export async function getMySupportTicketsController(req, res) {
   res.status(200).json({
     ok: true,
     message: "Ticketi su uspešno učitani.",
+    data: result,
+  });
+}
+
+export async function getSupportTicketDefaultsController(req, res) {
+  const result = await getSupportTicketDefaults();
+
+  res.status(200).json({
+    ok: true,
+    message: "Podrazumevane vrednosti za tiket su uspešno učitane.",
     data: result,
   });
 }

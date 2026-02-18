@@ -124,7 +124,7 @@ textarea {
 }
 .admin-stats-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 0.65rem;
 }
 .admin-stat {
@@ -146,11 +146,74 @@ textarea {
   display: grid;
   gap: 0.72rem;
 }
+.admin-ticket-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+.admin-ticket-group-list {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.85rem;
+}
+.admin-ticket-group {
+  border: 1px solid #c6d7ea;
+  border-radius: 12px;
+  padding: 0.82rem;
+  background: linear-gradient(170deg, #fbfdff, #eef4fc);
+}
+.admin-ticket-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+}
 .admin-ticket-item {
   border: 1px solid #c6d7ea;
   border-radius: 12px;
   padding: 0.82rem;
   background: linear-gradient(170deg, #f9fbff, #edf4fc);
+}
+.admin-status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  min-height: 28px;
+  padding: 0 0.55rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.84rem;
+  border: 1px solid #b8cbe2;
+  color: #1a416d;
+  background: #e8f1fb;
+}
+.admin-status-open {
+  border-color: #2e63a1;
+  color: #0d3e73;
+  background: #deebfa;
+}
+.admin-status-reviewed {
+  border-color: #3b6b59;
+  color: #22503f;
+  background: #e2f2eb;
+}
+.admin-status-in_progress {
+  border-color: #967021;
+  color: #6f4c08;
+  background: #faefcc;
+}
+.admin-status-rejected {
+  border-color: #8f3f4b;
+  color: #762531;
+  background: #f8dfe4;
+}
+.admin-status-closed {
+  border-color: #5d6674;
+  color: #354052;
+  background: #e6ebf2;
 }
 .admin-announcement-list {
   margin-top: 0.9rem;
@@ -187,4 +250,24 @@ textarea {
 .admin-table-actions {
   display: flex;
   gap: 0.45rem;
+}
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+.admin-tab-btn {
+  border: 1px solid #adc2dd;
+  border-radius: 999px;
+  padding: 0.48rem 0.9rem;
+  min-height: 38px;
+  color: #18426f;
+  background: #edf4fd;
+  font-weight: 700;
+  cursor: pointer;
+}
+.admin-tab-btn.is-active {
+  border-color: #1f528e;
+  color: #f6fbff;
+  background: linear-gradient(135deg, #144379, #255e9c);
 }

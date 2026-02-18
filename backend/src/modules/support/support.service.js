@@ -1,4 +1,5 @@
 import { HttpError } from "../../utils/httpError.js";
+import { getActiveAppVersionSetting } from "../appSettings/appSettings.repository.js";
 import {
   createSupportTicket,
   getSupportTicketsByReporterUserId,
@@ -14,6 +15,8 @@ function throwValidationIfNeeded(errors) {
 export async function createSupportTicketForUser(payload, reporterUserId) {
   const { errors, sanitized } = validateCreateSupportTicketPayload(payload);
   throwValidationIfNeeded(errors);
+  const activeAppVersion = await getActiveAppVersionSetting();
+  const resolvedAppVersion = sanitized.appVersion || activeAppVersion;
 
   const createdTicket = await createSupportTicket({
     reporterUserId,
@@ -21,7 +24,7 @@ export async function createSupportTicketForUser(payload, reporterUserId) {
     title: sanitized.title,
     description: sanitized.description,
     appLocation: sanitized.appLocation,
-    appVersion: sanitized.appVersion,
+    appVersion: resolvedAppVersion,
   });
 
   return {
@@ -33,5 +36,12 @@ export async function getMySupportTickets(userId) {
   const tickets = await getSupportTicketsByReporterUserId(userId);
   return {
     tickets,
+  };
+}
+
+export async function getSupportTicketDefaults() {
+  const activeAppVersion = await getActiveAppVersionSetting();
+  return {
+    activeAppVersion,
   };
 }

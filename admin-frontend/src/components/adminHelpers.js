@@ -5,6 +5,7 @@ export const ADMIN_TICKET_STATUS_OPTIONS = [
   { value: "rejected", label: "Odbacen" },
   { value: "closed", label: "Zatvoren" },
 ];
+export const ADMIN_TICKET_STATUS_ORDER = ADMIN_TICKET_STATUS_OPTIONS.map((option) => option.value);
 
 const TICKET_TYPE_LABELS = {
   bug_report: "Prijava baga",
@@ -32,4 +33,9 @@ export function formatAdminDate(value) {
 
 export function getTicketTypeLabel(value) {
   return TICKET_TYPE_LABELS[value] || "Nepoznato";
+}
+
+export function getAdminTicketStatusLabel(value) {
+  const statusOption = ADMIN_TICKET_STATUS_OPTIONS.find((option) => option.value === value);
+  return statusOption ? statusOption.label : "Nepoznato";
 }

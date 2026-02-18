@@ -2,7 +2,7 @@
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
 Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, javna Wiki stranica sa vodicem koriscenja, ulogovana pocetna sa stvarnim podacima iz SQLite baze, profil korisnika sa pregledom aktivnosti i upravljanjem nalogom, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
-Admin panel sada podrzava i kreiranje hitnih popup obavjestenja koja se prikazuju korisnicima unutar glavne aplikacije.
+Admin panel sada podrzava i kreiranje hitnih popup obavjestenja, tabovani dashboard sa odvojenim sekcijama i upravljanje aktivnom verzijom aplikacije koja se automatski koristi u support tiket formi.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
@@ -122,24 +122,31 @@ Tok koriscenja:
     (bez otvaranja kompletnog case workspace-a).
 22. U lijevom meniju creatorskog moda postoji opcija `Vrati slucaj u resavanje` koja autoru
     vraca sopstveni progress iz `resolved` u `in_progress`.
-23. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i verziju
-    aplikacije, i pratiti statuse svih svojih tiketa.
+23. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i
+    pratiti statuse svih svojih tiketa; polje verzije aplikacije je auto-popunjeno
+    aktivnom verzijom koju definiše admin panel.
 24. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
     email+lozinka naloga + lozinka admin panela (`ADMIN_PANEL_PASSWORD`).
-25. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
-26. U ruti `/profil` mozes pregledati svoje aktivnosti, azurirati osnovne podatke,
+25. Nakon admin prijave dashboard je razdvojen na tabove (`Pregled`, `Ticketi`,
+    `Obavjestenja`, `Korisnici`, `Slucajevi`, `Podesavanja`) sa odvojenim radnim sekcijama.
+26. U tabu `Ticketi` tiketi su grupisani po statusu i sortirani po datumu prijave
+    (najnoviji prvo) unutar svake grupe.
+27. U tabu `Podesavanja` admin unosi aktivnu verziju aplikacije koja se automatski
+    preuzima u korisnickoj support formi.
+28. U ruti `/profil` mozes pregledati svoje aktivnosti, azurirati osnovne podatke,
     promeniti lozinku ili trajno obrisati nalog uz potvrdu.
-27. U admin panelu postoji sekcija `Admin obavjestenja` gdje admin unosi naslov i sadrzaj
+29. U admin panelu postoji sekcija `Admin obavjestenja` gdje admin unosi naslov i sadrzaj
     hitne poruke, pa objavljuje popup obavjestenje.
-28. U korisnickoj aplikaciji, ulogovani korisnik automatski dobija pending popup
+30. U korisnickoj aplikaciji, ulogovani korisnik automatski dobija pending popup
     obavjestenja i moze ih zatvoriti akcijom `Zatvori obavjestenje`.
-29. Korisnici koji su bili registrovani u trenutku objave obavjestenja dobijaju
+31. Korisnici koji su bili registrovani u trenutku objave obavjestenja dobijaju
     isto obavjestenje i pri sledecoj prijavi ako ga ranije nisu zatvorili.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
 - Slucajevi i povezani podaci (osobe, dokumenti, timeline, korisnicki napredak, zavrsni kviz i recenzije) cuvaju se u SQLite `case_*` tabelama.
 - Ticketi podrske se cuvaju u tabeli `support_tickets`.
+- Aktivna verzija aplikacije cuva se u tabeli `app_settings` (`active_app_version`).
 - Admin popup obavjestenja i dismiss zapisi cuvaju se u tabelama
   `admin_announcements` i `admin_announcement_dismissals`.
 - Pri uspesnoj prijavi backend vraca JWT token koji se cuva u `localStorage` na klijentu.
@@ -302,6 +309,9 @@ Napomena:
   - nakon cuvanja backend automatski osvezava `average_rating` i `rating_count` slucaja
 - `GET /api/support/tickets/me` (autorizacija: `Bearer <JWT>`)
   - vraca sve tikete trenutno ulogovanog korisnika, ukljucujuci status i admin napomenu
+- `GET /api/support/ticket-defaults` (autorizacija: `Bearer <JWT>`)
+  - vraca podrazumevane vrednosti za novu prijavu tiketa
+  - trenutno ukljucuje `activeAppVersion` koja se koristi za auto-popunu forme
 - `POST /api/support/tickets` (autorizacija: `Bearer <JWT>`)
   - kreira novi tiket za podrsku
   - body: `ticketType`, `title`, `description`, `appLocation`, `appVersion`
@@ -318,10 +328,16 @@ Napomena:
   - vraca admin JWT token sa `scope=admin_panel`
 - `GET /api/admin/overview` (autorizacija: `Bearer <ADMIN_JWT>`)
   - vraca agregirane metrike korisnika, slucajeva i tiketa
+- `GET /api/admin/settings` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - vraca administratorska podesavanja panela
+  - trenutno ukljucuje `activeAppVersion`
 - `GET /api/admin/tickets` (autorizacija: `Bearer <ADMIN_JWT>`)
   - vraca sve tikete sa podacima naloga koji ih je prijavio
 - `PATCH /api/admin/tickets/:ticketId/status` (autorizacija: `Bearer <ADMIN_JWT>`)
   - menja status tiketa i opcionu `adminNote`
+- `PATCH /api/admin/settings/active-app-version` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - menja aktivnu verziju aplikacije koja se koristi u support tiket workflow-u
+  - body: `{ "activeAppVersion": "..." }`
 - `GET /api/admin/announcements` (autorizacija: `Bearer <ADMIN_JWT>`)
   - vraca listu svih admin obavjestenja sa podacima admina koji je objavio poruku
 - `POST /api/admin/announcements` (autorizacija: `Bearer <ADMIN_JWT>`)
@@ -384,13 +400,16 @@ Napomena:
   - bezbednosna akcija trajnog brisanja naloga uz potvrdu i odjavu korisnika
 - Korisnicka podrska (`/podrska`):
   - forma za prijavu bug-a ili predloga poboljsanja (`ticketType`, `title`, `description`, `appLocation`, `appVersion`)
+  - automatska popuna polja `appVersion` na osnovu aktivne verzije iz admin podesavanja
   - ucitavanje i prikaz svih tiketa trenutnog korisnika sa statusima
-  - backend integracija preko `GET /api/support/tickets/me` i `POST /api/support/tickets`
+  - backend integracija preko `GET /api/support/ticket-defaults`, `GET /api/support/tickets/me` i `POST /api/support/tickets`
 - Admin panel (`http://localhost:5174`):
   - zaseban frontend i odvojena sesija (`admin_panel` JWT scope)
   - login zahteva admin nalog i lozinku admin panela
-  - dashboard prikazuje aggregate metrike (`/api/admin/overview`)
-  - upravljanje ticketima (pregled svih + promena statusa i admin napomene)
+  - tabovani dashboard sa sekcijama `Pregled`, `Ticketi`, `Obavjestenja`, `Korisnici`, `Slucajevi`, `Podesavanja`
+  - dashboard prikazuje aggregate metrike (`/api/admin/overview`) i aktivnu verziju (`/api/admin/settings`)
+  - upravljanje ticketima (statusne grupe + sortiranje po datumu + promena statusa i admin napomene)
+  - upravljanje aktivnom verzijom aplikacije kroz endpoint `PATCH /api/admin/settings/active-app-version`
   - sekcija za kreiranje i pregled popup admin obavjestenja
     (`GET /api/admin/announcements`, `POST /api/admin/announcements`)
   - upravljanje korisnicima (pregled, izmena osnovnih podataka i role, kao i brisanje naloga; bez lozinki)

@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel + admin popup obavjestenja
+title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel (tabovi + aktivna verzija) + admin popup obavjestenja
 
 package "Frontend" {
   [App Shell]
@@ -82,6 +82,7 @@ package "Frontend" {
   [Case Progress API Client]
   [Profile API Client]
   [Support API Client]
+  [Support Ticket Defaults Loader]
   [Cases API Client]
   [Announcements API Client]
   [Auth API Client]
@@ -95,11 +96,16 @@ package "Admin Frontend (port 5174)" {
   [Admin App Shell]
   [Admin Login View]
   [Admin Dashboard]
+  [Admin Overview Section]
+  [Admin Dashboard State Hook]
+  [Admin Tabs Navigation]
   [Admin Tickets Section]
   [Admin Announcements Section]
   [Admin Users Section]
   [Admin User Delete Action]
   [Admin Cases Section]
+  [Admin Settings Section]
+  [Admin Active Version Form]
   [Admin API Client]
   [Admin Session Storage]
 }
@@ -119,6 +125,7 @@ package "Backend (Node.js + Express)" {
   [Profile Service]
   [Support Service]
   [Admin Service]
+  [Admin Settings Service]
   [Announcements Service]
   [Admin Announcements Service]
   [Case Timeline Service]
@@ -159,6 +166,7 @@ package "Backend (Node.js + Express)" {
   [Profile Repository]
   [Admin Repository]
   [Admin Announcements Repository]
+  [App Settings Repository]
   [Admin Bootstrap]
   [SQLite Module]
   [Migration Runner]
@@ -172,6 +180,7 @@ database "metadata_json u case_documents" as MetadataDb
 database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
 database "case_quiz_*" as QuizDb
 database "support_tickets" as SupportDb
+database "app_settings(active_app_version)" as AppSettingsDb
 database "admin_announcements + admin_announcement_dismissals" as AnnouncementsDb
 
 [App Shell] --> [Desktop Policy Gate]
@@ -224,6 +233,8 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Profile State Hook] --> [Session Storage]
 [Profile Delete Action] --> [Profile API Client]
 [Support Page] --> [Support API Client]
+[Support Page] --> [Support Ticket Defaults Loader]
+[Support Ticket Defaults Loader] --> [Support API Client]
 [Admin Announcement Popup] --> [Announcements API Client]
 
 [Create Case Start Page] --> [Shared Case Sidebar]
@@ -333,13 +344,20 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Admin App Shell] --> [Admin Login View]
 [Admin App Shell] --> [Admin Dashboard]
 [Admin Login View] --> [Admin API Client]
+[Admin Dashboard] --> [Admin Overview Section]
+[Admin Dashboard] --> [Admin Dashboard State Hook]
+[Admin Dashboard] --> [Admin Tabs Navigation]
 [Admin Dashboard] --> [Admin Tickets Section]
 [Admin Dashboard] --> [Admin Announcements Section]
 [Admin Dashboard] --> [Admin Users Section]
 [Admin Users Section] --> [Admin User Delete Action]
 [Admin User Delete Action] --> [Admin API Client]
 [Admin Dashboard] --> [Admin Cases Section]
+[Admin Dashboard] --> [Admin Settings Section]
+[Admin Settings Section] --> [Admin Active Version Form]
+[Admin Active Version Form] --> [Admin API Client]
 [Admin Dashboard] --> [Admin API Client]
+[Admin Dashboard State Hook] --> [Admin API Client]
 [Admin Announcements Section] --> [Admin API Client]
 [Admin API Client] --> [Admin Session Storage]
 
@@ -382,6 +400,7 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Support Routes] --> [Support Service]
 [Admin Routes] --> [Admin Panel Auth Guard]
 [Admin Routes] --> [Admin Service]
+[Admin Routes] --> [Admin Settings Service]
 [Admin Routes] --> [Admin Announcements Service]
 [Announcements Routes] --> [Auth Guard Middleware]
 [Announcements Routes] --> [Announcements Service]
@@ -394,10 +413,13 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Profile Service] --> [Profile Repository]
 [Support Service] --> [Support Validation]
 [Support Service] --> [Support Repository]
+[Support Service] --> [App Settings Repository]
 [Admin Service] --> [Admin Validation]
 [Admin Service] --> [Admin Repository]
 [Admin Service] --> [Support Repository]
 [Admin Service] --> [User Repository]
+[Admin Settings Service] --> [Admin Validation]
+[Admin Settings Service] --> [App Settings Repository]
 [Admin Announcements Service] --> [Admin Announcements Validation]
 [Admin Announcements Service] --> [Admin Announcements Repository]
 [Announcements Service] --> [Admin Announcements Repository]
@@ -460,6 +482,7 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Profile Repository] --> [SQLite Module]
 [Admin Repository] --> [SQLite Module]
 [Admin Announcements Repository] --> [SQLite Module]
+[App Settings Repository] --> [SQLite Module]
 [Admin Bootstrap] --> [User Repository]
 
 [SQLite Module] --> Db
@@ -469,6 +492,7 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [SQLite Module] --> InterrogationsDb
 [SQLite Module] --> QuizDb
 [SQLite Module] --> SupportDb
+[SQLite Module] --> AppSettingsDb
 [SQLite Module] --> AnnouncementsDb
 [Migration Runner] --> Db
 [Health Route] --> [SQLite Module]

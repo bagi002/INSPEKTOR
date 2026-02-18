@@ -1,133 +1,70 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  createAdminAnnouncement,
-  deleteAdminUser,
-  fetchAdminAnnouncements,
-  fetchAdminCases,
-  fetchAdminOverview,
-  fetchAdminTickets,
-  fetchAdminUsers,
-  updateAdminCase,
-  updateAdminTicketStatus,
-  updateAdminUser,
-} from "../services/adminApi";
+import { useState } from "react";
 import AdminAnnouncementsSection from "./AdminAnnouncementsSection";
 import AdminCasesSection from "./AdminCasesSection";
+import AdminOverviewSection from "./AdminOverviewSection";
+import AdminSettingsSection from "./AdminSettingsSection";
 import AdminTicketsSection from "./AdminTicketsSection";
 import AdminUsersSection from "./AdminUsersSection";
-
-const EMPTY_OVERVIEW = {
-  usersCount: 0,
-  adminsCount: 0,
-  casesCount: 0,
-  ticketsCount: 0,
-  openTicketsCount: 0,
-  inProgressTicketsCount: 0,
-};
+import { useAdminDashboardData } from "./useAdminDashboardData";
 
 function AdminDashboard({ adminUser, onLogout }) {
-  const [overview, setOverview] = useState(EMPTY_OVERVIEW);
-  const [tickets, setTickets] = useState([]);
-  const [announcements, setAnnouncements] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [cases, setCases] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [activeTab, setActiveTab] = useState("overview");
+  const {
+    overview,
+    settings,
+    tickets,
+    announcements,
+    users,
+    cases,
+    isLoading,
+    errorMessage,
+    dashboardTabs,
+    loadDashboardData,
+    handleUpdateTicket,
+    handleUpdateUser,
+    handleCreateAnnouncement,
+    handleUpdateCase,
+    handleDeleteUser,
+    handleUpdateActiveAppVersion,
+  } = useAdminDashboardData(onLogout);
 
-  const loadDashboardData = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage("");
-
-    const [overviewResult, ticketsResult, announcementsResult, usersResult, casesResult] = await Promise.all([
-      fetchAdminOverview(),
-      fetchAdminTickets(),
-      fetchAdminAnnouncements(),
-      fetchAdminUsers(),
-      fetchAdminCases(),
-    ]);
-    const allResults = [overviewResult, ticketsResult, announcementsResult, usersResult, casesResult];
-
-    if (allResults.some((result) => !result.ok && result.unauthorized)) {
-      onLogout();
-      return;
+  function renderTabSection() {
+    switch (activeTab) {
+      case "tickets":
+        return <AdminTicketsSection tickets={tickets} onUpdateTicket={handleUpdateTicket} />;
+      case "announcements":
+        return (
+          <AdminAnnouncementsSection
+            announcements={announcements}
+            onCreateAnnouncement={handleCreateAnnouncement}
+          />
+        );
+      case "users":
+        return (
+          <AdminUsersSection
+            users={users}
+            onUpdateUser={handleUpdateUser}
+            onDeleteUser={handleDeleteUser}
+          />
+        );
+      case "cases":
+        return <AdminCasesSection cases={cases} onUpdateCase={handleUpdateCase} />;
+      case "settings":
+        return (
+          <AdminSettingsSection
+            settings={settings}
+            onUpdateActiveAppVersion={handleUpdateActiveAppVersion}
+          />
+        );
+      case "overview":
+      default:
+        return (
+          <AdminOverviewSection
+            overview={overview}
+            activeAppVersion={settings.activeAppVersion}
+          />
+        );
     }
-
-    const failedResult = allResults.find((result) => !result.ok);
-    if (failedResult) {
-      setErrorMessage(failedResult.message || "Učitavanje admin podataka nije uspelo.");
-      setIsLoading(false);
-      return;
-    }
-
-    setOverview(overviewResult.data?.overview || EMPTY_OVERVIEW);
-    setTickets(Array.isArray(ticketsResult.data?.tickets) ? ticketsResult.data.tickets : []);
-    setAnnouncements(
-      Array.isArray(announcementsResult.data?.announcements)
-        ? announcementsResult.data.announcements
-        : []
-    );
-    setUsers(Array.isArray(usersResult.data?.users) ? usersResult.data.users : []);
-    setCases(Array.isArray(casesResult.data?.cases) ? casesResult.data.cases : []);
-    setIsLoading(false);
-  }, [onLogout]);
-
-  useEffect(() => {
-    void loadDashboardData();
-  }, [loadDashboardData]);
-
-  async function handleUpdateTicket(ticketId, payload) {
-    const result = await updateAdminTicketStatus(ticketId, payload);
-    if (result.ok) {
-      await loadDashboardData();
-    }
-    if (!result.ok && result.unauthorized) {
-      onLogout();
-    }
-    return result;
-  }
-
-  async function handleUpdateUser(userId, payload) {
-    const result = await updateAdminUser(userId, payload);
-    if (result.ok) {
-      await loadDashboardData();
-    }
-    if (!result.ok && result.unauthorized) {
-      onLogout();
-    }
-    return result;
-  }
-
-  async function handleCreateAnnouncement(payload) {
-    const result = await createAdminAnnouncement(payload);
-    if (result.ok) {
-      await loadDashboardData();
-    }
-    if (!result.ok && result.unauthorized) {
-      onLogout();
-    }
-    return result;
-  }
-
-  async function handleUpdateCase(caseId, payload) {
-    const result = await updateAdminCase(caseId, payload);
-    if (result.ok) {
-      await loadDashboardData();
-    }
-    if (!result.ok && result.unauthorized) {
-      onLogout();
-    }
-    return result;
-  }
-
-  async function handleDeleteUser(userId) {
-    const result = await deleteAdminUser(userId);
-    if (result.ok) {
-      await loadDashboardData();
-    }
-    if (!result.ok && result.unauthorized) {
-      onLogout();
-    }
-    return result;
   }
 
   return (
@@ -142,7 +79,7 @@ function AdminDashboard({ adminUser, onLogout }) {
         </div>
         <div className="admin-row">
           <button type="button" className="admin-btn" onClick={() => void loadDashboardData()}>
-            Osvezi
+            Osveži
           </button>
           <button type="button" className="admin-btn admin-btn-danger" onClick={onLogout}>
             Odjava
@@ -165,28 +102,20 @@ function AdminDashboard({ adminUser, onLogout }) {
       {!isLoading && !errorMessage ? (
         <>
           <section className="admin-card">
-            <h2>Brzi pregled</h2>
-            <div className="admin-stats-grid">
-              <article className="admin-stat"><span>Korisnici</span><strong>{overview.usersCount}</strong></article>
-              <article className="admin-stat"><span>Admini</span><strong>{overview.adminsCount}</strong></article>
-              <article className="admin-stat"><span>Slučajevi</span><strong>{overview.casesCount}</strong></article>
-              <article className="admin-stat"><span>Ticketi</span><strong>{overview.ticketsCount}</strong></article>
-              <article className="admin-stat"><span>Open</span><strong>{overview.openTicketsCount}</strong></article>
-              <article className="admin-stat"><span>In progress</span><strong>{overview.inProgressTicketsCount}</strong></article>
+            <div className="admin-tabs" role="tablist" aria-label="Admin sekcije">
+              {dashboardTabs.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  className={`admin-tab-btn ${activeTab === tab.key ? "is-active" : ""}`}
+                  onClick={() => setActiveTab(tab.key)}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </section>
-
-          <AdminTicketsSection tickets={tickets} onUpdateTicket={handleUpdateTicket} />
-          <AdminAnnouncementsSection
-            announcements={announcements}
-            onCreateAnnouncement={handleCreateAnnouncement}
-          />
-          <AdminUsersSection
-            users={users}
-            onUpdateUser={handleUpdateUser}
-            onDeleteUser={handleDeleteUser}
-          />
-          <AdminCasesSection cases={cases} onUpdateCase={handleUpdateCase} />
+          {renderTabSection()}
         </>
       ) : null}
     </main>
