@@ -524,3 +524,41 @@
     kljucnih ruta i pravilima za uspesno rjesavanje slucaja. Obezbediti stavku
     menija `Wiki igre` u javnom, ulogovanom i case-workspace meniju, kao i
     trajni markdown vodic u `Docs/wiki/game_wiki.md`.
+
+- id: REQ-SW-053
+  name: Backend API za korisnicki profil i aktivnosti
+  status: In Review
+  refines: REQ-007
+  description: >
+    Implementirati JWT-zasticeni profil modul sa endpointom `GET /api/profile`
+    koji vraca osnovne podatke korisnika (ime, prezime, email, datum registracije)
+    i pregled aktivnosti (kreirani slucajevi, reseni slucajevi i istorija datih ocena)
+    na osnovu realnih podataka iz SQLite baze.
+
+- id: REQ-SW-054
+  name: Frontend profilna stranica sa pregledom aktivnosti
+  status: In Review
+  refines: REQ-007
+  description: >
+    Implementirati funkcionalnu profilnu stranicu na ruti `/profil` u ulogovanom
+    meniju, sa prikazom osnovnih korisnickih podataka i odvojenim sekcijama za
+    statistiku i liste aktivnosti (kreirani slucajevi, reseni slucajevi i date ocene).
+
+- id: REQ-SW-055
+  name: Izmena osnovnih podataka i promena lozinke na profilu
+  status: In Review
+  refines: REQ-007
+  description: >
+    Implementirati backend endpointe `PUT /api/profile/basic` i
+    `PUT /api/profile/password` sa validacijama (ime/prezime/email, jedinstvenost email-a,
+    provera trenutne lozinke i nova lozinka), kao i frontend forme koje prikazuju
+    poruke gresaka/uspeha i azuriraju korisnicku sesiju nakon izmene osnovnih podataka.
+
+- id: REQ-SW-056
+  name: Brisanje korisnickog naloga sa profilne stranice
+  status: In Review
+  refines: REQ-007
+  description: >
+    Implementirati endpoint `DELETE /api/profile` koji uz potvrdu lozinkom trajno
+    brise korisnicki nalog i povezane podatke, kao i frontend potvrdu brisanja na
+    profilnoj stranici koja po uspehu cisti sesiju i odjavljuje korisnika.

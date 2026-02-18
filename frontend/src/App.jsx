@@ -5,7 +5,7 @@ import DesktopGate from "./components/DesktopGate";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import LoggedHomePage from "./components/LoggedHomePage";
-import LoggedPlaceholderPage from "./components/LoggedPlaceholderPage";
+import ProfilePage from "./components/ProfilePage";
 import RegistrationPage from "./components/RegistrationPage";
 import SupportPage from "./components/SupportPage";
 import WikiPage from "./components/WikiPage";
@@ -68,15 +68,7 @@ function App() {
     } else if (currentPath === AUTH_ROUTES.CREATE_CASE) {
       activePage = <CreateCasePage user={session.user} onLogout={handleLogout} />;
     } else if (currentPath === AUTH_ROUTES.PROFILE) {
-      activePage = (
-        <LoggedPlaceholderPage
-          title="Profil korisnika"
-          description="Ovde ce biti prikaz profila i aktivnosti ulogovanog korisnika."
-          activePath={AUTH_ROUTES.PROFILE}
-          user={session.user}
-          onLogout={handleLogout}
-        />
-      );
+      activePage = <ProfilePage user={session.user} onLogout={handleLogout} />;
     } else if (currentPath === AUTH_ROUTES.SUPPORT) {
       activePage = <SupportPage user={session.user} onLogout={handleLogout} />;
     } else {

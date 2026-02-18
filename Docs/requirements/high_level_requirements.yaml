@@ -14,7 +14,7 @@
 
 - id: REQ-002
   name: Funkcionalnosti aplikacije uopsteno
-  status: Draft
+  status: In Progress
   description: >
     Apllikacija je namjenjena za vise korisnika tj igraca
     Svaki korisnik ce iamti svoj nalog i moci ce da kreira ili rijesava ne rijesenne slucaje 
@@ -62,7 +62,7 @@
 
 - id: REQ-007
   name: Profil korisnika
-  status: Draft
+  status: In Review
   description: >
     Profil korisnika treba da sadrzi osnovne informacije o korisniku, kao sto su ime, prezime, email adresa i datum registracije
     Treba da sadrzi pregled aktivnosti korisnika, kao sto su kreirani slucajevi, rijeseni slucajevi i ocjene koje je korisnik dao drugim slucajevima
@@ -297,7 +297,7 @@
 
 - id: REQ-030
   name: WIKIPEDIA
-  status: In Review
+  status: In Progress
   description: >
     Treba d apsotoji stavka menija koja vodi na stranicu WIKIPWDIE ZA APP
     Tu trebad a se nalazi GUIDE o koriscenju aplikacije i njenim funkcionalnostima

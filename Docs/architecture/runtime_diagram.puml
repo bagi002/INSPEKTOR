@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + korisnicka podrska + admin panel
+title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + korisnicka podrska + admin panel
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -16,6 +16,7 @@ participant "CaseStatementsTab" as StatementsTab
 participant "CasePoliceDocumentsTab" as DocsTab
 participant "CaseInterrogationsTab" as InterrogationsTab
 participant "CaseQuizTab" as QuizTab
+participant "ProfilePage" as ProfilePage
 participant "SupportPage" as SupportPage
 participant "WikiPage (/wiki)" as WikiPage
 participant "Cases API Client" as CasesClient
@@ -26,10 +27,12 @@ participant "Case Interrogations API Client" as InterrogationsClient
 participant "Case Quiz API Client" as QuizClient
 participant "Case Reviews API Client" as ReviewsClient
 participant "Case Progress API Client" as ProgressClient
+participant "Profile API Client" as ProfileClient
 participant "Support API Client" as SupportClient
 participant "Auth API Client" as AuthClient
 participant "Express Auth API" as AuthApi
 participant "Express Cases API" as CasesApi
+participant "Express Profile API" as ProfileApi
 participant "Express Support API" as SupportApi
 participant "Express Admin API" as AdminApi
 participant "Auth Guard (JWT)" as JwtGuard
@@ -43,6 +46,7 @@ participant "Case Quiz Service" as QuizService
 participant "Case Reviews Service" as ReviewsService
 participant "Case Progress Service" as ProgressService
 participant "Case Publish Service" as PublishService
+participant "Profile Service" as ProfileService
 participant "Support Service" as SupportService
 participant "Admin Service" as AdminService
 participant "Case Solve Visibility Service" as SolveVisibility
@@ -56,6 +60,7 @@ participant "Case Interrogations Repository" as InterrogationsRepo
 participant "Case Quiz Repository" as QuizRepo
 participant "Case Reviews Repository" as ReviewsRepo
 participant "Case Publish Repository" as PublishRepo
+participant "Profile Repository" as ProfileRepo
 participant "Support Repository" as SupportRepo
 participant "Admin Repository" as AdminRepo
 actor "Administrator" as Admin
@@ -631,6 +636,69 @@ alt Desktop sirina
     CasesApi --> QuizClient: JSON odgovor (slucaj ostaje in_progress)
     QuizClient --> QuizTab: Poruka o nedovoljnom rezultatu i nastavku istrage
   end
+
+  User -> LoggedHome: Klik "Profil"
+  LoggedHome -> Router: /profil
+  Router -> Guard: Provera sesije
+  Guard -> ProfilePage: Render stranice profila
+  ProfilePage -> ProfileClient: GET /api/profile
+  ProfileClient -> ProfileApi: HTTP zahtev
+  ProfileApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> ProfileService: getMyProfile(userId)
+  ProfileService -> ProfileRepo: findProfileUserById(userId)
+  ProfileRepo -> UsersStore: SELECT user row
+  UsersStore --> ProfileRepo: user podaci
+  ProfileService -> ProfileRepo: getProfileUserActivity(userId)
+  ProfileRepo -> CasesStore: SELECT created/resolved/rating aktivnosti
+  ProfileRepo -> UsersStore: JOIN autori za date ocene
+  CasesStore --> ProfileRepo: agregati i liste aktivnosti
+  UsersStore --> ProfileRepo: autor podaci
+  ProfileRepo --> ProfileService: user + activity payload
+  ProfileService --> ProfileApi: response payload
+  ProfileApi --> ProfileClient: JSON uspeh
+  ProfileClient --> ProfilePage: Prikaz profila i aktivnosti
+
+  User -> ProfilePage: Menja osnovne podatke
+  ProfilePage -> ProfileClient: PUT /api/profile/basic
+  ProfileClient -> ProfileApi: HTTP zahtev
+  ProfileApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> ProfileService: updateMyProfileBasic(userId, payload)
+  ProfileService -> ProfileRepo: findUserByEmailExceptId(email, userId)
+  ProfileRepo -> UsersStore: SELECT konflikt email-a
+  ProfileService -> ProfileRepo: updateProfileUserBasicById(userId, payload)
+  ProfileRepo -> UsersStore: UPDATE users(first_name, last_name, email)
+  UsersStore --> ProfileRepo: azuriran user
+  ProfileRepo --> ProfileService: user payload
+  ProfileService --> ProfileApi: response payload
+  ProfileApi --> ProfileClient: JSON uspeh
+  ProfileClient --> ProfilePage: Potvrda + osvezenje lokalne sesije
+
+  User -> ProfilePage: Menja lozinku
+  ProfilePage -> ProfileClient: PUT /api/profile/password
+  ProfileClient -> ProfileApi: HTTP zahtev
+  ProfileApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> ProfileService: updateMyProfilePassword(userId, payload)
+  ProfileService -> ProfileRepo: findProfileUserByIdWithPassword(userId)
+  ProfileRepo -> UsersStore: SELECT user + password_hash
+  ProfileService -> ProfileRepo: updateProfileUserPasswordById(userId, passwordHash)
+  ProfileRepo -> UsersStore: UPDATE users(password_hash)
+  ProfileService --> ProfileApi: response payload
+  ProfileApi --> ProfileClient: JSON uspeh
+  ProfileClient --> ProfilePage: Potvrda promene lozinke
+
+  User -> ProfilePage: Brise nalog
+  ProfilePage -> ProfileClient: DELETE /api/profile
+  ProfileClient -> ProfileApi: HTTP zahtev
+  ProfileApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> ProfileService: deleteMyProfile(userId, payload)
+  ProfileService -> ProfileRepo: findProfileUserByIdWithPassword(userId)
+  ProfileRepo -> UsersStore: SELECT user + password_hash
+  ProfileService -> ProfileRepo: deleteProfileUserById(userId)
+  ProfileRepo -> UsersStore: DELETE users (cascade na povezane podatke)
+  ProfileService --> ProfileApi: response payload
+  ProfileApi --> ProfileClient: JSON uspeh
+  ProfileClient -> SessionStore: clearSession()
+  ProfileClient --> Router: Redirect /
 
   User -> LoggedHome: Klik "Podrska"
   LoggedHome -> Router: /podrska

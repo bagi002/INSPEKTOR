@@ -1,7 +1,7 @@
 # INSPEKTOR
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
-Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, javna Wiki stranica sa vodicem koriscenja, ulogovana pocetna sa stvarnim podacima iz SQLite baze, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
+Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, javna Wiki stranica sa vodicem koriscenja, ulogovana pocetna sa stvarnim podacima iz SQLite baze, profil korisnika sa pregledom aktivnosti i upravljanjem nalogom, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
@@ -14,7 +14,7 @@ Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekran
 ## Struktura projekta
 - `frontend/` - React aplikacija za korisnike (`landing`, auth, slucajevi, podrska)
 - `admin-frontend/` - zaseban React admin panel (port `5174`)
-- `backend/` - Express backend (`/api/auth`, `/api/cases`, `/api/support`, `/api/admin`, `/api/health`) i SQLite pristup
+- `backend/` - Express backend (`/api/auth`, `/api/profile`, `/api/cases`, `/api/support`, `/api/admin`, `/api/health`) i SQLite pristup
 - `Instances/` - runtime podaci (npr. SQLite fajl baze)
 - `Docs/requirements/` - high-level i softverski requirements
 - `Docs/architecture/` - runtime, class i block PUML dijagrami
@@ -66,6 +66,7 @@ Backend `.env` bitne promenljive za admin:
 - Registracija: `http://localhost:5173/registracija`
 - Prijava: `http://localhost:5173/prijava`
 - Ulogovana pocetna: `http://localhost:5173/app`
+- Profil korisnika: `http://localhost:5173/profil`
 - Podrska: `http://localhost:5173/podrska`
 - Kreiranje slucaja (start): `http://localhost:5173/slucaj/novi`
 - Workspace tab (kreiranje): `http://localhost:5173/slucaj/:id/kreiranje/:tab`
@@ -125,6 +126,8 @@ Tok koriscenja:
 24. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
     email+lozinka naloga + lozinka admin panela (`ADMIN_PANEL_PASSWORD`).
 25. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
+26. U ruti `/profil` mozes pregledati svoje aktivnosti, azurirati osnovne podatke,
+    promeniti lozinku ili trajno obrisati nalog uz potvrdu.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
@@ -143,6 +146,17 @@ Napomena:
 - `POST /api/auth/login`
   - body: `{ "email": "...", "password": "..." }`
   - vraca korisnika sa `role` poljem (`user` ili `admin`) i JWT token sa korisnickim scope-om
+- `GET /api/profile` (autorizacija: `Bearer <JWT>`)
+  - vraca osnovne podatke korisnika i pregled aktivnosti (kreirani slucajevi, reseni slucajevi, date ocene)
+- `PUT /api/profile/basic` (autorizacija: `Bearer <JWT>`)
+  - body: `{ "firstName": "...", "lastName": "...", "email": "..." }`
+  - azurira osnovne podatke korisnika uz proveru validnosti i jedinstvenosti email adrese
+- `PUT /api/profile/password` (autorizacija: `Bearer <JWT>`)
+  - body: `{ "currentPassword": "...", "newPassword": "..." }`
+  - menja lozinku nakon provere trenutne lozinke
+- `DELETE /api/profile` (autorizacija: `Bearer <JWT>`)
+  - body: `{ "password": "..." }`
+  - trajno brise korisnicki nalog i povezane podatke
 - `GET /api/cases/home` (autorizacija: `Bearer <JWT>`)
   - vraca sekcije i statistiku za ulogovanu pocetnu (`activeCases`, `resolvedCases`, `topRatedPublicCases`, `createdCases`)
 - `POST /api/cases` (autorizacija: `Bearer <JWT>`)
@@ -336,6 +350,12 @@ Napomena:
   - prikaz loading, greske i praznih stanja
   - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Podrska`, `Profil`, `Odjava`)
   - za admin korisnika dodatni link ka izdvojenom admin panelu (`http://localhost:5174`)
+- Profil korisnika (`/profil`):
+  - prikaz osnovnih podataka korisnika (ime, prezime, email, datum registracije)
+  - pregled aktivnosti kroz statistiku i liste (kreirani slucajevi, reseni slucajevi, poslednje date ocene)
+  - forma za izmenu osnovnih podataka uz azuriranje lokalne sesije
+  - forma za promenu lozinke (trenutna + nova)
+  - bezbednosna akcija trajnog brisanja naloga uz potvrdu i odjavu korisnika
 - Korisnicka podrska (`/podrska`):
   - forma za prijavu bug-a ili predloga poboljsanja (`ticketType`, `title`, `description`, `appLocation`, `appVersion`)
   - ucitavanje i prikaz svih tiketa trenutnog korisnika sa statusima

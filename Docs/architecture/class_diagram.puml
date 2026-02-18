@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + korisnicka podrska + admin panel
+title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -43,6 +43,36 @@ class LoggedCreatedCaseStatsModal {
 class SupportPage {
   +loadTickets()
   +handleSubmit(event)
+  +render()
+}
+
+class ProfilePage {
+  +render()
+}
+
+class UseProfilePageState {
+  +loadProfile()
+  +handleBasicSubmit(event)
+  +handlePasswordSubmit(event)
+  +handleDeleteSubmit(event)
+}
+
+class ProfileActivityPanel {
+  +render()
+}
+
+class ProfileBasicForm {
+  +onSubmit()
+  +render()
+}
+
+class ProfilePasswordForm {
+  +onSubmit()
+  +render()
+}
+
+class ProfileDeleteAccountForm {
+  +onSubmit()
   +render()
 }
 
@@ -352,6 +382,13 @@ class SupportApiClient {
   +createSupportTicket(payload)
 }
 
+class ProfileApiClient {
+  +fetchMyProfile()
+  +updateMyProfileBasic(payload)
+  +updateMyProfilePassword(payload)
+  +deleteMyProfile(payload)
+}
+
 class AdminApiClient {
   +loginAdmin(payload)
   +fetchAdminOverview()
@@ -444,6 +481,13 @@ class SupportRoutes {
   +POST /tickets
 }
 
+class ProfileRoutes {
+  +GET /
+  +PUT /basic
+  +PUT /password
+  +DELETE /
+}
+
 class AdminRoutes {
   +POST /login
   +GET /overview
@@ -496,6 +540,13 @@ class CaseProgressController {
 class SupportController {
   +getMySupportTicketsController(req, res)
   +createSupportTicketController(req, res)
+}
+
+class ProfileController {
+  +getMyProfileController(req, res)
+  +updateMyProfileBasicController(req, res)
+  +updateMyProfilePasswordController(req, res)
+  +deleteMyProfileController(req, res)
 }
 
 class AdminController {
@@ -564,6 +615,13 @@ class SupportService {
   +createSupportTicketForUser(payload, userId)
 }
 
+class ProfileService {
+  +getMyProfile(userId)
+  +updateMyProfileBasic(userId, payload)
+  +updateMyProfilePassword(userId, payload)
+  +deleteMyProfile(userId, payload)
+}
+
 class AdminService {
   +loginToAdminPanel(payload)
   +getAdminOverview()
@@ -612,6 +670,12 @@ class CaseReviewsValidation {
 
 class SupportValidation {
   +validateCreateSupportTicketPayload(payload)
+}
+
+class ProfileValidation {
+  +validateProfileBasicPayload(payload)
+  +validateProfilePasswordPayload(payload)
+  +validateProfileDeletePayload(payload)
 }
 
 class AdminValidation {
@@ -700,6 +764,16 @@ class SupportRepository {
   +updateSupportTicketStatus(ticketId, status, adminNote)
 }
 
+class ProfileRepository {
+  +findProfileUserById(userId)
+  +findProfileUserByIdWithPassword(userId)
+  +findUserByEmailExceptId(email, userId)
+  +updateProfileUserBasicById(userId, payload)
+  +updateProfileUserPasswordById(userId, passwordHash)
+  +deleteProfileUserById(userId)
+  +getProfileUserActivity(userId)
+}
+
 class AdminRepository {
   +getAdminOverviewCounts()
   +getAdminUsers()
@@ -754,8 +828,10 @@ App --> WikiPage
 DesktopGate --> LoggedHomePage
 DesktopGate --> CreateCasePage
 DesktopGate --> CaseWorkspacePage
+DesktopGate --> ProfilePage
 DesktopGate --> SupportPage
 DesktopGate --> WikiPage
+App --> ProfilePage
 App --> SupportPage
 WikiPage --> RouteUtils
 
@@ -821,6 +897,13 @@ LoggedHomePage *-- LoggedCreatedCaseStatsModal
 LoggedCreatedCaseStatsModal *-- CaseReviewsPanel
 LoggedCreatedCaseStatsModal ..> CaseReviewsApiClient
 CreateCasePage ..> CasesApiClient
+ProfilePage ..> UseProfilePageState
+ProfilePage *-- ProfileActivityPanel
+ProfilePage *-- ProfileBasicForm
+ProfilePage *-- ProfilePasswordForm
+ProfilePage *-- ProfileDeleteAccountForm
+UseProfilePageState ..> ProfileApiClient
+UseProfilePageState ..> SessionStorageService
 SupportPage ..> SupportApiClient
 CasePeopleApiClient ..> SessionStorageService
 CaseTimelineApiClient ..> SessionStorageService
@@ -830,6 +913,7 @@ CaseQuizApiClient ..> SessionStorageService
 CaseReviewsApiClient ..> SessionStorageService
 CaseProgressApiClient ..> SessionStorageService
 CasesApiClient ..> SessionStorageService
+ProfileApiClient ..> SessionStorageService
 SupportApiClient ..> SessionStorageService
 CasesApiClient ..> RouteUtils
 AdminApp --> AdminLoginView
@@ -849,9 +933,11 @@ CaseQuizApiClient ..> ExpressApp
 CaseReviewsApiClient ..> ExpressApp
 CaseProgressApiClient ..> ExpressApp
 CasesApiClient ..> ExpressApp
+ProfileApiClient ..> ExpressApp
 SupportApiClient ..> ExpressApp
 AdminApiClient ..> ExpressApp
 ExpressApp --> CasesRoutes
+ExpressApp --> ProfileRoutes
 ExpressApp --> SupportRoutes
 ExpressApp --> AdminRoutes
 CasesRoutes --> AuthGuardMiddleware
@@ -860,6 +946,8 @@ CasesRoutes --> CaseQuizController
 CasesRoutes --> CaseReviewsController
 CasesRoutes --> CasePeopleController
 CasesRoutes --> CaseProgressController
+ProfileRoutes --> AuthGuardMiddleware
+ProfileRoutes --> ProfileController
 SupportRoutes --> AuthGuardMiddleware
 SupportRoutes --> SupportController
 AdminRoutes --> AdminPanelAuthGuard
@@ -876,6 +964,7 @@ CaseQuizController --> CaseQuizService
 CaseReviewsController --> CaseReviewsService
 CasePeopleController --> CasePeopleService
 CaseProgressController --> CaseProgressService
+ProfileController --> ProfileService
 SupportController --> SupportService
 AdminController --> AdminService
 CasesService --> CasesRepository
@@ -917,6 +1006,8 @@ CaseProgressService --> CasesRepository
 CaseProgressService --> CaseProgressRepository
 CasePublishService --> CasesRepository
 CasePublishService --> CasePublishRepository
+ProfileService --> ProfileValidation
+ProfileService --> ProfileRepository
 SupportService --> SupportValidation
 SupportService --> SupportRepository
 AdminService --> AdminValidation
@@ -937,6 +1028,7 @@ CaseInterrogationsRepository --> DatabaseModule
 CaseQuizRepository --> DatabaseModule
 CaseReviewsRepository --> DatabaseModule
 CasePublishRepository --> DatabaseModule
+ProfileRepository --> DatabaseModule
 SupportRepository --> DatabaseModule
 AdminRepository --> DatabaseModule
 AdminBootstrap --> DatabaseModule

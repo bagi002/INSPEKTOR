@@ -6,6 +6,7 @@ import adminRoutes from "./modules/admin/admin.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import casesRoutes from "./modules/cases/cases.routes.js";
 import healthRoutes from "./modules/health/health.routes.js";
+import profileRoutes from "./modules/profile/profile.routes.js";
 import supportRoutes from "./modules/support/support.routes.js";
 
 export function createApp() {
@@ -43,6 +44,7 @@ export function createApp() {
 
   app.use("/api/health", healthRoutes);
   app.use("/api/auth", authRoutes);
+  app.use("/api/profile", profileRoutes);
   app.use("/api/cases", casesRoutes);
   app.use("/api/support", supportRoutes);
   app.use("/api/admin", adminRoutes);

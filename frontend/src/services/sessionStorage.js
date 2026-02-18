@@ -43,6 +43,19 @@ export function clearSession() {
   window.localStorage.removeItem(SESSION_USER_STORAGE_KEY);
 }
 
+export function updateSessionUser(nextUser) {
+  if (!isBrowser() || !nextUser) {
+    return;
+  }
+
+  const existingSession = getSession();
+  if (!existingSession?.token) {
+    return;
+  }
+
+  saveSession(existingSession.token, nextUser);
+}
+
 export function isAuthenticated() {
   return Boolean(getSession());
 }
