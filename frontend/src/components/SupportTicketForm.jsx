@@ -62,7 +62,7 @@ function SupportTicketForm({
           rows={6}
           value={formData.description}
           onChange={onFieldChange}
-          placeholder="Detaljno opisi sta se desava ili sta bi trebalo unaprediti."
+          placeholder="Detaljno opiši sta se desava ili sta bi trebalo unaprediti."
         />
         {formErrors.description ? (
           <span className="support-field-error">{formErrors.description}</span>

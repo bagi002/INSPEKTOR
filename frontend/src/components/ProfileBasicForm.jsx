@@ -25,7 +25,7 @@ function ProfileBasicForm({
         </label>
 
         <label htmlFor="profile-last-name">
-          Prezime
+          Prežime
           <input
             id="profile-last-name"
             name="lastName"
@@ -53,7 +53,7 @@ function ProfileBasicForm({
         </label>
 
         <button className="btn btn-primary profile-submit" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Cuvanje..." : "Sacuvaj izmene"}
+          {isSubmitting ? "Čuvanje..." : "Sačuvaj izmene"}
         </button>
         {formMessage ? (
           <p className={`profile-submit-feedback${Object.keys(formErrors).length > 0 ? " profile-submit-feedback-error" : ""}`}>

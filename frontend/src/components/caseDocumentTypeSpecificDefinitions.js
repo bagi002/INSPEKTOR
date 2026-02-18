@@ -28,7 +28,7 @@ export const TYPE_SPECIFIC_FIELDS_BY_DOCUMENT_TYPE = {
   suspect_statement: [
     {
       name: "rightsRead",
-      label: "Prava procitana osumnjicenom",
+      label: "Prava pročitana osumnjičenom",
       inputType: "checkbox",
       required: false,
     },
@@ -40,7 +40,7 @@ export const TYPE_SPECIFIC_FIELDS_BY_DOCUMENT_TYPE = {
     },
     {
       name: "statementStance",
-      label: "Stav osumnjicenog",
+      label: "Stav osumnjičenog",
       inputType: "select",
       required: true,
       options: [

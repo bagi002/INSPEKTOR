@@ -24,12 +24,12 @@ function parseCaseId(caseIdInput) {
   const normalizedValue =
     typeof caseIdInput === "string" ? caseIdInput.trim() : String(caseIdInput ?? "");
   if (!/^\d+$/.test(normalizedValue)) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+    throw new HttpError(400, "Prosleđeni slučaj nije validan.");
   }
 
   const caseId = Number.parseInt(normalizedValue, 10);
   if (!Number.isInteger(caseId) || caseId <= 0) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+    throw new HttpError(400, "Prosleđeni slučaj nije validan.");
   }
 
   return caseId;
@@ -53,14 +53,14 @@ function parsePersonId(personIdInput) {
 async function assertAuthorAccess(caseId, authorUserId) {
   const caseRow = await findCaseByIdForAuthor(caseId, authorUserId);
   if (!caseRow) {
-    throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+    throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
   }
 }
 
 function parseSolveRolePayload(payload) {
   const normalizedRole = normalizeCasePersonRole(payload?.apparentRole ?? payload?.role);
   if (!normalizedRole) {
-    throw new HttpError(400, "Uloga osobe nije podrzana.", {
+    throw new HttpError(400, "Uloga osobe nije podržana.", {
       apparentRole: "Dozvoljene vrednosti su unknown, suspect, victim i witness.",
     });
   }
@@ -107,7 +107,7 @@ export async function createCreatorCasePerson(caseIdInput, payload, authorUserId
 
   const createdPerson = await createCasePersonForCase(caseId, sanitized, authorUserId);
   if (!createdPerson) {
-    throw new HttpError(500, "Osoba je sacuvana, ali odgovor nije moguce ucitati.");
+    throw new HttpError(500, "Osoba je sačuvana, ali odgovor nije moguće učitati.");
   }
 
   return {
@@ -126,7 +126,7 @@ export async function updateSolveCasePersonRole(caseIdInput, personIdInput, payl
 
   const personExistsInSolveScope = solvePeopleState.visiblePeople.some((person) => person.id === personId);
   if (!personExistsInSolveScope) {
-    throw new HttpError(404, "Osoba nije pronadjena ili jos nije otkljucana za resavanje.");
+    throw new HttpError(404, "Osoba nije pronađena ili još nije otključana za rešavanje.");
   }
 
   await upsertCasePersonRoleSelection(caseId, personId, requesterUserId, selectedRole);

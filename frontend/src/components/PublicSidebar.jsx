@@ -9,7 +9,7 @@ function PublicSidebar({ activePath = PUBLIC_ROUTES.HOME, noteText = "" }) {
     <aside className="left-sidebar reveal">
       <div className="brand-block">
         <p className="brand-kicker">INSPEKTOR</p>
-        <h1>Platforma za istrazne slucajeve i takticko razmisljanje</h1>
+        <h1>Platforma za istražne slučajeve i taktičko razmišljanje</h1>
       </div>
 
       <nav aria-label="Javni meni">

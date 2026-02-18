@@ -11,7 +11,7 @@ function CaseQuizSolvePanel({
     <section className="card case-quiz-solve-card">
       <h3>Pitanja</h3>
       {questions.length === 0 ? (
-        <p className="case-quiz-empty">Kreator jos nije definisao zavrsni kviz za ovaj slucaj.</p>
+        <p className="case-quiz-empty">Kreator još nije definisao završni kviz za ovaj slučaj.</p>
       ) : (
         <form
           className="case-quiz-solve-form"
@@ -46,7 +46,7 @@ function CaseQuizSolvePanel({
             className="btn btn-primary case-quiz-submit-btn"
             disabled={isSubmitting || !canSubmit || questions.length === 0 || hasReview}
           >
-            {hasReview ? "Slucaj je rijesen" : isSubmitting ? "Predaja u toku..." : "Predaj zavrsni kviz"}
+            {hasReview ? "Slučaj je riješen" : isSubmitting ? "Predaja u toku..." : "Predaj završni kviz"}
           </button>
         </form>
       )}

@@ -45,14 +45,14 @@ function AdminTicketsSection({ tickets, onUpdateTicket }) {
     if (!result.ok) {
       setMessageById((previous) => ({
         ...previous,
-        [ticketId]: result.message || "Cuvanje izmjene nije uspelo.",
+        [ticketId]: result.message || "Čuvanje izmjene nije uspelo.",
       }));
       return;
     }
 
     setMessageById((previous) => ({
       ...previous,
-      [ticketId]: result.message || "Tiket je uspesno azuriran.",
+      [ticketId]: result.message || "Tiket je uspešno ažuriran.",
     }));
   }
 
@@ -119,7 +119,7 @@ function AdminTicketsSection({ tickets, onUpdateTicket }) {
                     onClick={() => void handleSave(ticket.id)}
                     disabled={isSaving}
                   >
-                    {isSaving ? "Cuvanje..." : "Sacuvaj status"}
+                    {isSaving ? "Čuvanje..." : "Sačuvaj status"}
                   </button>
                 </div>
 

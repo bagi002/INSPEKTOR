@@ -8,7 +8,7 @@ export async function getPendingAnnouncementsController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Pending obavjestenja su uspesno ucitana.",
+    message: "Pending obavještenja su uspešno učitana.",
     data: result,
   });
 }
@@ -21,7 +21,7 @@ export async function dismissPendingAnnouncementController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Obavjestenje je zatvoreno.",
+    message: "Obavještenje je zatvoreno.",
     data: result,
   });
 }

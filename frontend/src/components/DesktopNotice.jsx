@@ -3,12 +3,12 @@ function DesktopNotice({ minWidth }) {
     <main className="desktop-notice">
       <div className="desktop-notice-card">
         <p className="notice-kicker">INSPEKTOR</p>
-        <h1>Aplikacija je trenutno dostupna samo na desktop uredjajima.</h1>
+        <h1>Aplikacija je trenutno dostupna samo na desktop uređajima.</h1>
         <p>
           Zahtev za javnu stranicu je implementiran kao desktop-only iskustvo,
-          sa sirim prikazom i vecim radnim prostorom.
+          sa širim prikazom i većim radnim prostorom.
         </p>
-        <p>Minimalna preporucena sirina ekrana: {minWidth}px.</p>
+        <p>Minimalna preporučena širina ekrana: {minWidth}px.</p>
       </div>
     </main>
   );

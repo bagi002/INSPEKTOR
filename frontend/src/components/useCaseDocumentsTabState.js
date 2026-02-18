@@ -34,7 +34,7 @@ export function useCaseDocumentsTabState({ caseId, mode, category, onUnauthorize
         return;
       }
 
-      setErrorMessage(result.message || "Ucitavanje dokumenata nije uspelo.");
+      setErrorMessage(result.message || "Učitavanje dokumenata nije uspelo.");
       setIsLoading(false);
       return;
     }

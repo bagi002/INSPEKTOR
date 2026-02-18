@@ -44,7 +44,7 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
     <>
       {isLoading ? (
         <section className="card reveal delay-3">
-          <p>Ucitavam saslusanja...</p>
+          <p>Učitavam saslušanja...</p>
         </section>
       ) : null}
 
@@ -52,7 +52,7 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
         <section className="card reveal delay-3">
           <p className="error-banner">{errorMessage}</p>
           <button type="button" className="btn btn-primary inline-action" onClick={loadInterrogations}>
-            Pokusaj ponovo
+            Pokušaj ponovo
           </button>
         </section>
       ) : null}
@@ -64,12 +64,12 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
           >
             <div className="case-interrogations-hero-top">
               <div>
-                <p className="eyebrow">{isCreateMode ? "Creatorski centar" : "Rezavanje slucaja"}</p>
-                <h3>{isCreateMode ? "Operativni centar saslusanja" : "Pregled saslusanja po osobi"}</h3>
+                <p className="eyebrow">{isCreateMode ? "Creatorski centar" : "Rešavanje slučaja"}</p>
+                <h3>{isCreateMode ? "Operativni centar saslušanja" : "Pregled saslušanja po osobi"}</h3>
                 <p className="create-case-summary">
                   {isCreateMode
-                    ? "Izaberi osobu, definisi stablo pitanja i odgovora i proveri tok razgovora kroz chat modal."
-                    : "Izaberi osobu i pokreni saslusanje kroz chat da pregledas tok pitanja i odgovora."}
+                    ? "Izaberi osobu, definiši stablo pitanja i odgovora i proveri tok razgovora kroz chat modal."
+                    : "Izaberi osobu i pokreni saslušanje kroz chat da pregledaš tok pitanja i odgovora."}
                 </p>
               </div>
               {isCreateMode ? (
@@ -79,7 +79,7 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
                   onClick={() => openCreateModal()}
                   disabled={alivePeople.length === 0}
                 >
-                  + Novo saslusanje
+                  + Novo saslušanje
                 </button>
               ) : null}
             </div>
@@ -103,7 +103,7 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
                   onChange={handleSelectedPersonChange}
                   disabled={alivePeople.length === 0}
                 >
-                  {alivePeople.length === 0 ? <option value="">Nema zivih osoba</option> : null}
+                  {alivePeople.length === 0 ? <option value="">Nema živih osoba</option> : null}
                   {alivePeople.map((person) => (
                     <option key={person.id} value={person.id}>
                       {person.fullName} ({toRoleLabel(person.apparentRole)})
@@ -117,7 +117,7 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
                 onClick={startInterrogationForSelectedPerson}
                 disabled={alivePeople.length === 0}
               >
-                {isCreateMode ? "Pokreni / kreiraj saslusanje" : "Pokreni saslusanje"}
+                {isCreateMode ? "Pokreni / kreiraj saslušanje" : "Pokreni saslušanje"}
               </button>
             </div>
             {actionMessage ? <p className="case-interrogations-note">{actionMessage}</p> : null}
@@ -125,7 +125,7 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
 
           <section className="card reveal delay-3 case-interrogations-directory-card">
             {interrogations.length === 0 ? (
-              <p className="case-interrogation-empty">Nema evidentiranih saslusanja u ovom slucaju.</p>
+              <p className="case-interrogation-empty">Nema evidentiranih saslušanja u ovom slučaju.</p>
             ) : (
               <ul className="case-interrogations-directory-list">
                 {interrogations.map((interrogation) => (
@@ -136,15 +136,15 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
                       onClick={() => openChatModal(interrogation.id)}
                     >
                       <span className="case-interrogations-directory-main">
-                        <strong>{interrogation.title || "Saslusanje bez naslova"}</strong>
+                        <strong>{interrogation.title || "Saslušanje bez naslova"}</strong>
                         <small>
                           Osoba: {interrogation.person?.fullName || "Nepoznata osoba"} |{" "}
                           {toRoleLabel(interrogation.person?.apparentRole || "unknown")}
                         </small>
                       </span>
                       <span className="case-interrogations-directory-meta">
-                        <small>Cvorova pitanja: {interrogation.nodes?.length || 0}</small>
-                        <small>Azurirano: {interrogation.updatedAt || "N/A"}</small>
+                        <small>Čvorova pitanja: {interrogation.nodes?.length || 0}</small>
+                        <small>Ažurirano: {interrogation.updatedAt || "N/A"}</small>
                       </span>
                       <span className="case-interrogations-directory-action">Otvori chat</span>
                     </button>

@@ -8,7 +8,7 @@ export async function resetCreatorCaseProgressToSolveController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Status slucaja je vracen na rezim resavanja.",
+    message: "Status slučaja je vraćen na režim rešavanja.",
     data: result,
   });
 }

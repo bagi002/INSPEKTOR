@@ -33,7 +33,7 @@ function CaseTimelineCreateForm({
         </label>
 
         <label className="create-case-field">
-          Datum i vreme otkljucavanja
+          Datum i vreme otključavanja
           <input className="create-case-input" type="datetime-local" name="unlockAt" value={formData.unlockAt} onChange={onFieldChange} />
           {formErrors.unlockAt ? <span className="create-case-error">{formErrors.unlockAt}</span> : null}
         </label>

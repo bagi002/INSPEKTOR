@@ -35,7 +35,7 @@ function AdminAnnouncementPopup({
         aria-labelledby="admin-announcement-popup-title"
       >
         <header className="admin-announcement-popup-header">
-          <p className="eyebrow">Hitno obavjestenje admina</p>
+          <p className="eyebrow">Hitno obavještenje admina</p>
           <h3 id="admin-announcement-popup-title">{announcement.title}</h3>
         </header>
 
@@ -58,7 +58,7 @@ function AdminAnnouncementPopup({
             onClick={onClose}
             disabled={isClosing}
           >
-            {isClosing ? "Zatvaranje..." : "Zatvori obavjestenje"}
+            {isClosing ? "Zatvaranje..." : "Zatvori obavještenje"}
           </button>
         </div>
       </section>

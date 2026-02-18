@@ -108,7 +108,7 @@ export async function patchAdminTicketStatus(ticketId, payload) {
     sanitized.adminNote
   );
   if (!updatedTicket) {
-    throw new HttpError(404, "Tiket nije pronadjen.");
+    throw new HttpError(404, "Tiket nije pronađen.");
   }
 
   return {
@@ -134,12 +134,12 @@ export async function patchAdminUser(userId, payload) {
   } catch (error) {
     const errorMessage = String(error?.message || "");
     if (errorMessage.includes("UNIQUE constraint failed: users.email")) {
-      throw new HttpError(409, "Email adresa je vec zauzeta.");
+      throw new HttpError(409, "Email adresa je već zauzeta.");
     }
     throw error;
   }
   if (!updatedUser) {
-    throw new HttpError(404, "Korisnik nije pronadjen.");
+    throw new HttpError(404, "Korisnik nije pronađen.");
   }
 
   return {
@@ -155,13 +155,13 @@ export async function listAdminCases() {
 }
 
 export async function patchAdminCase(caseId, payload) {
-  const parsedCaseId = parseRequiredPositiveId(caseId, "Identifikator slucaja nije validan.");
+  const parsedCaseId = parseRequiredPositiveId(caseId, "Identifikator slučaja nije validan.");
   const { errors, sanitized } = validateAdminCasePatchPayload(payload);
-  throwValidationIfNeeded(errors, "Podaci za izmenu slucaja nisu validni.");
+  throwValidationIfNeeded(errors, "Podaci za izmenu slučaja nisu validni.");
 
   const updatedCase = await updateAdminCase(parsedCaseId, sanitized);
   if (!updatedCase) {
-    throw new HttpError(404, "Slucaj nije pronadjen.");
+    throw new HttpError(404, "Slučaj nije pronađen.");
   }
 
   return {
@@ -172,12 +172,12 @@ export async function patchAdminCase(caseId, payload) {
 export async function deleteAdminUser(userId, requesterAdminUserId) {
   const parsedUserId = parseRequiredPositiveId(userId, "Identifikator korisnika nije validan.");
   if (parsedUserId === requesterAdminUserId) {
-    throw new HttpError(400, "Ne mozes obrisati trenutno ulogovan admin nalog.");
+    throw new HttpError(400, "Ne možeš obrisati trenutno ulogovan admin nalog.");
   }
 
   const targetUser = await findAdminUserById(parsedUserId);
   if (!targetUser) {
-    throw new HttpError(404, "Korisnik nije pronadjen.");
+    throw new HttpError(404, "Korisnik nije pronađen.");
   }
 
   if (targetUser.role === "admin") {
@@ -189,7 +189,7 @@ export async function deleteAdminUser(userId, requesterAdminUserId) {
 
   const deleted = await deleteAdminUserById(parsedUserId);
   if (!deleted) {
-    throw new HttpError(404, "Korisnik nije pronadjen.");
+    throw new HttpError(404, "Korisnik nije pronađen.");
   }
 
   return {

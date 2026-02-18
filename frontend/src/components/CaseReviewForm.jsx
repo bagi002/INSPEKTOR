@@ -12,9 +12,9 @@ function CaseReviewForm({
 }) {
   return (
     <section className="card case-review-form-card">
-      <h3>Ocijeni slucaj</h3>
+      <h3>Ocijeni slučaj</h3>
       <p className="create-case-summary">
-        Ocjenu za isti slucaj mozes poslati samo jednom. Komentar je opcion.
+        Ocjenu za isti slučaj možeš poslati samo jednom. Komentar je opcion.
       </p>
 
       <form
@@ -43,7 +43,7 @@ function CaseReviewForm({
             maxLength={1200}
             value={commentValue}
             onChange={(event) => onCommentChange(event.target.value)}
-            placeholder="Napisi kratak utisak o slucaju..."
+            placeholder="Napisi kratak utisak o slučaju..."
           />
         </label>
 

@@ -5,17 +5,17 @@ import { CASE_PERSON_ROLE_OPTIONS } from "./casePeopleOptions";
 const ROLE_FILTER_OPTIONS = [{ value: "all", label: "Sve uloge" }, ...CASE_PERSON_ROLE_OPTIONS];
 const LIFE_FILTER_OPTIONS = [
   { value: "all", label: "Sve osobe" },
-  { value: "alive", label: "Samo zive" },
+  { value: "alive", label: "Samo žive" },
   { value: "deceased", label: "Samo preminule" },
 ];
 
 function buildStats(people) {
   return [
     { label: "Ukupno", value: people.length },
-    { label: "Osumnjiceni", value: people.filter((person) => person.apparentRole === "suspect").length },
-    { label: "Zrtve", value: people.filter((person) => person.apparentRole === "victim").length },
-    { label: "Svjedoci", value: people.filter((person) => person.apparentRole === "witness").length },
-    { label: "Zive osobe", value: people.filter((person) => person.dossier?.isAlive).length },
+    { label: "Osumnjičeni", value: people.filter((person) => person.apparentRole === "suspect").length },
+    { label: "Žrtve", value: people.filter((person) => person.apparentRole === "victim").length },
+    { label: "Svedoci", value: people.filter((person) => person.apparentRole === "witness").length },
+    { label: "Žive osobe", value: people.filter((person) => person.dossier?.isAlive).length },
   ];
 }
 
@@ -68,12 +68,12 @@ function CasePeopleOverviewPanel({
       <section className={`card reveal delay-3 case-people-hero-card ${isCreateMode ? "is-create" : "is-solve"}`}>
         <div className="case-people-hero-top">
           <div>
-            <p className="eyebrow">{isCreateMode ? "Creatorski centar" : "Rezavanje slucaja"}</p>
-            <h3>{isCreateMode ? "Operativni centar dosijea" : "Arhiva dosijea slucaja"}</h3>
+            <p className="eyebrow">{isCreateMode ? "Creatorski centar" : "Rešavanje slučaja"}</p>
+            <h3>{isCreateMode ? "Operativni centar dosijea" : "Arhiva dosijea slučaja"}</h3>
             <p className="create-case-summary">
               {isCreateMode
-                ? "Kreiraj nova lica, odrzavaj formalne profile i otvaraj detaljan dosije klikom na red osobe."
-                : "Pregledaj formalne dosijee i za svaku otkljucanu osobu postavi ulogu u slucaju."}
+                ? "Kreiraj nova lica, održavaj formalne profile i otvaraj detaljan dosije klikom na red osobe."
+                : "Pregledaj formalne dosijee i za svaku otključanu osobu postavi ulogu u slučaju."}
             </p>
           </div>
           {isCreateMode ? (
@@ -157,7 +157,7 @@ function CasePeopleOverviewPanel({
                   </span>
                   <span className="case-people-directory-meta">
                     <small>Uloga: {toRoleLabel(person.apparentRole)}</small>
-                    <small>Status: {person.dossier?.isAlive ? "Ziva osoba" : "Preminula osoba"}</small>
+                    <small>Status: {person.dossier?.isAlive ? "Živa osoba" : "Preminula osoba"}</small>
                     <small>Lokacija: {person.dossier?.lastKnownLocation || "Nije evidentirano"}</small>
                   </span>
                   {!isCreateMode ? (

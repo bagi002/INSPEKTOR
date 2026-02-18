@@ -46,7 +46,7 @@ export async function fetchPendingAnnouncements() {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(payload, "Ucitavanje obavjestenja nije uspelo."),
+        message: resolveMessage(payload, "Učitavanje obavještenja nije uspelo."),
         data: null,
       };
     }
@@ -54,14 +54,14 @@ export async function fetchPendingAnnouncements() {
     return {
       ok: true,
       unauthorized: false,
-      message: resolveMessage(payload, "Obavjestenja su uspesno ucitana."),
+      message: resolveMessage(payload, "Obavještenja su uspešno učitana."),
       data: payload?.data || null,
     };
   } catch {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       data: null,
     };
   }
@@ -94,7 +94,7 @@ export async function dismissAnnouncement(announcementId) {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(payload, "Zatvaranje obavjestenja nije uspelo."),
+        message: resolveMessage(payload, "Zatvaranje obavještenja nije uspelo."),
         data: null,
       };
     }
@@ -102,14 +102,14 @@ export async function dismissAnnouncement(announcementId) {
     return {
       ok: true,
       unauthorized: false,
-      message: resolveMessage(payload, "Obavjestenje je zatvoreno."),
+      message: resolveMessage(payload, "Obavještenje je zatvoreno."),
       data: payload?.data || null,
     };
   } catch {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       data: null,
     };
   }

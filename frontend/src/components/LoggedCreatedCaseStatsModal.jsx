@@ -23,7 +23,7 @@ function LoggedCreatedCaseStatsModal({ caseId, caseTitle, onClose, onUnauthorize
       setSummary(null);
       setReviews([]);
       setSolvedUsers([]);
-      setErrorMessage(result.message || "Ucitavanje statistike nije uspelo.");
+      setErrorMessage(result.message || "Učitavanje statistike nije uspelo.");
       setIsLoading(false);
       return;
     }
@@ -63,8 +63,8 @@ function LoggedCreatedCaseStatsModal({ caseId, caseTitle, onClose, onUnauthorize
       >
         <header className="created-case-stats-header">
           <div>
-            <p className="eyebrow">Statistika slucaja</p>
-            <h3 id="created-case-stats-title">{caseTitle || "Objavljeni slucaj"}</h3>
+            <p className="eyebrow">Statistika slučaja</p>
+            <h3 id="created-case-stats-title">{caseTitle || "Objavljeni slučaj"}</h3>
           </div>
           <button type="button" className="btn btn-secondary inline-action" onClick={onClose}>
             Zatvori
@@ -73,7 +73,7 @@ function LoggedCreatedCaseStatsModal({ caseId, caseTitle, onClose, onUnauthorize
 
         {isLoading ? (
           <section className="card">
-            <p>Ucitavam statistiku slucaja...</p>
+            <p>Učitavam statistiku slučaja...</p>
           </section>
         ) : null}
 
@@ -81,7 +81,7 @@ function LoggedCreatedCaseStatsModal({ caseId, caseTitle, onClose, onUnauthorize
           <section className="card">
             <p className="error-banner">{errorMessage}</p>
             <button type="button" className="btn btn-primary inline-action" onClick={loadStats}>
-              Pokusaj ponovo
+              Pokušaj ponovo
             </button>
           </section>
         ) : null}
@@ -92,7 +92,7 @@ function LoggedCreatedCaseStatsModal({ caseId, caseTitle, onClose, onUnauthorize
             reviews={reviews}
             solvedUsers={solvedUsers}
             isCreateMode
-            title="Pregled recenzija i rjesavanja slucaja"
+            title="Pregled recenzija i rješavanja slučaja"
           />
         ) : null}
       </section>

@@ -56,7 +56,7 @@ function validatePeople(rawPeople, errors) {
     }
 
     if (!apparentRole) {
-      errors[`people.${index}.apparentRole`] = "Uloga osobe nije podrzana.";
+      errors[`people.${index}.apparentRole`] = "Uloga osobe nije podržana.";
     }
 
     return {
@@ -80,13 +80,13 @@ function validateDocuments(rawDocuments, errors) {
     const isUnlockedByDefault = Boolean(document?.isUnlockedByDefault);
 
     if (!documentType) {
-      errors[`documents.${index}.documentType`] = "Tip dokumenta nije podrzan.";
+      errors[`documents.${index}.documentType`] = "Tip dokumenta nije podržan.";
     }
     if (title.length < 3) {
       errors[`documents.${index}.title`] = "Naslov dokumenta mora imati najmanje 3 karaktera.";
     }
     if (content.length < 10) {
-      errors[`documents.${index}.content`] = "Sadrzaj dokumenta mora imati najmanje 10 karaktera.";
+      errors[`documents.${index}.content`] = "Sadržaj dokumenta mora imati najmanje 10 karaktera.";
     }
 
     return {
@@ -146,7 +146,7 @@ function validateProgressItems(rawProgress, errors) {
       errors[`progress.${index}.userId`] = "Napredak mora imati validan userId.";
     }
     if (!progressStatus) {
-      errors[`progress.${index}.progressStatus`] = "Status napretka nije podrzan.";
+      errors[`progress.${index}.progressStatus`] = "Status napretka nije podržan.";
     }
 
     return {
@@ -169,11 +169,11 @@ export function validateCreateCasePayload(payload) {
   const progress = validateProgressItems(payload?.progress, errors);
 
   if (title.length < 3) {
-    errors.title = "Naziv slucaja mora imati najmanje 3 karaktera.";
+    errors.title = "Naziv slučaja mora imati najmanje 3 karaktera.";
   }
 
   if (description.length < 20) {
-    errors.description = "Opis slucaja mora imati najmanje 20 karaktera.";
+    errors.description = "Opis slučaja mora imati najmanje 20 karaktera.";
   }
 
   if (!publicationStatus) {

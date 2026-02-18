@@ -63,7 +63,7 @@ async function requestCaseQuiz(caseId, method, payload, fallbackMessage, endpoin
     return {
       ok: true,
       statusCode: response.status,
-      message: resolveMessage(responsePayload, "Zahtev je uspesan."),
+      message: resolveMessage(responsePayload, "Zahtev je uspešan."),
       data: responsePayload?.data || null,
       errors: null,
     };
@@ -72,7 +72,7 @@ async function requestCaseQuiz(caseId, method, payload, fallbackMessage, endpoin
       ok: false,
       unauthorized: false,
       statusCode: 0,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }
@@ -84,13 +84,13 @@ export function fetchCaseQuiz(caseId, scope = "create") {
     caseId,
     "GET",
     null,
-    "Ucitavanje kviza nije uspelo.",
+    "Učitavanje kviza nije uspelo.",
     `quiz?scope=${resolvedScope}`
   );
 }
 
 export function saveCaseQuiz(caseId, payload) {
-  return requestCaseQuiz(caseId, "PUT", payload, "Cuvanje kviza nije uspelo.", "quiz");
+  return requestCaseQuiz(caseId, "PUT", payload, "Čuvanje kviza nije uspelo.", "quiz");
 }
 
 export function submitCaseQuiz(caseId, payload) {
@@ -98,7 +98,7 @@ export function submitCaseQuiz(caseId, payload) {
     caseId,
     "POST",
     payload,
-    "Predaja zavrsnog kviza nije uspela.",
+    "Predaja završnog kviza nije uspela.",
     "quiz/submit"
   );
 }
@@ -109,7 +109,7 @@ export function fetchCaseReviews(caseId, scope = "solve") {
     caseId,
     "GET",
     null,
-    "Ucitavanje recenzija nije uspelo.",
+    "Učitavanje recenzija nije uspelo.",
     `reviews?scope=${resolvedScope}`
   );
 }
@@ -119,7 +119,7 @@ export function submitCaseReview(caseId, payload) {
     caseId,
     "POST",
     payload,
-    "Cuvanje ocjene nije uspelo.",
+    "Čuvanje ocjene nije uspelo.",
     "reviews"
   );
 }

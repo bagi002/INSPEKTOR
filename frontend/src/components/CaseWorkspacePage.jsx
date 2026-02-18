@@ -27,10 +27,10 @@ function resolvePublishErrorMessage(result) {
     : [];
 
   if (blockers.length > 0) {
-    return [result?.message || "Objava slucaja nije uspela.", ...blockers].join(" ");
+    return [result?.message || "Objava slučaja nije uspela.", ...blockers].join(" ");
   }
 
-  return result?.message || "Objava slucaja nije uspela.";
+  return result?.message || "Objava slučaja nije uspela.";
 }
 
 function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
@@ -69,12 +69,12 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
         onLogout();
         return;
       }
-      setErrorMessage(result.message || "Ucitavanje slucaja nije uspelo.");
+      setErrorMessage(result.message || "Učitavanje slučaja nije uspelo.");
       setIsLoading(false);
       return;
     }
     if (!result.data || !result.data.case?.id) {
-      setErrorMessage("Slucaj nije pronadjen ili vise nije dostupan.");
+      setErrorMessage("Slučaj nije pronađen ili više nije dostupan.");
       setIsLoading(false);
       return;
     }
@@ -108,7 +108,7 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
       return;
     }
 
-    setPublishStatusMessage(result.message || "Slucaj je uspesno objavljen.");
+    setPublishStatusMessage(result.message || "Slučaj je uspešno objavljen.");
     await loadCaseData();
     setIsPublishing(false);
   }
@@ -174,10 +174,10 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
     isPublishing ||
     isCasePublished ||
     Boolean(errorMessage);
-  const publishActionLabel = isCasePublished ? "Slucaj je objavljen" : "Objavi slucaj";
+  const publishActionLabel = isCasePublished ? "Slučaj je objavljen" : "Objavi slučaj";
   const resolvedPublishStatusMessage = showPublishButton
     ? publishStatusMessage ||
-      (isCasePublished ? "Slucaj je vec objavljen i dostupan za resavanje." : "")
+      (isCasePublished ? "Slučaj je već objavljen i dostupan za rešavanje." : "")
     : "";
   const showTabSummaryCard =
     !isTimelineTab &&
@@ -209,8 +209,8 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
         {isLoading ? (
           <section className="card reveal delay-1">
             <p className="eyebrow">{modeTexts.label}</p>
-            <h2>Ucitavam slucaj...</h2>
-            <p>Pripremam prikaz trazenog taba.</p>
+            <h2>Učitavam slučaj...</h2>
+            <p>Pripremam prikaz traženog taba.</p>
           </section>
         ) : null}
         {!isLoading && errorMessage ? (
@@ -218,10 +218,10 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
             <p className="error-banner">{errorMessage}</p>
             <div className="cta-row">
               <button type="button" className="btn btn-primary inline-action" onClick={loadCaseData}>
-                Pokusaj ponovo
+                Pokušaj ponovo
               </button>
               <a className="btn btn-secondary" href={AUTH_ROUTES.HOME}>
-                Nazad na pocetnu
+                Nazad na početnu
               </a>
             </div>
           </section>

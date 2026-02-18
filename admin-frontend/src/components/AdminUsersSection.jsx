@@ -48,11 +48,11 @@ function AdminUsersSection({ users, onUpdateUser, onDeleteUser }) {
     setIsSaving(false);
 
     if (!result.ok) {
-      setMessage(result.message || "Cuvanje izmjena korisnika nije uspelo.");
+      setMessage(result.message || "Čuvanje izmjena korisnika nije uspelo.");
       return;
     }
 
-    setMessage(result.message || "Korisnik je uspesno izmenjen.");
+    setMessage(result.message || "Korisnik je uspešno izmenjen.");
     setEditingUserId(null);
     setDraft(null);
   }
@@ -63,7 +63,7 @@ function AdminUsersSection({ users, onUpdateUser, onDeleteUser }) {
     }
 
     const confirmed = typeof window !== "undefined"
-      ? window.confirm(`Da li sigurno zelis da obrises nalog korisnika ${user.email}?`)
+      ? window.confirm(`Da li sigurno želiš da obrišeš nalog korisnika ${user.email}?`)
       : true;
     if (!confirmed) {
       return;
@@ -82,7 +82,7 @@ function AdminUsersSection({ users, onUpdateUser, onDeleteUser }) {
       setEditingUserId(null);
       setDraft(null);
     }
-    setMessage(result.message || "Korisnik je uspesno obrisan.");
+    setMessage(result.message || "Korisnik je uspešno obrisan.");
   }
 
   return (
@@ -96,7 +96,7 @@ function AdminUsersSection({ users, onUpdateUser, onDeleteUser }) {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Ime i prezime</th>
+                <th>Ime i prežime</th>
                 <th>Email</th>
                 <th>Rola</th>
                 <th>Kreiran</th>
@@ -126,7 +126,7 @@ function AdminUsersSection({ users, onUpdateUser, onDeleteUser }) {
                         onClick={() => void handleDelete(user)}
                         disabled={deletingUserId === user.id}
                       >
-                        {deletingUserId === user.id ? "Brisanje..." : "Obrisi"}
+                        {deletingUserId === user.id ? "Brisanje..." : "Obriši"}
                       </button>
                     </div>
                   </td>
@@ -145,7 +145,7 @@ function AdminUsersSection({ users, onUpdateUser, onDeleteUser }) {
             <input name="firstName" type="text" value={draft.firstName} onChange={handleDraftChange} />
           </label>
           <label>
-            Prezime
+            Prežime
             <input name="lastName" type="text" value={draft.lastName} onChange={handleDraftChange} />
           </label>
           <label>
@@ -167,7 +167,7 @@ function AdminUsersSection({ users, onUpdateUser, onDeleteUser }) {
               onClick={() => void handleSave()}
               disabled={isSaving}
             >
-              {isSaving ? "Cuvanje..." : "Sacuvaj korisnika"}
+              {isSaving ? "Čuvanje..." : "Sačuvaj korisnika"}
             </button>
             <button type="button" className="admin-btn" onClick={handleCancelEdit}>
               Odustani

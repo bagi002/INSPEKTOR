@@ -61,8 +61,8 @@ function CasePersonDossierModal({
               )}
             </div>
             <div className="dossier-person-summary">
-              {renderField("Ime i prezime", person.fullName)}
-              {renderField("Uloga u slucaju", toRoleLabel(person.apparentRole))}
+              {renderField("Ime i prežime", person.fullName)}
+              {renderField("Uloga u slučaju", toRoleLabel(person.apparentRole))}
               {renderField("Status osobe", dossier.isAlive ? "Ziv/a" : "Preminuo/la")}
               {renderField("Nivo rizika", toRiskLabel(dossier.riskLevel))}
             </div>
@@ -110,7 +110,7 @@ function CasePersonDossierModal({
                 className="btn btn-secondary dossier-interrogation-link"
                 href={buildInterrogationHref(caseId, CASE_WORKSPACE_MODES.SOLVE, person.id)}
               >
-                Saslusaj osobu
+                Saslušaj osobu
               </a>
             </div>
             {linkedDocumentsError ? (

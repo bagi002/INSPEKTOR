@@ -20,7 +20,7 @@ export async function listAdminAnnouncements() {
 
 export async function createAdminAnnouncementMessage(payload, adminUserId) {
   const { errors, sanitized } = validateCreateAdminAnnouncementPayload(payload);
-  throwValidationIfNeeded(errors, "Podaci za admin obavjestenje nisu validni.");
+  throwValidationIfNeeded(errors, "Podaci za admin obavještenje nisu validni.");
 
   const announcement = await createAdminAnnouncement({
     title: sanitized.title,

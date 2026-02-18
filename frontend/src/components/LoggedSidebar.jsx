@@ -5,9 +5,9 @@ const ADMIN_PANEL_URL = "http://localhost:5174";
 function LoggedSidebar({ activePath, user, onLogout }) {
   const normalizedActivePath = normalizePath(activePath);
   const menuItems = [
-    { label: "Pocetna", href: AUTH_ROUTES.HOME },
-    { label: "Kreiranje slucaja", href: AUTH_ROUTES.CREATE_CASE },
-    { label: "Podrska", href: AUTH_ROUTES.SUPPORT },
+    { label: "Početna", href: AUTH_ROUTES.HOME },
+    { label: "Kreiranje slučaja", href: AUTH_ROUTES.CREATE_CASE },
+    { label: "Podrška", href: AUTH_ROUTES.SUPPORT },
     { label: "Wiki igre", href: PUBLIC_ROUTES.WIKI },
     { label: "Profil", href: AUTH_ROUTES.PROFILE },
   ];
@@ -24,7 +24,7 @@ function LoggedSidebar({ activePath, user, onLogout }) {
     <aside className="left-sidebar reveal">
       <div className="brand-block">
         <p className="brand-kicker">INSPEKTOR</p>
-        <h1>Kontrolni centar istrazitelja</h1>
+        <h1>Kontrolni centar istražitelja</h1>
       </div>
 
       <section className="user-summary" aria-label="Ulogovani korisnik">

@@ -32,7 +32,7 @@ function validateTimelineReferences(sanitized, errors) {
     }
 
     if (usedOrders.has(item.unlockOrder)) {
-      errors[`timeline.${index}.unlockOrder`] = "Redosled otkljucavanja mora biti jedinstven.";
+      errors[`timeline.${index}.unlockOrder`] = "Redosled otključavanja mora biti jedinstven.";
       return;
     }
 
@@ -61,12 +61,12 @@ function parseCaseId(caseIdInput) {
   const normalizedValue =
     typeof caseIdInput === "string" ? caseIdInput.trim() : String(caseIdInput ?? "");
   if (!/^\d+$/.test(normalizedValue)) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+    throw new HttpError(400, "Prosleđeni slučaj nije validan.");
   }
 
   const caseId = Number.parseInt(normalizedValue, 10);
   if (!Number.isInteger(caseId) || caseId <= 0) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+    throw new HttpError(400, "Prosleđeni slučaj nije validan.");
   }
 
   return caseId;
@@ -76,7 +76,7 @@ export async function createCase(payload, authorUserId) {
   const { errors, sanitized } = validateCreateCasePayload(payload);
   const hasForeignProgressUser = sanitized.progress.some((item) => item.userId !== authorUserId);
   if (hasForeignProgressUser) {
-    errors.progress = "Trenutno je podrzano cuvanje napretka samo za autora slucaja.";
+    errors.progress = "Trenutno je podržano cuvanje napretka samo za autora slučaja.";
   }
 
   validateTimelineReferences(sanitized, errors);
@@ -127,7 +127,7 @@ export async function getCreatorCase(caseIdInput, userId) {
   const caseId = parseCaseId(caseIdInput);
   const caseRow = await findCaseByIdForAuthor(caseId, userId);
   if (!caseRow) {
-    throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+    throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
   }
 
   return caseRow;
@@ -156,7 +156,7 @@ export async function getCaseWorkspaceOverview(
   if (readScope === CASE_READ_SCOPES.CREATE) {
     const caseRow = await findCaseByIdForAuthor(caseId, requesterUserId);
     if (!caseRow) {
-      throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+      throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
     }
 
     const [totalQuestions, community] = await Promise.all([

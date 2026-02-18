@@ -46,7 +46,7 @@ export async function fetchLoggedHomeCases() {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(payload, "Ucitavanje slucajeva nije uspelo."),
+        message: resolveMessage(payload, "Učitavanje slučajeva nije uspelo."),
       };
     }
 
@@ -58,7 +58,7 @@ export async function fetchLoggedHomeCases() {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
     };
   }
 }
@@ -88,7 +88,7 @@ export async function createCase(payload) {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(responsePayload, "Cuvanje slucaja nije uspelo."),
+        message: resolveMessage(responsePayload, "Čuvanje slučaja nije uspelo."),
         errors:
           responsePayload?.errors && typeof responsePayload.errors === "object"
             ? responsePayload.errors
@@ -98,14 +98,14 @@ export async function createCase(payload) {
 
     return {
       ok: true,
-      message: resolveMessage(responsePayload, "Slucaj je uspesno sacuvan."),
+      message: resolveMessage(responsePayload, "Slučaj je uspešno sačuvan."),
       data: responsePayload?.data || null,
     };
   } catch {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }
@@ -134,7 +134,7 @@ export async function fetchCreatorCase(caseId) {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(payload, "Ucitavanje slucaja nije uspelo."),
+        message: resolveMessage(payload, "Učitavanje slučaja nije uspelo."),
       };
     }
 
@@ -146,7 +146,7 @@ export async function fetchCreatorCase(caseId) {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
     };
   }
 }
@@ -176,7 +176,7 @@ export async function fetchCaseOverview(caseId, scope = "create") {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(payload, "Ucitavanje pregleda slucaja nije uspelo."),
+        message: resolveMessage(payload, "Učitavanje pregleda slučaja nije uspelo."),
       };
     }
 
@@ -188,7 +188,7 @@ export async function fetchCaseOverview(caseId, scope = "create") {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
     };
   }
 }
@@ -217,7 +217,7 @@ export async function publishCase(caseId) {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(payload, "Objava slucaja nije uspela."),
+        message: resolveMessage(payload, "Objava slučaja nije uspela."),
         errors:
           payload?.errors && typeof payload.errors === "object" ? payload.errors : null,
       };
@@ -225,7 +225,7 @@ export async function publishCase(caseId) {
 
     return {
       ok: true,
-      message: resolveMessage(payload, "Slucaj je uspesno objavljen."),
+      message: resolveMessage(payload, "Slučaj je uspešno objavljen."),
       data: payload?.data || null,
       errors: null,
     };
@@ -233,7 +233,7 @@ export async function publishCase(caseId) {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }

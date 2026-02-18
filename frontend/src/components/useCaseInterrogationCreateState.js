@@ -150,12 +150,12 @@ export function useCaseInterrogationCreateState({
       if (Object.keys(nodeErrors).length > 0) {
         setNodeDraftError("Proveri validaciju stabla pitanja i odgovora.");
       }
-      setSubmitError(result.message || "Cuvanje saslusanja nije uspelo.");
+      setSubmitError(result.message || "Čuvanje saslušanja nije uspelo.");
       setIsSubmitting(false);
       return;
     }
     const savedInterrogationId = Number(result.data?.interrogation?.id) || null;
-    setSubmitSuccessMessage(result.message || "Saslusanje je uspesno sacuvano.");
+    setSubmitSuccessMessage(result.message || "Saslušanje je uspešno sačuvano.");
     await refreshInterrogations();
     setIsSubmitting(false);
     setIsCreateModalOpen(false);

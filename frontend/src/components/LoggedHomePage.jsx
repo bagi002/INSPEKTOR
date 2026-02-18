@@ -20,10 +20,10 @@ function LoggedHomePage({ user, onLogout }) {
   const [errorMessage, setErrorMessage] = useState("");
   const quickStats = useMemo(
     () => [
-      { label: "Aktivni slucajevi", value: String(homeData.summary.activeCount) },
-      { label: "Reseni slucajevi", value: String(homeData.summary.resolvedCount) },
-      { label: "Kreirani slucajevi", value: String(homeData.summary.createdCount) },
-      { label: "Prosecna ocena", value: formatAverageRating(homeData.summary.averageResolvedRating) },
+      { label: "Aktivni slučajevi", value: String(homeData.summary.activeCount) },
+      { label: "Rešeni slučajevi", value: String(homeData.summary.resolvedCount) },
+      { label: "Kreirani slučajevi", value: String(homeData.summary.createdCount) },
+      { label: "Prosečna ocena", value: formatAverageRating(homeData.summary.averageResolvedRating) },
     ],
     [homeData.summary]
   );
@@ -42,7 +42,7 @@ function LoggedHomePage({ user, onLogout }) {
         return;
       }
 
-      setErrorMessage(result.message || "Ucitavanje slucajeva nije uspelo.");
+      setErrorMessage(result.message || "Učitavanje slučajeva nije uspelo.");
       setIsLoading(false);
       return;
     }
@@ -53,7 +53,7 @@ function LoggedHomePage({ user, onLogout }) {
 
   const handleOpenCreatedCaseStats = useCallback((item) => {
     if (!item?.id) return;
-    setSelectedCreatedCaseForStats({ id: item.id, title: item.title || "Objavljeni slucaj" });
+    setSelectedCreatedCaseForStats({ id: item.id, title: item.title || "Objavljeni slučaj" });
   }, []);
 
   const handleCloseCreatedCaseStats = useCallback(() => {
@@ -69,25 +69,25 @@ function LoggedHomePage({ user, onLogout }) {
       <LoggedSidebar activePath={AUTH_ROUTES.HOME} user={user} onLogout={onLogout} />
       <main className="content logged-content">
         <section className="card logged-hero reveal delay-1">
-          <p className="eyebrow">Ulogovani rezim</p>
-          <h2>Dobrodosao nazad, {user.firstName}.</h2>
-          <p>U nastavku imas pregled slucajeva koje trenutno resavas, zavrsenih istraga, najocenjenijih javnih slucajeva i scenarija koje si kreirao.</p>
+          <p className="eyebrow">Ulogovani režim</p>
+          <h2>Dobrodošao nazad, {user.firstName}.</h2>
+          <p>U nastavku imaš pregled slučajeva koje trenutno rešavaš, završenih istraga, najocenjenijih javnih slučajeva i scenarija koje si kreirao.</p>
           <div className="cta-row">
-            <a className="btn btn-primary" href={AUTH_ROUTES.CREATE_CASE}>Kreiraj novi slucaj</a>
+            <a className="btn btn-primary" href={AUTH_ROUTES.CREATE_CASE}>Kreiraj novi slučaj</a>
             <a className="btn btn-secondary" href={AUTH_ROUTES.PROFILE}>Otvori profil</a>
           </div>
         </section>
         {isLoading ? (
           <section className="card reveal delay-2">
-            <p className="eyebrow">Ucitavanje podataka</p>
-            <h3>Pripremam stvarne slucajeve iz baze...</h3>
+            <p className="eyebrow">Učitavanje podataka</p>
+            <h3>Pripremam stvarne slučajeve iz baze...</h3>
           </section>
         ) : null}
         {!isLoading && errorMessage ? (
           <section className="card reveal delay-2">
             <p className="error-banner">{errorMessage}</p>
             <button type="button" className="btn btn-primary inline-action" onClick={loadHomeData}>
-              Pokusaj ponovo
+              Pokušaj ponovo
             </button>
           </section>
         ) : null}
@@ -105,36 +105,36 @@ function LoggedHomePage({ user, onLogout }) {
               </div>
             </section>
             <LoggedCaseSection
-              title="Slucajevi koje trenutno resavas"
+              title="Slučajevi koje trenutno rešavaš"
               items={homeData.sections.activeCases}
-              emptyMessage="Trenutno nemas aktivnih slucajeva."
+              emptyMessage="Trenutno nemaš aktivnih slučajeva."
               renderDetails={(item) => (
                 <>
                   <p className="case-meta">Faza istrage: {item.progressPercent || 0}%</p>
                   <p>{item.description}</p>
-                  <a className="btn btn-secondary inline-action case-inline-link" href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}>Nastavi resavanje</a>
+                  <a className="btn btn-secondary inline-action case-inline-link" href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}>Nastavi rešavanje</a>
                 </>
               )}
             />
             <LoggedCaseSection
-              title="Reseni slucajevi"
+              title="Rešeni slučajevi"
               items={homeData.sections.resolvedCases}
               gridClassName="case-grid case-grid-compact"
               delayClass="delay-3"
-              emptyMessage="Jos nemas resene slucajeve."
+              emptyMessage="Još nemaš rešene slučajeve."
               renderDetails={(item) => (
                 <>
                   <p>Ocena: <strong>{formatAverageRating(item.rating)}</strong> | {formatReviews(item.reviews)}</p>
-                  <p>Rijeseno: <strong>{formatResolvedAt(item.resolvedAt)}</strong></p>
+                  <p>Riješeno: <strong>{formatResolvedAt(item.resolvedAt)}</strong></p>
                 </>
               )}
             />
             <LoggedCaseSection
-              title="Slucajevi u fazi kreiranja"
+              title="Slučajevi u fazi kreiranja"
               items={draftCreationCases}
               gridClassName="case-grid case-grid-compact"
               delayClass="delay-3"
-              emptyMessage="Trenutno nemas slucajeve u fazi kreiranja."
+              emptyMessage="Trenutno nemaš slučajeve u fazi kreiranja."
               renderDetails={(item) => (
                 <>
                   <p>Status: <strong>U izradi</strong></p>
@@ -143,24 +143,24 @@ function LoggedHomePage({ user, onLogout }) {
               )}
             />
             <LoggedCaseSection
-              title="Najocenjeniji javni slucajevi"
+              title="Najocenjeniji javni slučajevi"
               items={homeData.sections.topRatedPublicCases}
               gridClassName="case-grid case-grid-compact"
               delayClass="delay-3"
-              emptyMessage="Nema javnih slucajeva za prikaz."
+              emptyMessage="Nema javnih slučajeva za prikaz."
               renderDetails={(item) => (
                 <>
                   <p>Ocena: <strong>{formatAverageRating(item.rating)}</strong> | Autor: {item.author}</p>
-                  <a className="btn btn-secondary inline-action case-inline-link" href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}>Pokreni resavanje</a>
+                  <a className="btn btn-secondary inline-action case-inline-link" href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}>Pokreni rešavanje</a>
                 </>
               )}
             />
             <LoggedCaseSection
-              title="Slucajevi koje si kreirao"
+              title="Slučajevi koje si kreirao"
               items={homeData.sections.createdCases}
               gridClassName="case-grid case-grid-compact"
               delayClass="delay-4"
-              emptyMessage="Jos nemas kreirane slucajeve."
+              emptyMessage="Još nemaš kreirane slučajeve."
               renderDetails={(item) => <LoggedCreatedCaseDetails item={item} onOpenStatistics={handleOpenCreatedCaseStats} />}
             />
           </>

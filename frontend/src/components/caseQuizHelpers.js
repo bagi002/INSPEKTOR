@@ -62,7 +62,7 @@ export function mapQuizQuestionsForEditor(rawQuestions, nextQuestionKey, nextOpt
 
 export function validateQuizQuestions(questions) {
   if (!Array.isArray(questions) || questions.length === 0) {
-    return "Dodaj bar jedno pitanje za zavrsni kviz.";
+    return "Dodaj bar jedno pitanje za završni kviz.";
   }
 
   for (let questionIndex = 0; questionIndex < questions.length; questionIndex += 1) {
@@ -72,7 +72,7 @@ export function validateQuizQuestions(questions) {
     }
 
     if (toText(question.explanationText).length < 8) {
-      return `Objasnjenje za pitanje #${questionIndex + 1} mora imati najmanje 8 karaktera.`;
+      return `Objašnjenje za pitanje #${questionIndex + 1} mora imati najmanje 8 karaktera.`;
     }
 
     if (!Array.isArray(question.options) || question.options.length < QUIZ_MIN_OPTIONS) {
@@ -80,7 +80,7 @@ export function validateQuizQuestions(questions) {
     }
 
     if (question.options.length > QUIZ_MAX_OPTIONS) {
-      return `Pitanje #${questionIndex + 1} moze imati najvise ${QUIZ_MAX_OPTIONS} odgovora.`;
+      return `Pitanje #${questionIndex + 1} može imati najviše ${QUIZ_MAX_OPTIONS} odgovora.`;
     }
 
     const correctCount = question.options.reduce(
@@ -89,7 +89,7 @@ export function validateQuizQuestions(questions) {
     );
 
     if (correctCount !== 1) {
-      return `Pitanje #${questionIndex + 1} mora imati tacno jedan tacan odgovor.`;
+      return `Pitanje #${questionIndex + 1} mora imati tačno jedan tačan odgovor.`;
     }
 
     for (let optionIndex = 0; optionIndex < question.options.length; optionIndex += 1) {

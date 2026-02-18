@@ -3,7 +3,7 @@ import { formatSolvedAt } from "./caseQuizHelpers";
 
 function renderReviewItems(reviews) {
   if (!Array.isArray(reviews) || reviews.length === 0) {
-    return <p className="case-quiz-empty">Jos nema dostupnih recenzija za prikaz.</p>;
+    return <p className="case-quiz-empty">Još nema dostupnih recenzija za prikaz.</p>;
   }
 
   return (
@@ -28,7 +28,7 @@ function renderReviewItems(reviews) {
 
 function renderSolvedUsers(items) {
   if (!Array.isArray(items) || items.length === 0) {
-    return <p className="case-quiz-empty">Jos nema korisnika koji su rijesili ovaj slucaj.</p>;
+    return <p className="case-quiz-empty">Još nema korisnika koji su rešili ovaj slučaj.</p>;
   }
 
   return (
@@ -40,7 +40,7 @@ function renderSolvedUsers(items) {
         >
           <h4>{item.userDisplayName || "Korisnik"}</h4>
           <p>
-            Rijesio: <strong>{formatSolvedAt(item.resolvedAt) || "-"}</strong>
+            Riješio: <strong>{formatSolvedAt(item.resolvedAt) || "-"}</strong>
           </p>
           <p>
             Recenzija:{" "}
@@ -72,17 +72,17 @@ function CaseReviewsPanel({ summary, reviews, solvedUsers, isCreateMode, title }
         </article>
         <article className="case-review-stat-card">
           <strong>{Number(safeSummary.activeSolverCount) || 0}</strong>
-          <span>Trenutno rjesava</span>
+          <span>Trenutno rješava</span>
         </article>
         <article className="case-review-stat-card">
           <strong>{Number(safeSummary.resolvedSolverCount) || 0}</strong>
-          <span>Rijesilo korisnika</span>
+          <span>Riješilo korisnika</span>
         </article>
       </div>
 
       {isCreateMode ? (
         <>
-          <h4>Korisnici koji su rijesili slucaj</h4>
+          <h4>Korisnici koji su rešili slučaj</h4>
           {renderSolvedUsers(solvedUsers)}
         </>
       ) : null}
@@ -94,4 +94,3 @@ function CaseReviewsPanel({ summary, reviews, solvedUsers, isCreateMode, title }
 }
 
 export default CaseReviewsPanel;
-

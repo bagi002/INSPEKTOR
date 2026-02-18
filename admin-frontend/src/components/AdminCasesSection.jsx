@@ -54,19 +54,19 @@ function AdminCasesSection({ cases, onUpdateCase }) {
     setIsSaving(false);
 
     if (!result.ok) {
-      setMessage(result.message || "Cuvanje izmjena slucaja nije uspelo.");
+      setMessage(result.message || "Čuvanje izmjena slučaja nije uspelo.");
       return;
     }
 
-    setMessage(result.message || "Slucaj je uspesno izmenjen.");
+    setMessage(result.message || "Slučaj je uspešno izmenjen.");
     setEditingCaseId(null);
     setDraft(null);
   }
 
   return (
     <section className="admin-card">
-      <h2>Slucajevi</h2>
-      {cases.length === 0 ? <p>Nema kreiranih slucajeva.</p> : null}
+      <h2>Slučajevi</h2>
+      {cases.length === 0 ? <p>Nema kreiranih slučajeva.</p> : null}
 
       {cases.length > 0 ? (
         <div className="admin-table-wrap">
@@ -109,7 +109,7 @@ function AdminCasesSection({ cases, onUpdateCase }) {
 
       {editingCaseId && draft ? (
         <div className="admin-inline-editor">
-          <h3>Izmena slucaja #{editingCaseId}</h3>
+          <h3>Izmena slučaja #{editingCaseId}</h3>
           <label>
             Naziv
             <input name="title" type="text" value={draft.title} onChange={handleDraftChange} />
@@ -126,7 +126,7 @@ function AdminCasesSection({ cases, onUpdateCase }) {
             </select>
           </label>
           <label>
-            Prosecna ocena
+            Prosečna ocena
             <input
               name="averageRating"
               type="number"
@@ -156,7 +156,7 @@ function AdminCasesSection({ cases, onUpdateCase }) {
               onClick={() => void handleSave()}
               disabled={isSaving}
             >
-              {isSaving ? "Cuvanje..." : "Sacuvaj slucaj"}
+              {isSaving ? "Čuvanje..." : "Sačuvaj slučaj"}
             </button>
             <button type="button" className="admin-btn" onClick={handleCancelEdit}>
               Odustani

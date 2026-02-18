@@ -22,7 +22,7 @@ export function validateCaseReviewPayload(payload) {
   }
 
   if (comment.length > 1200) {
-    errors.comment = "Komentar moze imati najvise 1200 karaktera.";
+    errors.comment = "Komentar može imati najviše 1200 karaktera.";
   }
 
   return {

@@ -37,7 +37,7 @@ function RegistrationPage() {
     }
 
     setFormData(initialFormState);
-    setSuccessMessage(result.message || "Registracija je uspesna.");
+    setSuccessMessage(result.message || "Registracija je uspešna.");
   }
 
   return (
@@ -45,7 +45,7 @@ function RegistrationPage() {
       activePath={PUBLIC_ROUTES.REGISTRATION}
       eyebrow="Kreiranje naloga"
       title="Registracija korisnika"
-      description="Unesi osnovne podatke za kreiranje naloga i pocetak rada na slucajevima."
+      description="Unesi osnovne podatke za kreiranje naloga i početak rada na slučajevima."
       sidebarNote="Novi korisnici mogu kreirati nalog kroz formular i zatim nastaviti na prijavu."
     >
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
@@ -65,7 +65,7 @@ function RegistrationPage() {
           </div>
 
           <div className="field-group">
-            <label htmlFor="lastName">Prezime</label>
+            <label htmlFor="lastName">Prežime</label>
             <input
               id="lastName"
               name="lastName"
@@ -73,7 +73,7 @@ function RegistrationPage() {
               value={formData.lastName}
               onChange={handleChange}
               autoComplete="family-name"
-              placeholder="Markovic"
+              placeholder="Marković"
             />
             {errors.lastName ? <p className="field-error">{errors.lastName}</p> : null}
           </div>
@@ -88,7 +88,7 @@ function RegistrationPage() {
             value={formData.email}
             onChange={handleChange}
             autoComplete="email"
-            placeholder="ime.prezime@email.com"
+            placeholder="ime.prežime@email.com"
           />
           {errors.email ? <p className="field-error">{errors.email}</p> : null}
         </div>

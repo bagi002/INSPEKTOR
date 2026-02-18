@@ -71,9 +71,9 @@ export function buildInterrogationsStats(interrogations, peopleDirectory) {
   const withoutInterrogation = alivePeople.filter((person) => !coveredPersonIds.has(person.id)).length;
 
   return [
-    { label: "Ukupno saslusanja", value: interrogations.length },
-    { label: "Zive osobe", value: alivePeople.length },
-    { label: "Bez saslusanja", value: withoutInterrogation },
+    { label: "Ukupno saslušanja", value: interrogations.length },
+    { label: "Žive osobe", value: alivePeople.length },
+    { label: "Bez saslušanja", value: withoutInterrogation },
   ];
 }
 

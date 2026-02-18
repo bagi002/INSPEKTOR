@@ -19,7 +19,7 @@ export async function adminLoginController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Admin prijava je uspesna.",
+    message: "Admin prijava je uspešna.",
     data: result,
   });
 }
@@ -29,7 +29,7 @@ export async function adminOverviewController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Admin overview je uspesno ucitan.",
+    message: "Admin overview je uspešno učitan.",
     data: result,
   });
 }
@@ -39,7 +39,7 @@ export async function adminTicketsController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Admin lista tiketa je uspesno ucitana.",
+    message: "Admin lista tiketa je uspešno učitana.",
     data: result,
   });
 }
@@ -49,7 +49,7 @@ export async function adminAnnouncementsController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Admin lista obavjestenja je uspesno ucitana.",
+    message: "Admin lista obavještenja je uspešno učitana.",
     data: result,
   });
 }
@@ -62,7 +62,7 @@ export async function adminCreateAnnouncementController(req, res) {
 
   res.status(201).json({
     ok: true,
-    message: "Admin obavjestenje je uspesno kreirano.",
+    message: "Admin obavještenje je uspešno kreirano.",
     data: result,
   });
 }
@@ -72,7 +72,7 @@ export async function adminUpdateTicketStatusController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Status tiketa je uspesno izmenjen.",
+    message: "Status tiketa je uspešno izmenjen.",
     data: result,
   });
 }
@@ -82,7 +82,7 @@ export async function adminUsersController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Admin lista korisnika je uspesno ucitana.",
+    message: "Admin lista korisnika je uspešno učitana.",
     data: result,
   });
 }
@@ -92,7 +92,7 @@ export async function adminUpdateUserController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Korisnik je uspesno izmenjen.",
+    message: "Korisnik je uspešno izmenjen.",
     data: result,
   });
 }
@@ -102,7 +102,7 @@ export async function adminDeleteUserController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Korisnik je uspesno obrisan.",
+    message: "Korisnik je uspešno obrisan.",
     data: result,
   });
 }
@@ -112,7 +112,7 @@ export async function adminCasesController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Admin lista slucajeva je uspesno ucitana.",
+    message: "Admin lista slučajeva je uspešno učitana.",
     data: result,
   });
 }
@@ -122,7 +122,7 @@ export async function adminUpdateCaseController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Slucaj je uspesno izmenjen.",
+    message: "Slučaj je uspešno izmenjen.",
     data: result,
   });
 }

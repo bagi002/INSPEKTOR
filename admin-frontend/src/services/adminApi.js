@@ -88,13 +88,13 @@ export async function loginAdmin(payload) {
     saveAdminSession(token, user);
     return {
       ok: true,
-      message: resolveMessage(responsePayload, "Admin prijava je uspesna."),
+      message: resolveMessage(responsePayload, "Admin prijava je uspešna."),
       data: responsePayload?.data || null,
     };
   } catch {
     return {
       ok: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }
@@ -139,7 +139,7 @@ async function requestAdmin(path, options = {}) {
     return {
       ok: true,
       unauthorized: false,
-      message: resolveMessage(responsePayload, "Admin zahtev je uspesan."),
+      message: resolveMessage(responsePayload, "Admin zahtev je uspešan."),
       data: responsePayload?.data || null,
       errors: null,
     };
@@ -147,7 +147,7 @@ async function requestAdmin(path, options = {}) {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       data: null,
       errors: null,
     };

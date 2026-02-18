@@ -12,7 +12,7 @@ function LoggedPlaceholderPage({ title, description, activePath, user, onLogout 
           <p>{description}</p>
           <p>
             Ova sekcija je rezervisana za narednu fazu implementacije. Navigacija
-            je vec spremna i povezana sa ulogovanim menijem.
+            je već spremna i povezana sa ulogovanim menijem.
           </p>
         </section>
       </main>

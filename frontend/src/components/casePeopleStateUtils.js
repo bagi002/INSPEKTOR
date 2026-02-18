@@ -16,7 +16,7 @@ export function readPhotoDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
-    reader.onerror = () => reject(new Error("Greska pri citanju fajla."));
+    reader.onerror = () => reject(new Error("Greška pri čitanju fajla."));
     reader.readAsDataURL(file);
   });
 }

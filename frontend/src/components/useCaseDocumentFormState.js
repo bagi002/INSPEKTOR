@@ -146,14 +146,14 @@ export function useCaseDocumentFormState({
         setFormErrors((previous) => ({ ...previous, ...backendErrors }));
       }
 
-      setSubmitError(result.message || "Cuvanje dokumenta nije uspelo.");
+      setSubmitError(result.message || "Čuvanje dokumenta nije uspelo.");
       setIsSubmitting(false);
       return;
     }
 
     setFormData(buildInitialCaseDocumentFormData(category));
     setFormErrors({});
-    setSubmitSuccessMessage(result.message || "Dokument je uspesno sacuvan.");
+    setSubmitSuccessMessage(result.message || "Dokument je uspešno sačuvan.");
     await refreshDocuments();
     setIsCreateModalOpen(false);
     if (typeof onDocumentCreated === "function") {

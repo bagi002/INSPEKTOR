@@ -34,8 +34,8 @@ function CaseInterrogationTreePreview({ nodes }) {
   if (sortedNodes.length === 0) {
     return (
       <section className="case-interrogation-tree-panel">
-        <h5>Vizuelni tok saslusanja</h5>
-        <p className="case-interrogation-empty">Stablo je prazno. Dodaj prvo pitanje da vidis tok.</p>
+        <h5>Vizuelni tok saslušanja</h5>
+        <p className="case-interrogation-empty">Stablo je prazno. Dodaj prvo pitanje da vidiš tok.</p>
       </section>
     );
   }
@@ -45,10 +45,10 @@ function CaseInterrogationTreePreview({ nodes }) {
 
   return (
     <section className="case-interrogation-tree-panel">
-      <h5>Vizuelni tok saslusanja</h5>
+      <h5>Vizuelni tok saslušanja</h5>
       {rootNodes.length === 0 ? (
         <p className="case-interrogation-empty">
-          Stablo nema pocetni cvor. Dodaj root pitanje da bi tok bio validan.
+          Stablo nema početni čvor. Dodaj root pitanje da bi tok bio validan.
         </p>
       ) : (
         <ul className="case-interrogation-tree-list">

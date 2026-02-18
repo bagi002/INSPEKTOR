@@ -11,18 +11,18 @@ export const INITIAL_TIMELINE_FORM_DATA = {
 };
 
 const DOCUMENT_TYPE_LABELS = {
-  police_report: "Policijski izvjestaj",
-  forensic_report: "Forenzicki nalaz",
+  police_report: "Policijski izvještaj",
+  forensic_report: "Forenzički nalaz",
   dossier: "Dosije",
   witness_statement: "Izjava svjedoka",
-  suspect_statement: "Izjava osumnjicenog",
-  victim_statement: "Izjava zrtve",
+  suspect_statement: "Izjava osumnjičenog",
+  victim_statement: "Izjava žrtve",
 };
 
 const PERSON_ROLE_LABELS = {
   unknown: "Nepoznato",
-  suspect: "Osumnjiceni",
-  victim: "Zrtva",
+  suspect: "Osumnjičeni",
+  victim: "Žrtva",
   witness: "Svjedok",
 };
 
@@ -61,11 +61,11 @@ export function validateTimelineItemForm(formData, existingItems) {
   const normalizedUnlockAt = (formData.unlockAt || "").trim();
 
   if (!sourceId) {
-    errors.sourceId = "Izaberi osobu ili dokument koji dodajes u vremensku liniju.";
+    errors.sourceId = "Izaberi osobu ili dokument koji dodaješ u vremensku liniju.";
   }
 
   if (normalizedNote.length > 500) {
-    errors.unlockNote = "Napomena moze imati najvise 500 karaktera.";
+    errors.unlockNote = "Napomena može imati najviše 500 karaktera.";
   }
 
   if (normalizedUnlockAt && !DATETIME_LOCAL_PATTERN.test(normalizedUnlockAt)) {
@@ -78,7 +78,7 @@ export function validateTimelineItemForm(formData, existingItems) {
     );
 
     if (duplicate) {
-      errors.sourceId = "Izabrana stavka je vec dodata u vremensku liniju.";
+      errors.sourceId = "Izabrana stavka je već dodata u vremensku liniju.";
     }
   }
 

@@ -32,8 +32,8 @@ export async function registerUser(payload) {
 
   const existingUser = await findUserByEmail(sanitized.email);
   if (existingUser) {
-    throw new HttpError(409, "Nalog sa ovom email adresom vec postoji.", {
-      email: "Nalog sa ovom email adresom vec postoji.",
+    throw new HttpError(409, "Nalog sa ovom email adresom već postoji.", {
+      email: "Nalog sa ovom email adresom već postoji.",
     });
   }
 

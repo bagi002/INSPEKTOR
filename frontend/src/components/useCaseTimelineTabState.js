@@ -45,7 +45,7 @@ export function useCaseTimelineTabState({ caseId, mode, onUnauthorized }) {
     const result = await fetchCaseTimeline(caseId);
     if (!result.ok) {
       if (result.unauthorized) { setIsLoading(false); onUnauthorized(); return; }
-      setErrorMessage(result.message || "Ucitavanje vremenske linije nije uspelo."); setIsLoading(false); return;
+      setErrorMessage(result.message || "Učitavanje vremenske linije nije uspelo."); setIsLoading(false); return;
     }
 
     const mappedItems = (Array.isArray(result.data?.items) ? result.data.items : []).map(mapTimelineItemForState);
@@ -75,7 +75,7 @@ export function useCaseTimelineTabState({ caseId, mode, onUnauthorized }) {
     if (Object.keys(validationErrors).length > 0) return;
 
     const sourceId = parseTimelineSourceId(formData.sourceId); const source = sourceOptions.find((option) => option.id === sourceId);
-    if (!sourceId || !source) { setFormErrors({ sourceId: "Izabrani zapis vise nije dostupan. Osvezi stranicu i pokusaj ponovo." }); return; }
+    if (!sourceId || !source) { setFormErrors({ sourceId: "Izabrani zapis više nije dostupan. Osveži stranicu i pokušaj ponovo." }); return; }
 
     const localKey = `timeline-item-new-${nextLocalKeyRef.current}`; nextLocalKeyRef.current += 1;
     const sourceLabel = formatTimelineSourceOption(formData.itemType, source);
@@ -94,12 +94,12 @@ export function useCaseTimelineTabState({ caseId, mode, onUnauthorized }) {
     if (!result.ok) {
       if (result.unauthorized) { setIsSaving(false); onUnauthorized(); return; }
       const validationMessage = pickFirstValidationMessage(result.errors);
-      setSaveErrorMessage(validationMessage || result.message || "Cuvanje vremenske linije nije uspelo."); setIsSaving(false); return;
+      setSaveErrorMessage(validationMessage || result.message || "Čuvanje vremenske linije nije uspelo."); setIsSaving(false); return;
     }
 
     const updatedItems = Array.isArray(result.data?.items) ? result.data.items.map(mapTimelineItemForState) : [];
     setTimelineItems(updatedItems); setTimelineProgress((previous) => mapTimelineProgressForState(previous, updatedItems.length));
-    setSaveSuccessMessage(result.message || "Vremenska linija je uspesno sacuvana."); setIsSaving(false);
+    setSaveSuccessMessage(result.message || "Vremenska linija je uspešno sačuvana."); setIsSaving(false);
   }
 
   async function handleAdvanceTimeline() {
@@ -108,12 +108,12 @@ export function useCaseTimelineTabState({ caseId, mode, onUnauthorized }) {
     const result = await advanceCaseTimeline(caseId);
     if (!result.ok) {
       if (result.unauthorized) { setIsAdvancing(false); onUnauthorized(); return; }
-      setAdvanceErrorMessage(result.message || "Otkljucavanje sledece stavke nije uspelo."); setIsAdvancing(false); return;
+      setAdvanceErrorMessage(result.message || "Otključavanje sledeće stavke nije uspelo."); setIsAdvancing(false); return;
     }
 
     const updatedItems = Array.isArray(result.data?.items) ? result.data.items.map(mapTimelineItemForState) : [];
     setTimelineItems(updatedItems); setTimelineProgress(mapTimelineProgressForState(result.data?.userProgress, updatedItems.length));
-    setAdvanceSuccessMessage(result.message || "Sledeca timeline stavka je uspesno otkljucana."); setIsAdvancing(false);
+    setAdvanceSuccessMessage(result.message || "Sledeća timeline stavka je uspešno otključana."); setIsAdvancing(false);
   }
 
   return {

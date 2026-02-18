@@ -21,10 +21,10 @@ function createMessage(id, role, text) {
 function buildOpeningMessages(interrogation) {
   const personName = interrogation?.person?.fullName || "Nepoznata osoba";
   const openingPrompt =
-    interrogation?.openingPrompt || "Saslusanje je pokrenuto. Izaberi sledece pitanje.";
+    interrogation?.openingPrompt || "Saslušanje je pokrenuto. Izaberi sledeće pitanje.";
 
   return [
-    createMessage("system-open", "system", `Otvoreno saslusanje: ${personName}`),
+    createMessage("system-open", "system", `Otvoreno saslušanje: ${personName}`),
     createMessage("system-prompt", "system", openingPrompt),
   ];
 }
@@ -86,7 +86,7 @@ function CaseInterrogationChatModal({ interrogation, onClose }) {
       createMessage(
         `system-close-${previous.length + 1}`,
         "system",
-        "Saslusanje je zakljuceno. Zapisnik razgovora je kompletiran."
+        "Saslušanje je zaključeno. Zapisnik razgovora je kompletiran."
       ),
     ]);
     setIsConcluded(true);
@@ -111,8 +111,8 @@ function CaseInterrogationChatModal({ interrogation, onClose }) {
               {personLabel.charAt(0).toUpperCase()}
             </span>
             <div>
-              <p className="eyebrow">Chat saslusanje</p>
-              <h3>{interrogation.title || "Saslusanje"}</h3>
+              <p className="eyebrow">Chat saslušanje</p>
+              <h3>{interrogation.title || "Saslušanje"}</h3>
               <p className="create-case-summary">
                 {personLabel} | {roleLabel}
               </p>
@@ -120,7 +120,7 @@ function CaseInterrogationChatModal({ interrogation, onClose }) {
           </div>
           <div className="case-interrogation-chat-actions">
             <button type="button" className="btn btn-secondary" onClick={handleRestart}>
-              Kreni iz pocetka
+              Kreni iz početka
             </button>
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Zatvori
@@ -150,16 +150,16 @@ function CaseInterrogationChatModal({ interrogation, onClose }) {
               <p className="case-interrogation-empty">
                 {hasConversationStarted
                   ? "Nema dodatnih pitanja u ovoj grani."
-                  : "Izaberi prvo pitanje da pokrenes saslusanje."}
+                  : "Izaberi prvo pitanje da pokrenes saslušanje."}
               </p>
               {canConclude ? (
                 <button type="button" className="btn btn-primary" onClick={handleConclude}>
-                  Zakljuci saslusanje
+                  Zakljuci saslušanje
                 </button>
               ) : null}
               {isConcluded ? (
                 <p className="case-interrogation-concluded-note">
-                  Saslusanje je zakljuceno. Mozes ga ponovo pokrenuti preko dugmeta Kreni iz pocetka.
+                  Saslušanje je zaključeno. Možeš ga ponovo pokrenuti preko dugmeta Kreni iz početka.
                 </p>
               ) : null}
             </div>

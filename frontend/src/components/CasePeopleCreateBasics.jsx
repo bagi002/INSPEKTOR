@@ -50,7 +50,7 @@ function CasePeopleCreateBasics({
     <>
       <div className="case-people-form-grid">
         <label className="create-case-field" htmlFor="case-person-full-name">
-          Ime i prezime
+          Ime i prežime
           <input
             id="case-person-full-name"
             className="create-case-input"
@@ -67,7 +67,7 @@ function CasePeopleCreateBasics({
           {
             id: "case-person-role",
             name: "apparentRole",
-            label: "Uloga u slucaju",
+            label: "Uloga u slučaju",
             options: CASE_PERSON_ROLE_OPTIONS,
             value: formData.apparentRole,
           },

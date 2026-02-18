@@ -24,7 +24,7 @@
 
 - id: REQ-003
   name: Stil aplikacije
-  status: In Progress
+  status: In Review
   description: >
     Aplikacija treba da ima ozbilajn formalni policiski  stil sa modernim dizajnom
     Korisnicki interfejs treba biti jednostavan i intuitivan, sa jasnim navigacionim elementima
@@ -32,7 +32,7 @@
     Boje koje se korist esu bijela siva svijetlo plava sa akcentomu tamno plavom i crvenom bojom
 - id: REQ-004
   name: Pocetna stranica za ne ulogovane korisnike
-  status: Finished
+  status: In Review
   description: >
     Treba da sadrzi osnovne informacije o aplikaciji, njenu svrhu i funkcionalnosti
     Treba da prestavi sto bolej aplikaciju u reklamnu svrhu
@@ -131,7 +131,7 @@
     
 - id: REQ-013
   name: Vremenska linija
-  status: Finished
+  status: In Review
   description: >
     Vremenska linija treba da prikazuje redoslijed otkljucavanja osoba i dokumenata u slucaju
     Vremenska linija treba da bude vizuelno privlacna i intuitivna za koristenje u formi road mape

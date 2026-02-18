@@ -34,7 +34,7 @@ export function validateReplaceCaseTimelinePayload(payload, availableSources) {
   const rawItems = payload?.items;
 
   if (!Array.isArray(rawItems)) {
-    errors.items = "Timeline mora biti prosledjen kao niz stavki.";
+    errors.items = "Timeline mora biti prosleđen kao niz stavki.";
     return { errors, sanitized: [] };
   }
 
@@ -55,12 +55,12 @@ export function validateReplaceCaseTimelinePayload(payload, availableSources) {
 
     if (unlockNote.length > MAX_TIMELINE_NOTE_LENGTH) {
       errors[`items.${index}.unlockNote`] =
-        `Napomena timeline stavke moze imati najvise ${MAX_TIMELINE_NOTE_LENGTH} karaktera.`;
+        `Napomena timeline stavke može imati najviše ${MAX_TIMELINE_NOTE_LENGTH} karaktera.`;
     }
 
     if (unlockAt === null) {
       errors[`items.${index}.unlockAt`] =
-        "Datum i vreme otkljucavanja moraju biti u formatu YYYY-MM-DDTHH:mm.";
+        "Datum i vreme otključavanja moraju biti u formatu YYYY-MM-DDTHH:mm.";
     }
 
     if (itemType && sourceId) {
@@ -68,12 +68,12 @@ export function validateReplaceCaseTimelinePayload(payload, availableSources) {
         itemType === "person" ? availableSources.personIds : availableSources.documentIds;
       if (!sourceSet.has(sourceId)) {
         errors[`items.${index}.sourceId`] =
-          "Timeline stavka referencira zapis koji ne postoji u trazenom slucaju.";
+          "Timeline stavka referencira zapis koji ne postoji u traženom slučaju.";
       }
 
       const sourceReference = `${itemType}:${sourceId}`;
       if (usedSourceReferences.has(sourceReference)) {
-        errors[`items.${index}.sourceId`] = "Ista stavka ne moze biti vise puta u timeline-u.";
+        errors[`items.${index}.sourceId`] = "Ista stavka ne može biti vise puta u timeline-u.";
       }
       usedSourceReferences.add(sourceReference);
     }

@@ -40,7 +40,7 @@ function validateWitnessStatement(typeSpecific, errors) {
     errors["typeSpecific.observationDistanceMeters"] = "Udaljenost mora biti ceo broj.";
   }
   if (observationDistanceMeters !== null && (observationDistanceMeters < 0 || observationDistanceMeters > 5000)) {
-    errors["typeSpecific.observationDistanceMeters"] = "Udaljenost mora biti broj izmedju 0 i 5000.";
+    errors["typeSpecific.observationDistanceMeters"] = "Udaljenost mora biti broj između 0 i 5000.";
   }
 
   return {
@@ -60,7 +60,7 @@ function validateSuspectStatement(typeSpecific, errors) {
     errors["typeSpecific.statementStance"] = "Stav osumnjicenog nije validan.";
   }
   if (alibiDescription.length > 3000) {
-    errors["typeSpecific.alibiDescription"] = "Opis alibija moze imati najvise 3000 karaktera.";
+    errors["typeSpecific.alibiDescription"] = "Opis alibija može imati najviše 3000 karaktera.";
   }
 
   return {
@@ -84,7 +84,7 @@ function validateVictimStatement(typeSpecific, errors) {
     errors["typeSpecific.threatPerception"] = "Procjena prijetnje nije validna.";
   }
   if (lossDescription.length > 3000) {
-    errors["typeSpecific.lossDescription"] = "Opis stete moze imati najvise 3000 karaktera.";
+    errors["typeSpecific.lossDescription"] = "Opis štete može imati najviše 3000 karaktera.";
   }
 
   return {
@@ -105,13 +105,13 @@ function validatePoliceReport(typeSpecific, errors) {
     errors["typeSpecific.incidentCategory"] = "Kategorija incidenta nije validna.";
   }
   if (operationCode.length > 80) {
-    errors["typeSpecific.operationCode"] = "Operativni kod moze imati najvise 80 karaktera.";
+    errors["typeSpecific.operationCode"] = "Operativni kod može imati najviše 80 karaktera.";
   }
   if (respondingUnit.length > 120) {
-    errors["typeSpecific.respondingUnit"] = "Interventna jedinica moze imati najvise 120 karaktera.";
+    errors["typeSpecific.respondingUnit"] = "Interventna jedinica može imati najviše 120 karaktera.";
   }
   if (immediateMeasures.length > 3000) {
-    errors["typeSpecific.immediateMeasures"] = "Mjere mogu imati najvise 3000 karaktera.";
+    errors["typeSpecific.immediateMeasures"] = "Mjere mogu imati najviše 3000 karaktera.";
   }
 
   return {
@@ -148,7 +148,7 @@ function validateForensicReport(typeSpecific, errors) {
     errors["typeSpecific.sampleCount"] = "Broj uzoraka mora biti ceo broj.";
   }
   if (sampleCount !== null && (sampleCount < 0 || sampleCount > 2000)) {
-    errors["typeSpecific.sampleCount"] = "Broj uzoraka mora biti izmedju 0 i 2000.";
+    errors["typeSpecific.sampleCount"] = "Broj uzoraka mora biti između 0 i 2000.";
   }
 
   return {

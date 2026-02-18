@@ -63,7 +63,7 @@ async function performProfileRequest(pathname, method, payload, fallbackMessage)
     return {
       ok: true,
       unauthorized: false,
-      message: resolveMessage(responsePayload, "Uspesno."),
+      message: resolveMessage(responsePayload, "Uspešno."),
       errors: null,
       data: responsePayload?.data || null,
     };
@@ -71,7 +71,7 @@ async function performProfileRequest(pathname, method, payload, fallbackMessage)
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
       data: null,
     };
@@ -79,11 +79,11 @@ async function performProfileRequest(pathname, method, payload, fallbackMessage)
 }
 
 export async function fetchMyProfile() {
-  return performProfileRequest("/", "GET", undefined, "Ucitavanje profila nije uspelo.");
+  return performProfileRequest("/", "GET", undefined, "Učitavanje profila nije uspelo.");
 }
 
 export async function updateMyProfileBasic(payload) {
-  return performProfileRequest("/basic", "PUT", payload, "Azuriranje osnovnih podataka nije uspelo.");
+  return performProfileRequest("/basic", "PUT", payload, "Ažuriranje osnovnih podataka nije uspelo.");
 }
 
 export async function updateMyProfilePassword(payload) {

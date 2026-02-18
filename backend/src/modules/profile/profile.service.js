@@ -37,7 +37,7 @@ function sanitizeUser(user) {
 async function requireExistingUserById(userId) {
   const user = await findProfileUserById(userId);
   if (!user) {
-    throw new HttpError(404, "Korisnik nije pronadjen.");
+    throw new HttpError(404, "Korisnik nije pronađen.");
   }
 
   return user;
@@ -46,7 +46,7 @@ async function requireExistingUserById(userId) {
 async function requireExistingUserByIdWithPassword(userId) {
   const user = await findProfileUserByIdWithPassword(userId);
   if (!user) {
-    throw new HttpError(404, "Korisnik nije pronadjen.");
+    throw new HttpError(404, "Korisnik nije pronađen.");
   }
 
   return user;
@@ -69,14 +69,14 @@ export async function updateMyProfileBasic(userId, payload) {
   await requireExistingUserById(userId);
   const conflictingUser = await findUserByEmailExceptId(sanitized.email, userId);
   if (conflictingUser) {
-    throw new HttpError(409, "Nalog sa ovom email adresom vec postoji.", {
-      email: "Nalog sa ovom email adresom vec postoji.",
+    throw new HttpError(409, "Nalog sa ovom email adresom već postoji.", {
+      email: "Nalog sa ovom email adresom već postoji.",
     });
   }
 
   const updatedUser = await updateProfileUserBasicById(userId, sanitized);
   if (!updatedUser) {
-    throw new HttpError(404, "Korisnik nije pronadjen.");
+    throw new HttpError(404, "Korisnik nije pronađen.");
   }
 
   return {
@@ -99,7 +99,7 @@ export async function updateMyProfilePassword(userId, payload) {
   const nextPasswordHash = await bcrypt.hash(sanitized.newPassword, SALT_ROUNDS);
   const updated = await updateProfileUserPasswordById(userId, nextPasswordHash);
   if (!updated) {
-    throw new HttpError(404, "Korisnik nije pronadjen.");
+    throw new HttpError(404, "Korisnik nije pronađen.");
   }
 
   return { success: true };
@@ -119,7 +119,7 @@ export async function deleteMyProfile(userId, payload) {
 
   const deleted = await deleteProfileUserById(userId);
   if (!deleted) {
-    throw new HttpError(404, "Korisnik nije pronadjen.");
+    throw new HttpError(404, "Korisnik nije pronađen.");
   }
 
   return {

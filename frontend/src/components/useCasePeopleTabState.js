@@ -40,7 +40,7 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
         onUnauthorized();
         return;
       }
-      setErrorMessage(result.message || "Ucitavanje osoba i dosijea nije uspelo.");
+      setErrorMessage(result.message || "Učitavanje osoba i dosijea nije uspelo.");
       setIsLoading(false);
       return;
     }
@@ -92,7 +92,7 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
     } catch {
       setFormErrors((previous) => ({
         ...previous,
-        photoDataUrl: "Fotografiju nije moguce ucitati. Pokusaj ponovo.",
+        photoDataUrl: "Fotografiju nije moguće učitati. Pokušaj ponovo.",
       }));
     } finally {
       event.target.value = "";
@@ -133,14 +133,14 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
       if (Object.keys(backendErrors).length > 0) {
         setFormErrors((previous) => ({ ...previous, ...backendErrors }));
       }
-      setSubmitError(result.message || "Cuvanje osobe nije uspelo.");
+      setSubmitError(result.message || "Čuvanje osobe nije uspelo.");
       setIsSubmitting(false);
       return;
     }
 
     setFormData(INITIAL_PERSON_FORM_DATA);
     setFormErrors({});
-    setSubmitSuccessMessage(result.message || "Osoba i dosije su uspesno sacuvani.");
+    setSubmitSuccessMessage(result.message || "Osoba i dosije su uspešno sačuvani.");
     await loadPeople();
     setIsCreateModalOpen(false);
     setActivePersonId(result.data?.person?.id || null);

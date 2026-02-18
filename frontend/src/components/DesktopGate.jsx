@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DesktopNotice from "./DesktopNotice";
+import DesktopNotiće from "./DesktopNotice";
 
 const DESKTOP_MIN_WIDTH = 1120;
 
@@ -24,7 +24,7 @@ function DesktopGate({ children }) {
   }, []);
 
   if (!isDesktop) {
-    return <DesktopNotice minWidth={DESKTOP_MIN_WIDTH} />;
+    return <DesktopNotiće minWidth={DESKTOP_MIN_WIDTH} />;
   }
 
   return children;

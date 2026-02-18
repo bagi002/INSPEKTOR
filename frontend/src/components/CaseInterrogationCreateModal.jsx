@@ -22,7 +22,7 @@ function CaseInterrogationCreateModal({
   return (
     <form className="case-interrogation-form" onSubmit={onSubmit}>
       <header className="case-interrogation-create-header">
-        <h3>Kreiranje saslusanja</h3>
+        <h3>Kreiranje saslušanja</h3>
         <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={isSubmitting}>
           Zatvori
         </button>
@@ -52,14 +52,14 @@ function CaseInterrogationCreateModal({
         </label>
 
         <label className="create-case-field">
-          Naslov saslusanja
+          Naslov saslušanja
           <input
             className="create-case-input"
             type="text"
             name="title"
             value={formData.title}
             onChange={onFieldChange}
-            placeholder="npr. Operativno saslusanje osumnjicenog"
+            placeholder="npr. Operativno saslušanje osumnjičenog"
             maxLength={160}
             disabled={isSubmitting}
           />
@@ -75,7 +75,7 @@ function CaseInterrogationCreateModal({
           value={formData.openingPrompt}
           onChange={onFieldChange}
           rows={3}
-          placeholder="Kratko objasnjenje toka saslusanja u chatu."
+          placeholder="Kratko objašnjenje toka saslušanja u chatu."
           disabled={isSubmitting}
         />
         {formErrors.openingPrompt ? (
@@ -96,7 +96,7 @@ function CaseInterrogationCreateModal({
 
       <div className="cta-row">
         <button type="submit" className="btn btn-primary" disabled={isSubmitting || availablePeople.length === 0}>
-          {isSubmitting ? "Cuvam..." : "Sacuvaj saslusanje"}
+          {isSubmitting ? "Čuvam..." : "Sačuvaj saslušanje"}
         </button>
         <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={isSubmitting}>
           Odustani

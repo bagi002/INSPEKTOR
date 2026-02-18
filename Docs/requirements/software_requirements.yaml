@@ -3,21 +3,22 @@
 
 - id: REQ-SW-002
   name: Landing stranica za neulogovane korisnike
-  status: Finished
+  status: In Review
   refines: REQ-004
   description: >
-    Implementirati React stranicu za neulogovane korisnike koja sadrzi uvodni hero
-    segment, pregled svrhe aplikacije, osnovne funkcionalnosti i jasno istaknute CTA
-    akcije za registraciju i prijavu.
+    Implementirati unapredjenu React landing stranicu za neulogovane korisnike sa
+    jacim marketinskim fokusom: premium hero sekcija, istaknuti benefiti igre,
+    pregled kljucnih funkcionalnosti i jasno vidljivi CTA tok ka registraciji i prijavi
+    koji aktivno motivise ulazak novih igraca.
 
 - id: REQ-SW-003
   name: Vizuelni stil javne pocetne stranice
-  status: Finished
+  status: In Review
   refines: REQ-003
   description: >
-    Definisati i primeniti konzistentan vizuelni stil javne pocetne stranice sa
-    dominacijom bele, sive i svetloplave boje, uz akcente tamnoplave i crvene boje.
-    Interfejs mora zadrzati profesionalan i jasan policijski identitet.
+    Definisati i primeniti konzistentan ali vizuelno snazniji stil javne pocetne
+    stranice (hero gradijenti, signal kartice, strukturisani benefiti i jasne vizuelne
+    hijerarhije) uz zadrzavanje profesionalnog policijskog identiteta i citljivosti.
 
 - id: REQ-SW-004
   name: Meni za neulogovane korisnike
@@ -39,7 +40,7 @@
 
 - id: REQ-SW-006
   name: Registraciona stranica sa validacijom
-  status: Finished
+  status: In Review
   refines: REQ-008
   description: >
     Implementirati stranicu `/registracija` sa formom koja sadrzi polja za ime,
@@ -48,7 +49,7 @@
 
 - id: REQ-SW-007
   name: Stranica za prijavu i sesija korisnika
-  status: Finished
+  status: In Review
   refines: REQ-009
   description: >
     Implementirati stranicu `/prijava` sa validacijom email adrese i lozinke, proverom
@@ -361,7 +362,7 @@
 
 - id: REQ-SW-038
   name: Tab vremenska linija - kreiranje i pregled roadmap-a
-  status: Finished
+  status: In Review
   refines: REQ-013
   description: >
     Implementirati funkcionalan tab `vremenska-linija` u case workspace-u koji u
@@ -516,7 +517,7 @@
 
 - id: REQ-SW-052
   name: Wiki stranica igre sa obrascima koriscenja i uputstvima
-  status: In Progress
+  status: In Review
   refines: REQ-030
   description: >
     Implementirati javno dostupnu Wiki stranicu na ruti `/wiki` sa analiziranim
@@ -594,3 +595,21 @@
     a korisnicki frontend mora prikazati popup svim korisnicima koji su bili
     registrovani u trenutku kreiranja obavjestenja, ukljucujuci i prikaz pri
     sledecoj prijavi ako korisnik nije bio online kada je obavjestenje kreirano.
+
+- id: REQ-SW-060
+  name: Standardizacija korisnickog teksta na srpsku latinicu
+  status: In Review
+  refines: REQ-003
+  description: >
+    U javnim, auth, wiki i timeline prikazima uvesti pravilnu srpsku latinicu
+    (sa dijakriticima) umesto osisane latinice, uz ujednacavanje kljucnih
+    korisnickih poruka i CTA labela radi bolje citljivosti i profesionalnog utiska.
+
+- id: REQ-SW-061
+  name: Cist prikaz timeline poruka i uklanjanje debug detalja
+  status: In Review
+  refines: REQ-013
+  description: >
+    Obezbediti da timeline poruke prikazuju labelu `Dalje` bez escape/navodnickih
+    debug artefakata i ukloniti debug stack detalje iz backend error response-a
+    kako bi korisnicke greske bile jasne, kratke i pogodne za produkcioni prikaz.

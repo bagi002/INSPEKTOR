@@ -17,22 +17,22 @@ function CreateCaseSidebar({
   onPublish = null,
   publishDisabled = true,
   isPublishing = false,
-  publishActionLabel = "Objavi slucaj",
+  publishActionLabel = "Objavi slučaj",
   publishStatusMessage = "",
   onOpenSolveQuiz = null,
   showSolveAction = false,
   solveActionDisabled = true,
   solveStatusMessage = "",
-  solveActionLabel = "Rijesi slucaj",
+  solveActionLabel = "Reši slučaj",
 }) {
   const [isResettingCaseProgress, setIsResettingCaseProgress] = useState(false);
   const [resetProgressStatusMessage, setResetProgressStatusMessage] = useState("");
   const isCreateMode = mode === CASE_WORKSPACE_MODES.CREATE;
-  const modeLabel = isCreateMode ? "Kreiranje slucaja" : "Resavanje slucaja";
+  const modeLabel = isCreateMode ? "Kreiranje slučaja" : "Rešavanje slučaja";
   const sidebarLabel = isCreateMode
-    ? "Meni za kreiranje slucaja"
-    : "Meni za resavanje slucaja";
-  const exitLabel = isCreateMode ? "Izlaz iz kreiranja" : "Izlaz iz resavanja";
+    ? "Meni za kreiranje slučaja"
+    : "Meni za rešavanje slučaja";
+  const exitLabel = isCreateMode ? "Izlaz iz kreiranja" : "Izlaz iz rešavanja";
   const visibleTabs = useMemo(
     () =>
       CASE_WORKSPACE_TABS.filter(
@@ -72,14 +72,14 @@ function CreateCaseSidebar({
       }
 
       setResetProgressStatusMessage(
-        result.message || "Vracanje slucaja u rezim resavanja nije uspelo."
+        result.message || "Vraćanje slučaja u režim rešavanja nije uspelo."
       );
       setIsResettingCaseProgress(false);
       return;
     }
 
     setResetProgressStatusMessage(
-      result.message || "Status slucaja je vracen na rezim resavanja."
+      result.message || "Status slučaja je vraćen na režim rešavanja."
     );
     setIsResettingCaseProgress(false);
   }
@@ -142,8 +142,8 @@ function CreateCaseSidebar({
             disabled={!caseId || isResettingCaseProgress}
           >
             {isResettingCaseProgress
-              ? "Vracam status..."
-              : "Vrati slucaj u resavanje"}
+              ? "Vraćam status..."
+              : "Vrati slučaj u rešavanje"}
           </button>
           {resetProgressStatusMessage ? (
             <p className="create-case-publish-status">{resetProgressStatusMessage}</p>

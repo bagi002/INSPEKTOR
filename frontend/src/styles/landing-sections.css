@@ -1,0 +1,112 @@
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.82rem;
+}
+
+.feature-card {
+  padding: 1rem;
+  border-radius: 13px;
+  border: 1px solid #c3d6ec;
+  background: linear-gradient(170deg, #fafdff 0%, #e9f2ff 100%);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  border-color: #90b3dc;
+  box-shadow: 0 10px 22px rgba(20, 63, 125, 0.16);
+}
+
+.feature-card h4 {
+  margin: 0;
+  font-size: 1.03rem;
+  color: #18375c;
+}
+
+.feature-card p {
+  margin: 0.46rem 0 0;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+.timeline {
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: landing-step;
+  display: grid;
+  gap: 0.72rem;
+}
+
+.timeline li {
+  position: relative;
+  padding: 0.75rem 0.86rem 0.75rem 2.9rem;
+  border-radius: 12px;
+  border: 1px solid #cfdbec;
+  background: linear-gradient(170deg, #f9fcff 0%, #eff5ff 100%);
+  color: #475e78;
+  line-height: 1.48;
+}
+
+.timeline li::before {
+  counter-increment: landing-step;
+  content: counter(landing-step);
+  position: absolute;
+  left: 0.88rem;
+  top: 50%;
+  width: 1.42rem;
+  height: 1.42rem;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #f5f9ff;
+  background: linear-gradient(140deg, #1b4d88, #c23645);
+}
+
+.benefit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.82rem;
+}
+
+.benefit-card {
+  padding: 1.04rem;
+  border-radius: 13px;
+  border: 1px solid #cad9eb;
+  background:
+    linear-gradient(162deg, rgba(255, 255, 255, 0.95), rgba(232, 242, 255, 0.92));
+}
+
+.benefit-card h4 {
+  margin: 0;
+  color: #173b62;
+  font-size: 1.04rem;
+}
+
+.benefit-card p {
+  margin: 0.5rem 0 0;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+.cta-panel {
+  border-color: #98b2d4;
+  background:
+    radial-gradient(circle at 78% -12%, rgba(255, 255, 255, 0.68), transparent 40%),
+    linear-gradient(160deg, rgba(211, 228, 249, 0.74), rgba(254, 239, 242, 0.66)),
+    var(--surface-card);
+}
+
+@media (max-width: 1330px) {
+  .landing-hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-signal-panel {
+    max-width: 560px;
+  }
+}

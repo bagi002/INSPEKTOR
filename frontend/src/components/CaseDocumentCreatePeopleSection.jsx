@@ -37,7 +37,7 @@ function CaseDocumentCreatePeopleSection({
       <section className="case-doc-people-picker">
         <p>Povezane osobe</p>
         {peopleDirectory.length === 0 ? (
-          <p className="case-doc-people-empty">Nema evidentiranih osoba u ovom slucaju.</p>
+          <p className="case-doc-people-empty">Nema evidentiranih osoba u ovom slučaju.</p>
         ) : (
           <div className="case-doc-people-grid">
             {peopleDirectory.map((person) => (

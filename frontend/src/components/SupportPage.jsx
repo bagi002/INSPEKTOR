@@ -33,7 +33,7 @@ function SupportPage({ user, onLogout }) {
         return;
       }
 
-      setTicketErrorMessage(result.message || "Ucitavanje tiketa nije uspelo.");
+      setTicketErrorMessage(result.message || "Učitavanje tiketa nije uspelo.");
       setIsLoadingTickets(false);
       return;
     }
@@ -78,7 +78,7 @@ function SupportPage({ user, onLogout }) {
       description: "",
       appLocation: "",
     }));
-    setFormMessage(result.message || "Tiket je uspesno kreiran.");
+    setFormMessage(result.message || "Tiket je uspešno kreiran.");
     void loadTickets();
   }
 
@@ -88,10 +88,10 @@ function SupportPage({ user, onLogout }) {
 
       <main className="content logged-content">
         <section className="card support-hero reveal delay-1">
-          <p className="eyebrow">Podrska korisnicima</p>
+          <p className="eyebrow">Podrška korisnicima</p>
           <h2>Prijava baga i predloga</h2>
           <p>
-            Kreiraj tiket sa jasnim opisom problema ili predloga. U nastavku mozes pratiti sve
+            Kreiraj tiket sa jasnim opisom problema ili predloga. U nastavku možeš pratiti sve
             svoje prijave i njihove statuse.
           </p>
         </section>

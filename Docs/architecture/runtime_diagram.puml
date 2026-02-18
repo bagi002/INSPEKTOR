@@ -4,6 +4,7 @@ title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resava
 actor "Korisnik" as User
 participant "Frontend Router" as Router
 participant "DesktopGate" as Gate
+participant "LandingPage (/)" as Landing
 participant "LoginPage" as Login
 participant "App Route Guard" as Guard
 participant "LoggedHomePage" as LoggedHome
@@ -85,10 +86,17 @@ database "LocalStorage (session)" as SessionStore
 database "LocalStorage (admin session)" as AdminSessionStore
 participant "Desktop Notice View" as Notice
 
-User -> Router: Otvara /wiki
-Router -> Gate: Provera desktop pravila
-
 alt Desktop sirina
+  User -> Router: Otvara /
+  Router -> Gate: Provera desktop pravila
+  Gate -> Landing: Render marketinske javne pocetne
+  User -> Landing: Pregled benefita igre i CTA sekcija
+  Landing -> Router: Navigacija na /registracija ili /prijava
+  Router -> Gate: Provera desktop pravila
+  Gate -> Login: Render prijavne forme
+
+  User -> Router: Otvara /wiki
+  Router -> Gate: Provera desktop pravila
   Gate -> WikiPage: Render wiki stranice
   User -> WikiPage: Pregled obrasca koriscenja i ruta
   WikiPage -> Router: Navigacija na /prijava
@@ -506,7 +514,7 @@ alt Desktop sirina
   CasesApi --> CasesClient: JSON uspeh
   CasesClient --> Workspace: Opis slucaja + napredak + kviz spremnost + role readiness
   Workspace --> WorkspaceSidebar: Tab "Kviz" je sakriven dok role readiness nije ispunjen
-  Workspace -> TimelineTab: Prikaz sa akcijom "Dalje"
+  Workspace -> TimelineTab: Prikaz sa akcijom Dalje (bez escape navodnika)
   TimelineTab -> TimelineClient: GET /api/cases/{caseId}/timeline
   TimelineClient --> TimelineTab: Trenutno otkljucane stavke + procenat istrage
   User -> TimelineTab: Klik "Dalje"

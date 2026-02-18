@@ -49,20 +49,20 @@ export async function resetCaseProgressToSolve(caseId) {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(payload, "Vracanje slucaja u rezim resavanja nije uspelo."),
+        message: resolveMessage(payload, "Vraćanje slučaja u režim rešavanja nije uspelo."),
       };
     }
 
     return {
       ok: true,
-      message: resolveMessage(payload, "Status slucaja je vracen na rezim resavanja."),
+      message: resolveMessage(payload, "Status slučaja je vraćen na režim rešavanja."),
       data: payload?.data || null,
     };
   } catch {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
     };
   }
 }

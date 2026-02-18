@@ -38,7 +38,7 @@ function CaseDocumentsTab({ caseId, mode, category, onUnauthorized }) {
     <>
       {isLoading ? (
         <section className="card reveal delay-3">
-          <p>Ucitavam dokumente...</p>
+          <p>Učitavam dokumente...</p>
         </section>
       ) : null}
 
@@ -46,7 +46,7 @@ function CaseDocumentsTab({ caseId, mode, category, onUnauthorized }) {
         <section className="card reveal delay-3">
           <p className="error-banner">{errorMessage}</p>
           <button type="button" className="btn btn-primary inline-action" onClick={loadDocuments}>
-            Pokusaj ponovo
+            Pokušaj ponovo
           </button>
         </section>
       ) : null}

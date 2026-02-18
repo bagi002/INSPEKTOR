@@ -47,8 +47,8 @@ function CaseDocumentModal({ caseId, mode, document, tabConfig, onClose }) {
             {renderField("Klasifikacija", toClassificationLabel(metadata.classificationLevel))}
             {renderField("Datum i vrijeme", formatRecordedAt(metadata.recordedAt))}
             {renderField("Lokacija", metadata.location)}
-            {renderField("Sluzbenik", metadata.officerName)}
-            {renderField("Broj znacke", metadata.badgeNumber)}
+            {renderField("Službenik", metadata.officerName)}
+            {renderField("Broj značke", metadata.badgeNumber)}
             {renderField("Jedinica/Laboratorija", metadata.department)}
             {renderField("Referenca dokaza", metadata.evidenceReference)}
             {renderField("Pravna referenca", metadata.legalReference)}
@@ -61,8 +61,8 @@ function CaseDocumentModal({ caseId, mode, document, tabConfig, onClose }) {
           </section>
 
           <section className="case-doc-file-content">
-            <h5>Sadrzaj</h5>
-            <p>{document.content || "Nije evidentiran sadrzaj."}</p>
+            <h5>Sadržaj</h5>
+            <p>{document.content || "Nije evidentiran sadržaj."}</p>
           </section>
 
           {typeSpecificRows.length > 0 ? (

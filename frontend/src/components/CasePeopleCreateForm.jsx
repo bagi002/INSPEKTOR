@@ -43,7 +43,7 @@ function CasePeopleCreateForm({
 
       <div className="cta-row">
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? "Cuvanje u toku..." : "Sacuvaj osobu i dosije"}
+          {isSubmitting ? "Čuvanje u toku..." : "Sačuvaj osobu i dosije"}
         </button>
       </div>
     </form>

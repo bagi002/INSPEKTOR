@@ -13,12 +13,12 @@ export function parseCaseId(caseIdInput) {
     typeof caseIdInput === "string" ? caseIdInput.trim() : String(caseIdInput ?? "");
 
   if (!/^\d+$/.test(normalizedValue)) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+    throw new HttpError(400, "Prosleđeni slučaj nije validan.");
   }
 
   const caseId = Number.parseInt(normalizedValue, 10);
   if (!Number.isInteger(caseId) || caseId <= 0) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+    throw new HttpError(400, "Prosleđeni slučaj nije validan.");
   }
 
   return caseId;
@@ -122,7 +122,7 @@ export function buildAvailableSourceSets(people, documents) {
 export async function assertTimelineReadAccess(caseId, requesterUserId) {
   const caseRow = await findCaseById(caseId);
   if (!caseRow) {
-    throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+    throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
   }
 
   if (caseRow.authorUserId === requesterUserId || caseRow.publicationStatus === "published") {
@@ -134,12 +134,12 @@ export async function assertTimelineReadAccess(caseId, requesterUserId) {
     return caseRow;
   }
 
-  throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+  throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
 }
 
 export async function assertTimelineWriteAccess(caseId, requesterUserId) {
   const caseRow = await findCaseByIdForAuthor(caseId, requesterUserId);
   if (!caseRow) {
-    throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+    throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
   }
 }

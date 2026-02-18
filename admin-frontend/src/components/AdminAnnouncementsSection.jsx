@@ -30,35 +30,35 @@ function AdminAnnouncementsSection({ announcements, onCreateAnnouncement }) {
 
     if (!result.ok) {
       setFormErrors(result.errors || {});
-      setMessage(result.message || "Kreiranje obavjestenja nije uspelo.");
+      setMessage(result.message || "Kreiranje obavještenja nije uspelo.");
       return;
     }
 
     setFormData(initialFormState);
-    setMessage(result.message || "Obavjestenje je uspesno kreirano.");
+    setMessage(result.message || "Obavještenje je uspešno kreirano.");
   }
 
   return (
     <section className="admin-card">
-      <h2>Admin obavjestenja</h2>
-      <p>Kreiraj popup poruku koja ce biti prikazana korisnicima.</p>
+      <h2>Admin obavještenja</h2>
+      <p>Kreiraj popup poruku koja će biti prikazana korisnicima.</p>
 
       <form className="admin-inline-editor" onSubmit={handleSubmit} noValidate>
         <label htmlFor="adminAnnouncementTitle">
-          Naslov obavjestenja
+          Naslov obavještenja
           <input
             id="adminAnnouncementTitle"
             name="title"
             type="text"
             value={formData.title}
             onChange={handleFieldChange}
-            placeholder="Npr. Planirano odrzavanje sistema"
+            placeholder="Npr. Planirano održavanje sistema"
           />
         </label>
         {formErrors.title ? <p className="admin-error">{formErrors.title}</p> : null}
 
         <label htmlFor="adminAnnouncementContent">
-          Sadrzaj obavjestenja
+          Sadržaj obavještenja
           <textarea
             id="adminAnnouncementContent"
             name="content"
@@ -71,14 +71,14 @@ function AdminAnnouncementsSection({ announcements, onCreateAnnouncement }) {
         {formErrors.content ? <p className="admin-error">{formErrors.content}</p> : null}
 
         <button type="submit" className="admin-btn admin-btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? "Objava..." : "Objavi obavjestenje"}
+          {isSubmitting ? "Objava..." : "Objavi obavještenje"}
         </button>
       </form>
 
       {message ? <p className="admin-feedback">{message}</p> : null}
 
       <div className="admin-announcement-list">
-        {announcements.length === 0 ? <p>Nema prethodno objavljenih obavjestenja.</p> : null}
+        {announcements.length === 0 ? <p>Nema prethodno objavljenih obavještenja.</p> : null}
 
         {announcements.map((announcement) => (
           <article key={announcement.id} className="admin-announcement-item">

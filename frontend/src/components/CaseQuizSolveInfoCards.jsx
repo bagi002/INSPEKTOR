@@ -6,7 +6,7 @@ function CaseQuizSolveInfoCards({ caseSummary, lastAttempt, blockers }) {
     <>
       {caseSummary ? (
         <section className="card case-quiz-case-summary-card">
-          <p className="eyebrow">Opis slucaja</p>
+          <p className="eyebrow">Opis slučaja</p>
           <h3>{caseSummary.title}</h3>
           <p className="create-case-summary">{caseSummary.description}</p>
           <div className="case-quiz-case-meta">

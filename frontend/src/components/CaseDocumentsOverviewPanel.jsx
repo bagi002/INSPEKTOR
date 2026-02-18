@@ -42,7 +42,7 @@ function CaseDocumentsOverviewPanel({
       <section className={`card reveal delay-3 case-docs-hero-card ${isCreateMode ? "is-create" : "is-solve"}`}>
         <div className="case-docs-hero-top">
           <div>
-            <p className="eyebrow">{isCreateMode ? "Creatorski centar" : "Resavanje slucaja"}</p>
+            <p className="eyebrow">{isCreateMode ? "Creatorski centar" : "Rešavanje slučaja"}</p>
             <h3>{isCreateMode ? tabConfig.heroCreateTitle : tabConfig.heroSolveTitle}</h3>
             <p className="create-case-summary">
               {isCreateMode ? tabConfig.heroCreateDescription : tabConfig.heroSolveDescription}

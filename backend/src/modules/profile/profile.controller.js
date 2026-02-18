@@ -10,7 +10,7 @@ export async function getMyProfileController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Profil je uspesno ucitan.",
+    message: "Profil je uspešno učitan.",
     data: result,
   });
 }
@@ -20,7 +20,7 @@ export async function updateMyProfileBasicController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Osnovni podaci su uspesno azurirani.",
+    message: "Osnovni podaci su uspešno ažurirani.",
     data: result,
   });
 }
@@ -30,7 +30,7 @@ export async function updateMyProfilePasswordController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Lozinka je uspesno promenjena.",
+    message: "Lozinka je uspešno promenjena.",
     data: result,
   });
 }
@@ -40,7 +40,7 @@ export async function deleteMyProfileController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Nalog je uspesno obrisan.",
+    message: "Nalog je uspešno obrisan.",
     data: result,
   });
 }

@@ -58,10 +58,10 @@ export function validateAdminTicketStatusPayload(payload) {
   const adminNote = toText(payload?.adminNote);
 
   if (!status) {
-    errors.status = "Status tiketa nije podrzan.";
+    errors.status = "Status tiketa nije podržan.";
   }
   if (adminNote.length > 2000) {
-    errors.adminNote = "Admin napomena moze imati najvise 2000 karaktera.";
+    errors.adminNote = "Admin napomena može imati najviše 2000 karaktera.";
   }
 
   return { errors, sanitized: { status: status || "open", adminNote } };
@@ -76,7 +76,7 @@ export function validateAdminUserPatchPayload(payload) {
     if (firstName.length < 2) {
       errors.firstName = "Ime mora imati najmanje 2 karaktera.";
     } else if (firstName.length > 80) {
-      errors.firstName = "Ime moze imati najvise 80 karaktera.";
+      errors.firstName = "Ime može imati najviše 80 karaktera.";
     } else {
       updates.firstName = firstName;
     }
@@ -87,7 +87,7 @@ export function validateAdminUserPatchPayload(payload) {
     if (lastName.length < 2) {
       errors.lastName = "Prezime mora imati najmanje 2 karaktera.";
     } else if (lastName.length > 80) {
-      errors.lastName = "Prezime moze imati najvise 80 karaktera.";
+      errors.lastName = "Prezime može imati najviše 80 karaktera.";
     } else {
       updates.lastName = lastName;
     }
@@ -126,9 +126,9 @@ export function validateAdminCasePatchPayload(payload) {
   const title = toOptionalText(payload?.title);
   if (title !== undefined) {
     if (title.length < 3) {
-      errors.title = "Naziv slucaja mora imati najmanje 3 karaktera.";
+      errors.title = "Naziv slučaja mora imati najmanje 3 karaktera.";
     } else if (title.length > 220) {
-      errors.title = "Naziv slucaja moze imati najvise 220 karaktera.";
+      errors.title = "Naziv slučaja može imati najviše 220 karaktera.";
     } else {
       updates.title = title;
     }
@@ -137,9 +137,9 @@ export function validateAdminCasePatchPayload(payload) {
   const description = toOptionalText(payload?.description);
   if (description !== undefined) {
     if (description.length < 20) {
-      errors.description = "Opis slucaja mora imati najmanje 20 karaktera.";
+      errors.description = "Opis slučaja mora imati najmanje 20 karaktera.";
     } else if (description.length > 15000) {
-      errors.description = "Opis slucaja moze imati najvise 15000 karaktera.";
+      errors.description = "Opis slučaja može imati najviše 15000 karaktera.";
     } else {
       updates.description = description;
     }
@@ -158,7 +158,7 @@ export function validateAdminCasePatchPayload(payload) {
   if (payload?.averageRating !== undefined) {
     const averageRating = toNumber(payload.averageRating);
     if (averageRating === null || averageRating < 0 || averageRating > 5) {
-      errors.averageRating = "Prosjecna ocjena mora biti broj izmedju 0 i 5.";
+      errors.averageRating = "Prosjecna ocjena mora biti broj između 0 i 5.";
     } else {
       updates.averageRating = averageRating;
     }

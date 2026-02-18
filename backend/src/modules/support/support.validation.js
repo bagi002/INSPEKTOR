@@ -24,19 +24,19 @@ export function validateCreateSupportTicketPayload(payload) {
     errors.title = "Naslov tiketa mora imati najmanje 4 karaktera.";
   }
   if (title.length > 120) {
-    errors.title = "Naslov tiketa moze imati najvise 120 karaktera.";
+    errors.title = "Naslov tiketa može imati najviše 120 karaktera.";
   }
   if (description.length < 20) {
     errors.description = "Opis tiketa mora imati najmanje 20 karaktera.";
   }
   if (description.length > 5000) {
-    errors.description = "Opis tiketa moze imati najvise 5000 karaktera.";
+    errors.description = "Opis tiketa može imati najviše 5000 karaktera.";
   }
   if (appLocation.length > 160) {
-    errors.appLocation = "Lokacija u aplikaciji moze imati najvise 160 karaktera.";
+    errors.appLocation = "Lokacija u aplikaciji može imati najviše 160 karaktera.";
   }
   if (appVersion.length > 40) {
-    errors.appVersion = "Verzija aplikacije moze imati najvise 40 karaktera.";
+    errors.appVersion = "Verzija aplikacije može imati najviše 40 karaktera.";
   }
 
   return {

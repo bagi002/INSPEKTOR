@@ -60,7 +60,7 @@ async function requestCaseDocuments(caseId, endpointPath, method, payload, fallb
 
     return {
       ok: true,
-      message: resolveMessage(responsePayload, "Zahtev je uspesan."),
+      message: resolveMessage(responsePayload, "Zahtev je uspešan."),
       data: responsePayload?.data || null,
       errors: null,
     };
@@ -68,7 +68,7 @@ async function requestCaseDocuments(caseId, endpointPath, method, payload, fallb
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }
@@ -84,7 +84,7 @@ export function fetchCaseStatements(caseId, scope = "create") {
     withScope("statements", scope),
     "GET",
     null,
-    "Ucitavanje izjava nije uspelo."
+    "Učitavanje izjava nije uspelo."
   );
 }
 
@@ -94,7 +94,7 @@ export function createCaseStatement(caseId, payload) {
     "statements",
     "POST",
     payload,
-    "Cuvanje izjave nije uspelo."
+    "Čuvanje izjave nije uspelo."
   );
 }
 
@@ -104,7 +104,7 @@ export function fetchCasePoliceDocuments(caseId, scope = "create") {
     withScope("police-documents", scope),
     "GET",
     null,
-    "Ucitavanje policijskih dokumenata nije uspelo."
+    "Učitavanje policijskih dokumenata nije uspelo."
   );
 }
 
@@ -114,6 +114,6 @@ export function createCasePoliceDocument(caseId, payload) {
     "police-documents",
     "POST",
     payload,
-    "Cuvanje policijskog dokumenta nije uspelo."
+    "Čuvanje policijskog dokumenta nije uspelo."
   );
 }

@@ -3,11 +3,11 @@ import { toRoleLabel } from "./casePeopleHelpers";
 import { getTypeSpecificFieldsForDocumentType } from "./caseDocumentTypeSpecificConfig";
 
 const DOCUMENT_TYPE_LABELS = {
-  police_report: "Policijski izvjestaj",
-  forensic_report: "Forenzicki nalaz",
+  police_report: "Policijski izvještaj",
+  forensic_report: "Forenzički nalaz",
   witness_statement: "Izjava svjedoka",
-  suspect_statement: "Izjava osumnjicenog",
-  victim_statement: "Izjava zrtve",
+  suspect_statement: "Izjava osumnjičenog",
+  victim_statement: "Izjava žrtve",
 };
 
 function toLabel(options, value, fallback) {
@@ -43,7 +43,7 @@ export function buildDocumentStats(documents) {
   return [
     { label: "Ukupno", value: documents.length },
     {
-      label: "Otkljucani",
+      label: "Otključani",
       value: documents.filter((document) => document.isUnlockedByDefault).length,
     },
     {

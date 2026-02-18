@@ -3,11 +3,11 @@ import { formatProfileDate, formatProfileRating } from "./profileHelpers";
 function ProfileActivityPanel({ activity }) {
   const summary = activity?.summary || {};
   const statCards = [
-    { label: "Kreirani slucajevi", value: String(summary.createdCount || 0) },
-    { label: "Objavljeni slucajevi", value: String(summary.publishedCreatedCount || 0) },
-    { label: "Draft slucajevi", value: String(summary.draftCreatedCount || 0) },
-    { label: "Aktivna resavanja", value: String(summary.activeSolveCount || 0) },
-    { label: "Reseni slucajevi", value: String(summary.resolvedSolveCount || 0) },
+    { label: "Kreirani slučajevi", value: String(summary.createdCount || 0) },
+    { label: "Objavljeni slučajevi", value: String(summary.publishedCreatedCount || 0) },
+    { label: "Draft slučajevi", value: String(summary.draftCreatedCount || 0) },
+    { label: "Aktivna rešavanja", value: String(summary.activeSolveCount || 0) },
+    { label: "Rešeni slučajevi", value: String(summary.resolvedSolveCount || 0) },
     { label: "Date ocene", value: String(summary.ratingsGivenCount || 0) },
     { label: "Prosek datih ocena", value: formatProfileRating(summary.averageRatingGiven) },
   ];
@@ -30,9 +30,9 @@ function ProfileActivityPanel({ activity }) {
 
       <div className="profile-activity-grid">
         <article className="profile-activity-card">
-          <h4>Poslednje kreirani slucajevi</h4>
+          <h4>Poslednje kreirani slučajevi</h4>
           {createdCases.length === 0 ? (
-            <p className="empty-state">Nema kreiranih slucajeva.</p>
+            <p className="empty-state">Nema kreiranih slučajeva.</p>
           ) : (
             <ul className="profile-activity-list">
               {createdCases.map((item) => (
@@ -48,16 +48,16 @@ function ProfileActivityPanel({ activity }) {
         </article>
 
         <article className="profile-activity-card">
-          <h4>Poslednje reseni slucajevi</h4>
+          <h4>Poslednje rešeni slučajevi</h4>
           {resolvedCases.length === 0 ? (
-            <p className="empty-state">Nema resenih slucajeva.</p>
+            <p className="empty-state">Nema rešenih slučajeva.</p>
           ) : (
             <ul className="profile-activity-list">
               {resolvedCases.map((item) => (
                 <li key={`resolved-${item.id}`}>
                   <p><strong>{item.title}</strong></p>
                   <p>Ocena: {formatProfileRating(item.rating)}</p>
-                  <p>Resen: {formatProfileDate(item.resolvedAt)}</p>
+                  <p>Rešen: {formatProfileDate(item.resolvedAt)}</p>
                 </li>
               ))}
             </ul>

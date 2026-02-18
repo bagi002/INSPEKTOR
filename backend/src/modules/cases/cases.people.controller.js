@@ -10,7 +10,7 @@ export async function updateSolveCasePersonRoleController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Uloga osobe je uspesno azurirana za rezim resavanja.",
+    message: "Uloga osobe je uspešno ažurirana za režim rešavanja.",
     data: result,
   });
 }

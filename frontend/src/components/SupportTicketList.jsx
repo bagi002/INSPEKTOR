@@ -6,7 +6,7 @@ import {
 
 function SupportTicketList({ isLoadingTickets, ticketErrorMessage, tickets }) {
   if (isLoadingTickets) {
-    return <p>Ucitavanje tiketa...</p>;
+    return <p>Učitavanje tiketa...</p>;
   }
 
   if (ticketErrorMessage) {
@@ -14,7 +14,7 @@ function SupportTicketList({ isLoadingTickets, ticketErrorMessage, tickets }) {
   }
 
   if (tickets.length === 0) {
-    return <p className="empty-state">Jos uvek nemas kreiranih tiketa.</p>;
+    return <p className="empty-state">Još uvek nemaš kreiranih tiketa.</p>;
   }
 
   return (

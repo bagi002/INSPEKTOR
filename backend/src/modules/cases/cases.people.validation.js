@@ -54,55 +54,55 @@ export function validateCreateCasePersonPayload(payload) {
     errors.fullName = "Ime osobe mora imati najmanje 2 karaktera.";
   }
   if (!apparentRole) {
-    errors.apparentRole = "Uloga osobe nije podrzana.";
+    errors.apparentRole = "Uloga osobe nije podržana.";
   }
   if (biography.length > 4000) {
-    errors.biography = "Biografija osobe moze imati najvise 4000 karaktera.";
+    errors.biography = "Biografija osobe može imati najviše 4000 karaktera.";
   }
   if (phoneNumber.length > 40) {
-    errors.phoneNumber = "Telefon osobe moze imati najvise 40 karaktera.";
+    errors.phoneNumber = "Telefon osobe može imati najviše 40 karaktera.";
   }
   if (address.length > 220) {
-    errors.address = "Adresa osobe moze imati najvise 220 karaktera.";
+    errors.address = "Adresa osobe može imati najviše 220 karaktera.";
   }
   if (birthDate === null) {
-    errors.birthDate = "Datum rodjenja mora biti u formatu YYYY-MM-DD.";
+    errors.birthDate = "Datum rođenja mora biti u formatu YYYY-MM-DD.";
   }
   if (birthPlace.length > 120) {
-    errors.birthPlace = "Mjesto rodjenja moze imati najvise 120 karaktera.";
+    errors.birthPlace = "Mjesto rođenja može imati najviše 120 karaktera.";
   }
   if (!nationality) {
-    errors.nationality = "Nacionalnost nije podrzana.";
+    errors.nationality = "Nacionalnost nije podržana.";
   }
   if (!gender) {
-    errors.gender = "Pol nije podrzan.";
+    errors.gender = "Pol nije podržan.";
   }
   if (!maritalStatus) {
-    errors.maritalStatus = "Bracni status nije podrzan.";
+    errors.maritalStatus = "Bracni status nije podržan.";
   }
   if (occupation.length > 120) {
-    errors.occupation = "Zanimanje moze imati najvise 120 karaktera.";
+    errors.occupation = "Zanimanje može imati najviše 120 karaktera.";
   }
   if (employer.length > 120) {
-    errors.employer = "Poslodavac moze imati najvise 120 karaktera.";
+    errors.employer = "Poslodavac može imati najviše 120 karaktera.";
   }
   if (!educationLevel) {
-    errors.educationLevel = "Obrazovanje nije podrzano.";
+    errors.educationLevel = "Obrazovanje nije podržano.";
   }
   if (!eyeColor) {
-    errors.eyeColor = "Boja ociju nije podrzana.";
+    errors.eyeColor = "Boja ociju nije podržana.";
   }
   if (!hairColor) {
-    errors.hairColor = "Boja kose nije podrzana.";
+    errors.hairColor = "Boja kose nije podržana.";
   }
   if (identifyingMarks.length > 2000) {
-    errors.identifyingMarks = "Posebna obiljezja mogu imati najvise 2000 karaktera.";
+    errors.identifyingMarks = "Posebna obilježja mogu imati najviše 2000 karaktera.";
   }
   if (knownAssociates.length > 2000) {
-    errors.knownAssociates = "Poznate veze mogu imati najvise 2000 karaktera.";
+    errors.knownAssociates = "Poznate veze mogu imati najviše 2000 karaktera.";
   }
   if (lastKnownLocation.length > 220) {
-    errors.lastKnownLocation = "Posljednja lokacija moze imati najvise 220 karaktera.";
+    errors.lastKnownLocation = "Posljednja lokacija može imati najviše 220 karaktera.";
   }
   if (photoDataUrl === null) {
     errors.photoDataUrl = "Fotografija mora biti JPG/PNG/WEBP data URL.";
@@ -111,25 +111,25 @@ export function validateCreateCasePersonPayload(payload) {
     errors.photoDataUrl = "Fotografija je prevelika. Maksimalna velicina je oko 2MB.";
   }
   if (notes.length > 4000) {
-    errors.notes = "Napomene mogu imati najvise 4000 karaktera.";
+    errors.notes = "Napomene mogu imati najviše 4000 karaktera.";
   }
   if (priorOffenses.length > 4000) {
-    errors.priorOffenses = "Istorija dela moze imati najvise 4000 karaktera.";
+    errors.priorOffenses = "Istorija dela može imati najviše 4000 karaktera.";
   }
   if (!riskLevel) {
-    errors.riskLevel = "Nivo rizika nije podrzan.";
+    errors.riskLevel = "Nivo rizika nije podržan.";
   }
   if (heightCm !== null && (heightCm < 50 || heightCm > 260)) {
-    errors.heightCm = "Visina osobe mora biti broj izmedju 50 i 260 cm.";
+    errors.heightCm = "Visina osobe mora biti broj između 50 i 260 cm.";
   }
   if (hasHeightCm && heightCm === null) {
     errors.heightCm = "Visina osobe mora biti ceo broj u centimetrima.";
   }
   if (weightKg !== null && (weightKg < 25 || weightKg > 300)) {
-    errors.weightKg = "Tezina osobe mora biti broj izmedju 25 i 300 kg.";
+    errors.weightKg = "Težina osobe mora biti broj između 25 i 300 kg.";
   }
   if (hasWeightKg && weightKg === null) {
-    errors.weightKg = "Tezina osobe mora biti ceo broj u kilogramima.";
+    errors.weightKg = "Težina osobe mora biti ceo broj u kilogramima.";
   }
 
   return {

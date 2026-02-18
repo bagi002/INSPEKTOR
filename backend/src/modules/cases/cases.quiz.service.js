@@ -34,7 +34,7 @@ import {
 async function assertAuthorQuizAccess(caseId, userId) {
   const caseRow = await findCaseByIdForAuthor(caseId, userId);
   if (!caseRow) {
-    throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+    throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
   }
   return caseRow;
 }
@@ -108,12 +108,12 @@ export async function submitCaseQuiz(caseIdInput, payload, requesterUserId) {
     getSolveVisibilityForUser(caseId, requesterUserId),
   ]);
   if (questions.length === 0) {
-    throw new HttpError(400, "Zavrsni kviz nije dostupan za ovaj slucaj.");
+    throw new HttpError(400, "Završni kviz nije dostupan za ovaj slučaj.");
   }
 
   const progress = visibility.progress;
   if (progress.progressStatus === "resolved") {
-    throw new HttpError(409, "Slucaj je vec oznacen kao rijesen.");
+    throw new HttpError(409, "Slučaj je već označen kao riješen.");
   }
   const solvePeopleState = await getSolvePeopleRoleState(
     caseId,
@@ -122,7 +122,7 @@ export async function submitCaseQuiz(caseIdInput, payload, requesterUserId) {
   );
   const blockers = buildQuizSolveBlockers(progress, questions.length, solvePeopleState.roleProgress);
   if (blockers.length > 0) {
-    throw new HttpError(400, "Slucaj jos nije spreman za zavrsni kviz.", {
+    throw new HttpError(400, "Slučaj još nije spreman za završni kviz.", {
       quiz: blockers[0],
     });
   }

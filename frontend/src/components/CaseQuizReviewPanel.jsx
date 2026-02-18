@@ -1,9 +1,9 @@
 function CaseQuizReviewPanel({ review }) {
   return (
     <section className="card case-quiz-review-card">
-      <h3>Prikaz tacnih odgovora</h3>
+      <h3>Prikaz tačnih odgovora</h3>
       <p className="create-case-summary">
-        Ovaj pregled je dostupan jer je slucaj uspjesno rijesen.
+        Ovaj pregled je dostupan jer je slučaj uspjesno riješen.
       </p>
       <div className="case-quiz-review-list">
         {review.map((item, index) => (
@@ -18,7 +18,7 @@ function CaseQuizReviewPanel({ review }) {
               Tvoj odgovor: <strong>{item.selectedOptionText || "Nije izabran"}</strong>
             </p>
             <p>
-              Tacan odgovor: <strong>{item.correctOptionText || "-"}</strong>
+              Tačan odgovor: <strong>{item.correctOptionText || "-"}</strong>
             </p>
             <p>{item.explanationText}</p>
           </article>

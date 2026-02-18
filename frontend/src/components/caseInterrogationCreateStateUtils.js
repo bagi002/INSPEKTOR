@@ -41,7 +41,7 @@ export function buildNodeFromDraft(nodes, nodeDraft) {
     questionReferenceKey = resolveQuestionReferenceKey(sourceNode);
     if (hasQuestionReferenceInBranch(nodes, parentKey, questionReferenceKey)) {
       return {
-        error: "Isto pitanje ne moze biti dodato dva puta u istoj grani.",
+        error: "Isto pitanje ne može biti dodato dva puta u istoj grani.",
         node: null,
         nextNodeDraft: null,
       };
@@ -112,7 +112,7 @@ export function collectInterrogationNodesForRemoval(nodes, rootNodeKey) {
 export function validateInterrogationFormBeforeSubmit(formData) {
   const errors = {};
   if (!formData.personId) {
-    errors.personId = "Izaberi osobu za koju kreiras saslusanje.";
+    errors.personId = "Izaberi osobu za koju kreiras saslušanje.";
   }
   if (!Array.isArray(formData.nodes) || formData.nodes.length === 0) {
     errors.nodes = "Dodaj bar jedno pitanje u stablo.";

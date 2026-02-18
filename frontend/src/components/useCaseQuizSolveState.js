@@ -51,7 +51,7 @@ export function useCaseQuizSolveState({ caseId, onUnauthorized, onResolved }) {
 
     const { payload, missingAnswers } = buildQuizSubmitPayload(questions, selectedAnswers);
     if (missingAnswers > 0) {
-      setSubmitErrorMessage("Odgovori na sva pitanja prije predaje kviza.");
+      setSubmitErrorMessage("Odgovori na sva pitanja pre predaje kviza.");
       setIsSubmitting(false);
       return;
     }
@@ -80,14 +80,14 @@ export function useCaseQuizSolveState({ caseId, onUnauthorized, onResolved }) {
       setSelectedAnswers(buildSelectedAnswersFromReview(payloadData.review));
       setCanSubmit(false);
       setBlockers([]);
-      setSubmitSuccessMessage(result.message || "Slucaj je uspesno rijesen.");
+      setSubmitSuccessMessage(result.message || "Slučaj je uspešno riješen.");
       if (typeof onResolved === "function") {
         onResolved(payloadData);
       }
     } else {
       setReview(null);
       setCanSubmit(true);
-      setSubmitErrorMessage(result.message || "Kviz nije polozen. Nastavi istragu i pokusaj ponovo.");
+      setSubmitErrorMessage(result.message || "Kviz nije položen. Nastavi istragu i pokušaj ponovo.");
     }
 
     setIsSubmitting(false);

@@ -39,7 +39,7 @@ export function useProfilePageState({ fallbackUser, onLogout }) {
         onLogout();
         return;
       }
-      setErrorMessage(result.message || "Ucitavanje profila nije uspelo.");
+      setErrorMessage(result.message || "Učitavanje profila nije uspelo.");
       setIsLoading(false);
       return;
     }
@@ -74,7 +74,7 @@ export function useProfilePageState({ fallbackUser, onLogout }) {
         onLogout();
         return;
       }
-      const fallbackMessage = result.message || "Azuriranje osnovnih podataka nije uspelo.";
+      const fallbackMessage = result.message || "Ažuriranje osnovnih podataka nije uspelo.";
       setBasicFormErrors(result.errors || { general: fallbackMessage });
       setBasicFormMessage(fallbackMessage);
       return;
@@ -84,7 +84,7 @@ export function useProfilePageState({ fallbackUser, onLogout }) {
       setProfileData((previous) => ({ ...previous, user: updatedUser }));
       updateSessionUser(updatedUser);
     }
-    setBasicFormMessage(result.message || "Osnovni podaci su uspesno azurirani.");
+    setBasicFormMessage(result.message || "Osnovni podaci su uspešno ažurirani.");
   }
 
   function handlePasswordFieldChange(event) {
@@ -122,7 +122,7 @@ export function useProfilePageState({ fallbackUser, onLogout }) {
       return;
     }
     setPasswordForm(PASSWORD_FORM_INITIAL_STATE);
-    setPasswordFormMessage(result.message || "Lozinka je uspesno promenjena.");
+    setPasswordFormMessage(result.message || "Lozinka je uspešno promenjena.");
   }
 
   function handleDeleteFieldChange(event) {
@@ -133,11 +133,12 @@ export function useProfilePageState({ fallbackUser, onLogout }) {
   }
   async function handleDeleteSubmit(event) {
     event.preventDefault();
-    if (deleteForm.confirmationText.trim().toUpperCase() !== "OBRISI") {
-      setDeleteFormErrors({ confirmationText: "Unesi tacan tekst potvrde: OBRISI." });
+    const normalizedConfirmation = deleteForm.confirmationText.trim().toUpperCase();
+    if (normalizedConfirmation !== "OBRISI" && normalizedConfirmation !== "OBRIŠI") {
+      setDeleteFormErrors({ confirmationText: "Unesi tačan tekst potvrde: OBRIŠI." });
       return;
     }
-    if (!window.confirm("Ovo ce trajno obrisati nalog. Da li zelis da nastavis?")) {
+    if (!window.confirm("Ovo će trajno obrisati nalog. Da li želiš da nastaviš?")) {
       return;
     }
     setDeleteFormErrors({});

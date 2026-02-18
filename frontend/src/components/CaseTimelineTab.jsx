@@ -53,14 +53,14 @@ function CaseTimelineTab({ caseId, mode, onUnauthorized }) {
   const solveCurrentDateLabel =
     timelineProgress.unlockedCount > 0
       ? formatTimelineUnlockAt(timelineProgress.lastUnlockedTimelineAt)
-      : "Nema otkljucanih";
+      : "Nema otključanih";
 
   const visibleRoadmapItems = isCreateMode ? timelineItems : solveVisibleItems;
 
   if (isLoading) {
     return (
       <section className="card reveal delay-3">
-        <p>Ucitavam vremensku liniju...</p>
+        <p>Učitavam vremensku liniju...</p>
       </section>
     );
   }
@@ -70,7 +70,7 @@ function CaseTimelineTab({ caseId, mode, onUnauthorized }) {
       <section className="card reveal delay-3">
         <p className="error-banner">{errorMessage}</p>
         <button type="button" className="btn btn-primary inline-action" onClick={loadTimeline}>
-          Pokusaj ponovo
+          Pokušaj ponovo
         </button>
       </section>
     );
@@ -82,20 +82,20 @@ function CaseTimelineTab({ caseId, mode, onUnauthorized }) {
         <div className="case-timeline-hero-top">
           <div>
             <p className="eyebrow">Vremenska linija</p>
-            <h3>Roadmap otkljucavanja tragova</h3>
+            <h3>Roadmap otključavanja tragova</h3>
             <p className="create-case-summary">
               {isCreateMode
-                ? "Definisi redosled kojim se osobe i dokumenti otkrivaju tokom istrage."
-                : "U modu resavanja otkljucavas sledecu stavku klikom na dugme Dalje, dok se iznad prikazuje trenutni datum istrage."}
+                ? "Definiši redosled kojim se osobe i dokumenti otkrivaju tokom istrage."
+                : "U modu rešavanja otključavaš sledeću stavku klikom na dugme Dalje, dok se iznad prikazuje trenutni datum istrage."}
             </p>
           </div>
           {isCreateMode ? (
             <button type="button" className="btn btn-primary case-timeline-save-btn" onClick={handleSaveTimeline} disabled={isSaving}>
-              {isSaving ? "Cuvanje..." : "Sacuvaj vremensku liniju"}
+              {isSaving ? "Čuvanje..." : "Sačuvaj vremensku liniju"}
             </button>
           ) : (
             <button type="button" className="btn btn-primary case-timeline-save-btn" onClick={handleAdvanceTimeline} disabled={isAdvancing || !timelineProgress.hasNextItem}>
-              {isAdvancing ? "Otkljucavam..." : timelineProgress.hasNextItem ? "Dalje" : "Sve je otkljucano"}
+              {isAdvancing ? "Otključavam..." : timelineProgress.hasNextItem ? "Dalje" : "Sve je otključano"}
             </button>
           )}
         </div>
@@ -110,7 +110,7 @@ function CaseTimelineTab({ caseId, mode, onUnauthorized }) {
             </>
           ) : (
             <>
-              <CaseTimelineStatCard value={`${timelineProgress.unlockedCount}/${timelineProgress.totalItems}`} label="Otkljucano" />
+              <CaseTimelineStatCard value={`${timelineProgress.unlockedCount}/${timelineProgress.totalItems}`} label="Otključano" />
               <CaseTimelineStatCard value={`${timelineProgress.progressPercent}%`} label="Faza istrage" />
               <CaseTimelineStatCard value={solveCurrentDateLabel} label="Trenutni datum" />
               <CaseTimelineStatCard value={solveRemainingCount} label="Preostalo" />
@@ -135,9 +135,9 @@ function CaseTimelineTab({ caseId, mode, onUnauthorized }) {
       ) : null}
 
       <section className="card case-timeline-roadmap-card">
-        <h3>{isCreateMode ? "Sekvenca otkljucavanja" : "Otkljucane stavke (najnovije gore)"}</h3>
-        {isCreateMode && visibleRoadmapItems.length === 0 ? <p className="case-timeline-empty">Vremenska linija jos nije definisana za ovaj slucaj.</p> : null}
-        {!isCreateMode && visibleRoadmapItems.length === 0 ? <p className="case-timeline-empty">Nema otkljucanih stavki. Klikni \"Dalje\" da otkljucas prvu.</p> : null}
+        <h3>{isCreateMode ? "Sekvenca otključavanja" : "Otključane stavke (najnovije gore)"}</h3>
+        {isCreateMode && visibleRoadmapItems.length === 0 ? <p className="case-timeline-empty">Vremenska linija još nije definisana za ovaj slučaj.</p> : null}
+        {!isCreateMode && visibleRoadmapItems.length === 0 ? <p className="case-timeline-empty">Nema otključanih stavki. Klikni na dugme Dalje da otključaš prvu.</p> : null}
 
         {visibleRoadmapItems.length > 0 ? (
           <ol className="case-timeline-roadmap-list">

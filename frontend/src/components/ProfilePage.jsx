@@ -45,12 +45,12 @@ function ProfilePage({ user, onLogout }) {
           <p>Datum registracije: <strong>{formatProfileDate(activeUser?.createdAt)}</strong></p>
         </section>
 
-        {isLoading ? <section className="card reveal delay-2"><p>Ucitavanje profila...</p></section> : null}
+        {isLoading ? <section className="card reveal delay-2"><p>Učitavanje profila...</p></section> : null}
         {!isLoading && errorMessage ? (
           <section className="card reveal delay-2">
             <p className="error-banner">{errorMessage}</p>
             <button className="btn btn-primary inline-action" type="button" onClick={loadProfile}>
-              Pokusaj ponovo
+              Pokušaj ponovo
             </button>
           </section>
         ) : null}

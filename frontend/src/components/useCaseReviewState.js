@@ -70,7 +70,7 @@ export function useCaseReviewState({
       }
 
       applyReviewPayload(null, false);
-      setReviewErrorMessage(reviewResult.message || "Ucitavanje recenzija nije uspelo.");
+      setReviewErrorMessage(reviewResult.message || "Učitavanje recenzija nije uspelo.");
       return { ok: false, unauthorized: false };
     }
 
@@ -94,7 +94,7 @@ export function useCaseReviewState({
       }
 
       if (!isCaseResolved) {
-        setReviewErrorMessage("Ocjena je dostupna tek nakon sto uspjesno rijesis slucaj.");
+        setReviewErrorMessage("Ocjena je dostupna tek nakon sto uspjesno riješiš slučaj.");
         return;
       }
 
@@ -123,7 +123,7 @@ export function useCaseReviewState({
         setReviewErrorMessage(
           pickFirstValidationMessage(result.errors) ||
             result.message ||
-            "Cuvanje recenzije nije uspelo."
+            "Čuvanje recenzije nije uspelo."
         );
         setIsSubmittingReview(false);
         return;
@@ -132,7 +132,7 @@ export function useCaseReviewState({
       const payload = result.data || {};
       applyReviewPayload(payload, false);
       setIsReviewVisibilityLocked(false);
-      const successMessage = result.message || "Ocjena je uspjesno sacuvana.";
+      const successMessage = result.message || "Ocjena je uspjesno sačuvana.";
       setReviewSuccessMessage(successMessage);
       if (typeof onReviewPersisted === "function") {
         onReviewPersisted(payload, successMessage);

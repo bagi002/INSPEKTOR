@@ -159,14 +159,14 @@ export function useCaseQuizCreateState({ caseId, onUnauthorized }) {
       }
 
       setSaveErrorMessage(
-        pickFirstValidationMessage(result.errors) || result.message || "Cuvanje kviza nije uspelo."
+        pickFirstValidationMessage(result.errors) || result.message || "Čuvanje kviza nije uspelo."
       );
       setIsSaving(false);
       return;
     }
 
     applyLoadedQuestions(result.data?.questions);
-    setSaveSuccessMessage(result.message || "Kviz je uspesno sacuvan.");
+    setSaveSuccessMessage(result.message || "Kviz je uspešno sačuvan.");
     setIsSaving(false);
   }
 

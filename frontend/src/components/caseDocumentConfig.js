@@ -12,24 +12,24 @@ export const CASE_DOCUMENT_CLASSIFICATION_OPTIONS = [
 
 const CASE_STATEMENT_TYPE_OPTIONS = [
   { value: "witness_statement", label: "Izjava svjedoka" },
-  { value: "suspect_statement", label: "Izjava osumnjicenog" },
-  { value: "victim_statement", label: "Izjava zrtve" },
+  { value: "suspect_statement", label: "Izjava osumnjičenog" },
+  { value: "victim_statement", label: "Izjava žrtve" },
 ];
 
 const CASE_POLICE_DOCUMENT_TYPE_OPTIONS = [
-  { value: "police_report", label: "Policijski izvjestaj" },
-  { value: "forensic_report", label: "Forenzicki nalaz" },
+  { value: "police_report", label: "Policijski izvještaj" },
+  { value: "forensic_report", label: "Forenzički nalaz" },
 ];
 
 const CASE_DOCUMENT_TAB_CONFIG = {
   [CASE_DOCUMENT_CATEGORIES.STATEMENTS]: {
     category: CASE_DOCUMENT_CATEGORIES.STATEMENTS,
     heroCreateTitle: "Operativni centar izjava",
-    heroSolveTitle: "Arhiva izjava slucaja",
+    heroSolveTitle: "Arhiva izjava slučaja",
     heroCreateDescription:
-      "Evidentiraj formalne izjave osoba u slucaju i otvaraj svaki dokument u sluzbenom formatu.",
+      "Evidentiraj formalne izjave osoba u slučaju i otvaraj svaki dokument u službenom formatu.",
     heroSolveDescription:
-      "Pregledaj sve evidentirane izjave bez mogucnosti izmjene i prati povezanost sa osobama.",
+      "Pregledaj sve evidentirane izjave bez mogućnosti izmjene i prati povezanost sa osobama.",
     createButtonLabel: "+ Nova izjava",
     openButtonLabel: "Otvori izjavu",
     searchLabel: "Pretraga (naslov, broj dokumenta)",
@@ -46,9 +46,9 @@ const CASE_DOCUMENT_TAB_CONFIG = {
     heroCreateTitle: "Operativni centar policijskih dokumenata",
     heroSolveTitle: "Arhiva policijskih dokumenata",
     heroCreateDescription:
-      "Kreiraj policijske izvjestaje i forenzicke nalaze sa formalnim metapodacima i vezama ka osobama.",
+      "Kreiraj policijske izvještaje i forenzičke nalaze sa formalnim metapodacima i vezama ka osobama.",
     heroSolveDescription:
-      "Pregledaj sluzbena dokumenta slucaja u read-only modu uz pun formalni prikaz.",
+      "Pregledaj službena dokumenta slučaja u read-only modu uz pun formalni prikaz.",
     createButtonLabel: "+ Novi dokument",
     openButtonLabel: "Otvori dokument",
     searchLabel: "Pretraga (naslov, broj dokumenta)",

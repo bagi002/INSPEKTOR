@@ -14,7 +14,7 @@ export async function getCaseOverviewController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Pregled slucaja je uspesno ucitan.",
+    message: "Pregled slučaja je uspešno učitan.",
     data: result,
   });
 }
@@ -24,7 +24,7 @@ export async function getCaseQuizController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Kviz podaci su uspesno ucitani.",
+    message: "Kviz podaci su uspešno učitani.",
     data: result,
   });
 }
@@ -34,7 +34,7 @@ export async function upsertCreatorCaseQuizController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Kviz slucaja je uspesno sacuvan.",
+    message: "Kviz slučaja je uspešno sačuvan.",
     data: result,
   });
 }
@@ -45,8 +45,8 @@ export async function submitCaseQuizController(req, res) {
   res.status(200).json({
     ok: true,
     message: result.passed
-      ? "Slucaj je uspesno rijesen kroz zavrsni kviz."
-      : "Kviz je zavrsen, ali prag za rjesenje slucaja nije dostignut.",
+      ? "Slučaj je uspešno riješen kroz završni kviz."
+      : "Kviz je završen, ali prag za rješenje slučaja nije dostignut.",
     data: result,
   });
 }

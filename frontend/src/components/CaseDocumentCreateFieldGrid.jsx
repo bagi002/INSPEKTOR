@@ -170,7 +170,7 @@ function CaseDocumentCreateFieldGrid({ tabConfig, formData, formErrors, isSubmit
       </label>
 
       <label className="create-case-field case-doc-unlock-toggle" htmlFor="case-doc-unlock">
-        <span>Otkljucan po default-u</span>
+        <span>Otključan po default-u</span>
         <input
           id="case-doc-unlock"
           name="isUnlockedByDefault"

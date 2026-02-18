@@ -24,7 +24,7 @@ export async function getPendingAnnouncements(userId) {
 export async function dismissPendingAnnouncement(announcementId, userId) {
   const parsedAnnouncementId = parsePositiveId(announcementId);
   if (!parsedAnnouncementId) {
-    throw new HttpError(400, "Identifikator obavjestenja nije validan.");
+    throw new HttpError(400, "Identifikator obavještenja nije validan.");
   }
 
   const pendingAnnouncement = await findPendingAdminAnnouncementForUserById(
@@ -32,7 +32,7 @@ export async function dismissPendingAnnouncement(announcementId, userId) {
     userId
   );
   if (!pendingAnnouncement) {
-    throw new HttpError(404, "Obavjestenje nije dostupno za ovog korisnika.");
+    throw new HttpError(404, "Obavještenje nije dostupno za ovog korisnika.");
   }
 
   await dismissAdminAnnouncementForUser(parsedAnnouncementId, userId);

@@ -59,7 +59,7 @@ function CaseQuizTab({ caseId, mode, onUnauthorized, onResolved }) {
   if (isLoading) {
     return (
       <section className="card reveal delay-3">
-        <p>Ucitavam zavrsni kviz...</p>
+        <p>Učitavam završni kviz...</p>
       </section>
     );
   }
@@ -69,7 +69,7 @@ function CaseQuizTab({ caseId, mode, onUnauthorized, onResolved }) {
       <section className="card reveal delay-3">
         <p className="error-banner">{errorMessage}</p>
         <button type="button" className="btn btn-primary inline-action" onClick={loadQuiz}>
-          Pokusaj ponovo
+          Pokušaj ponovo
         </button>
       </section>
     );
@@ -80,12 +80,12 @@ function CaseQuizTab({ caseId, mode, onUnauthorized, onResolved }) {
       <section className={`card case-quiz-hero-card ${isCreateMode ? "is-create" : "is-solve"}`}>
         <div className="case-quiz-hero-top">
           <div>
-            <p className="eyebrow">Zavrsni kviz</p>
-            <h3>{isCreateMode ? "Priprema kviza za potvrdu resenja" : "Kviz za potvrdu rijesenog slucaja"}</h3>
+            <p className="eyebrow">Završni kviz</p>
+            <h3>{isCreateMode ? "Priprema kviza za potvrdu rešenja" : "Kviz za potvrdu riješenog slučaja"}</h3>
             <p className="create-case-summary">
               {isCreateMode
-                ? "Kreator unaprijed definise pitanja i ponudjene odgovore. Prag za prolaz je strogo veci od 80%."
-                : "Za prelazak slucaja u rijesene potrebno je ostvariti vise od 80% tacnih odgovora."}
+                ? "Kreator unaprijed definiše pitanja i ponuđene odgovore. Prag za prolaz je strogo veći od 80%."
+                : "Za prelazak slučaja u riješene potrebno je ostvariti više od 80% tačnih odgovora."}
             </p>
           </div>
           {isCreateMode ? (
@@ -95,7 +95,7 @@ function CaseQuizTab({ caseId, mode, onUnauthorized, onResolved }) {
               onClick={handleSaveQuiz}
               disabled={isSaving}
             >
-              {isSaving ? "Cuvanje..." : "Sacuvaj kviz"}
+              {isSaving ? "Čuvanje..." : "Sačuvaj kviz"}
             </button>
           ) : null}
         </div>
@@ -110,12 +110,12 @@ function CaseQuizTab({ caseId, mode, onUnauthorized, onResolved }) {
             <span>Prag prolaza</span>
           </article>
           <article className="case-quiz-stat-card">
-            <strong>{progress?.progressStatus === "resolved" ? "Rijesen" : "U toku"}</strong>
-            <span>Status slucaja</span>
+            <strong>{progress?.progressStatus === "resolved" ? "Riješen" : "U toku"}</strong>
+            <span>Status slučaja</span>
           </article>
           <article className="case-quiz-stat-card">
             <strong>{progress?.resolvedAt ? formatSolvedAt(progress.resolvedAt) : "-"}</strong>
-            <span>Vrijeme rjesavanja</span>
+            <span>Vrijeme rješavanja</span>
           </article>
         </div>
 

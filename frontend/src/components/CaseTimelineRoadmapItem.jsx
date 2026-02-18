@@ -65,7 +65,7 @@ function CaseTimelineRoadmapItem({
         {isCreateMode ? (
           <div className="case-timeline-roadmap-fields">
             <label className="create-case-field">
-              Datum i vreme otkljucavanja
+              Datum i vreme otključavanja
               <input
                 className="create-case-input"
                 type="datetime-local"

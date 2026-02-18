@@ -29,7 +29,7 @@ function CaseInterrogationNodeBuilderSection({
             onChange={onNodeDraftChange}
             disabled={isSubmitting}
           >
-            <option value="">Pocetno pitanje (root)</option>
+            <option value="">Početno pitanje (root)</option>
             {safeNodes.map((node) => (
               <option key={node.nodeKey} value={node.nodeKey}>
                 {node.nodeKey} - {node.question}
@@ -65,7 +65,7 @@ function CaseInterrogationNodeBuilderSection({
               <strong>Odgovor:</strong> {sourceNode.answer}
             </p>
             <p className="case-interrogation-source-note">
-              Ovo pitanje moze biti dodato u drugu granu, ali ne i u istu granu toka.
+              Ovo pitanje može biti dodato u drugu granu, ali ne i u istu granu toka.
             </p>
           </article>
         ) : (
@@ -78,7 +78,7 @@ function CaseInterrogationNodeBuilderSection({
                 name="question"
                 value={nodeDraft.question}
                 onChange={onNodeDraftChange}
-                placeholder="Unesi pitanje koje korisnik moze postaviti."
+                placeholder="Unesi pitanje koje korisnik može postaviti."
                 maxLength={320}
                 disabled={isSubmitting}
               />
@@ -109,7 +109,7 @@ function CaseInterrogationNodeBuilderSection({
       </button>
 
       {safeNodes.length === 0 ? (
-        <p className="case-interrogation-empty">Dodaj bar jedno pitanje da bi saslusanje moglo da se sacuva.</p>
+        <p className="case-interrogation-empty">Dodaj bar jedno pitanje da bi saslušanje moglo da se sačuva.</p>
       ) : (
         <ul className="case-interrogation-node-list">
           {safeNodes.map((node) => (
@@ -117,7 +117,7 @@ function CaseInterrogationNodeBuilderSection({
               <div>
                 <strong>{node.nodeKey}</strong>
                 <p>
-                  {node.parentKey ? `Nakon: ${node.parentKey}` : "Pocetno pitanje"} |{" "}
+                  {node.parentKey ? `Nakon: ${node.parentKey}` : "Početno pitanje"} |{" "}
                   {node.questionReferenceKey !== node.nodeKey
                     ? `Ponavljanje pitanja ${node.questionReferenceKey}`
                     : node.question}
@@ -129,7 +129,7 @@ function CaseInterrogationNodeBuilderSection({
                 onClick={() => onRemoveNode(node.nodeKey)}
                 disabled={isSubmitting}
               >
-                Obrisi
+                Obriši
               </button>
             </li>
           ))}

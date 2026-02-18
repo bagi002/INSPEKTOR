@@ -65,7 +65,7 @@ function CaseDocumentCreateForm({
       />
 
       <label className="create-case-field" htmlFor="case-doc-content">
-        Sadrzaj dokumenta
+        Sadržaj dokumenta
         <textarea
           id="case-doc-content"
           className="create-case-textarea"
@@ -95,7 +95,7 @@ function CaseDocumentCreateForm({
 
       <div className="cta-row">
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? "Cuvanje u toku..." : "Sacuvaj dokument"}
+          {isSubmitting ? "Čuvanje u toku..." : "Sačuvaj dokument"}
         </button>
       </div>
     </form>

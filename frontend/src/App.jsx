@@ -108,7 +108,7 @@ function App() {
         handleLogout();
         return;
       }
-      setAnnouncementErrorMessage(result.message || "Zatvaranje obavjestenja nije uspelo.");
+      setAnnouncementErrorMessage(result.message || "Zatvaranje obavještenja nije uspelo.");
       return;
     }
 

@@ -53,7 +53,7 @@ export async function fetchCasePeople(caseId, scope = "create") {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(payload, "Ucitavanje osoba nije uspelo."),
+        message: resolveMessage(payload, "Učitavanje osoba nije uspelo."),
       };
     }
 
@@ -65,7 +65,7 @@ export async function fetchCasePeople(caseId, scope = "create") {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
     };
   }
 }
@@ -96,7 +96,7 @@ export async function createCasePerson(caseId, payload) {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(responsePayload, "Cuvanje osobe nije uspelo."),
+        message: resolveMessage(responsePayload, "Čuvanje osobe nije uspelo."),
         errors:
           responsePayload?.errors && typeof responsePayload.errors === "object"
             ? responsePayload.errors
@@ -106,14 +106,14 @@ export async function createCasePerson(caseId, payload) {
 
     return {
       ok: true,
-      message: resolveMessage(responsePayload, "Osoba je uspesno sacuvana."),
+      message: resolveMessage(responsePayload, "Osoba je uspešno sačuvana."),
       data: responsePayload?.data || null,
     };
   } catch {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }
@@ -145,7 +145,7 @@ export async function updateCasePersonRole(caseId, personId, payload) {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(responsePayload, "Azuriranje uloge osobe nije uspelo."),
+        message: resolveMessage(responsePayload, "Ažuriranje uloge osobe nije uspelo."),
         errors:
           responsePayload?.errors && typeof responsePayload.errors === "object"
             ? responsePayload.errors
@@ -155,7 +155,7 @@ export async function updateCasePersonRole(caseId, personId, payload) {
 
     return {
       ok: true,
-      message: resolveMessage(responsePayload, "Uloga osobe je uspesno azurirana."),
+      message: resolveMessage(responsePayload, "Uloga osobe je uspešno ažurirana."),
       data: responsePayload?.data || null,
       errors: null,
     };
@@ -163,7 +163,7 @@ export async function updateCasePersonRole(caseId, personId, payload) {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }

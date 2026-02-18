@@ -46,17 +46,17 @@ function hasBranchReferenceConflict(startNode, nodesByKey) {
 
 function normalizeNodes(rawNodes, errors) {
   if (!Array.isArray(rawNodes)) {
-    errors.nodes = "Stablo saslusanja mora biti lista cvorova pitanja i odgovora.";
+    errors.nodes = "Stablo saslušanja mora biti lista čvorova pitanja i odgovora.";
     return [];
   }
 
   if (rawNodes.length === 0) {
-    errors.nodes = "Saslusanje mora imati najmanje jedno pitanje.";
+    errors.nodes = "Saslušanje mora imati najmanje jedno pitanje.";
     return [];
   }
 
   if (rawNodes.length > MAX_NODES) {
-    errors.nodes = `Saslusanje moze imati najvise ${MAX_NODES} cvorova pitanja i odgovora.`;
+    errors.nodes = `Saslušanje može imati najviše ${MAX_NODES} čvorova pitanja i odgovora.`;
     return [];
   }
 
@@ -86,7 +86,7 @@ function normalizeNodes(rawNodes, errors) {
       errors[`${prefix}.parentKey`] = "Veza ka prethodnom pitanju nije validna.";
     }
     if (parentKey.length > 0 && parentKey === nodeKey) {
-      errors[`${prefix}.parentKey`] = "Pitanje ne moze biti samo sebi roditelj.";
+      errors[`${prefix}.parentKey`] = "Pitanje ne može biti samo sebi roditelj.";
     }
     if (!NODE_KEY_PATTERN.test(questionReferenceKey)) {
       errors[`${prefix}.questionReferenceKey`] = "Referenca pitanja nije validna.";
@@ -95,13 +95,13 @@ function normalizeNodes(rawNodes, errors) {
     if (question.length < 3) {
       errors[`${prefix}.question`] = "Pitanje mora imati najmanje 3 karaktera.";
     } else if (question.length > MAX_QUESTION_LENGTH) {
-      errors[`${prefix}.question`] = `Pitanje moze imati najvise ${MAX_QUESTION_LENGTH} karaktera.`;
+      errors[`${prefix}.question`] = `Pitanje može imati najviše ${MAX_QUESTION_LENGTH} karaktera.`;
     }
 
     if (answer.length < 3) {
       errors[`${prefix}.answer`] = "Odgovor mora imati najmanje 3 karaktera.";
     } else if (answer.length > MAX_ANSWER_LENGTH) {
-      errors[`${prefix}.answer`] = `Odgovor moze imati najvise ${MAX_ANSWER_LENGTH} karaktera.`;
+      errors[`${prefix}.answer`] = `Odgovor može imati najviše ${MAX_ANSWER_LENGTH} karaktera.`;
     }
 
     normalized.push({
@@ -117,7 +117,7 @@ function normalizeNodes(rawNodes, errors) {
   const nodesByKey = new Map(normalized.map((node) => [node.nodeKey, node]));
   const rootCount = normalized.filter((node) => node.parentKey.length === 0).length;
   if (rootCount === 0) {
-    errors.nodes = "Saslusanje mora imati pocetno pitanje (root cvor).";
+    errors.nodes = "Saslušanje mora imati početno pitanje (root čvor).";
   }
 
   normalized.forEach((node, index) => {
@@ -126,18 +126,18 @@ function normalizeNodes(rawNodes, errors) {
     }
     if (node.questionReferenceKey && !nodesByKey.has(node.questionReferenceKey)) {
       errors[`nodes[${index}].questionReferenceKey`] =
-        "Referenca pitanja mora pokazivati na postojeci cvor pitanja u stablu.";
+        "Referenca pitanja mora pokazivati na postojeći čvor pitanja u stablu.";
     }
   });
 
   if (Object.keys(errors).length === 0 && hasCycle(nodesByKey)) {
-    errors.nodes = "Stablo pitanja ne sme sadrzati ciklicne veze.";
+    errors.nodes = "Stablo pitanja ne sme sadržati ciklične veze.";
   }
   if (Object.keys(errors).length === 0) {
     normalized.forEach((node, index) => {
       if (hasBranchReferenceConflict(node, nodesByKey)) {
         errors[`nodes[${index}].questionReferenceKey`] =
-          "Isto pitanje ne moze biti dodato dva puta u istoj grani saslusanja.";
+          "Isto pitanje ne može biti dodato dva puta u istoj grani saslušanja.";
       }
     });
   }
@@ -163,22 +163,22 @@ export function validateCreateCaseInterrogationPayload(payload) {
   const nodes = normalizeNodes(payload?.nodes, errors);
 
   if (!personId || personId <= 0) {
-    errors.personId = "Saslusanje mora biti povezano sa validnom osobom.";
+    errors.personId = "Saslušanje mora biti povezano sa validnom osobom.";
   }
 
   if (title.length > MAX_TITLE_LENGTH) {
-    errors.title = `Naslov saslusanja moze imati najvise ${MAX_TITLE_LENGTH} karaktera.`;
+    errors.title = `Naslov saslušanja može imati najviše ${MAX_TITLE_LENGTH} karaktera.`;
   }
 
   if (openingPrompt.length > MAX_PROMPT_LENGTH) {
-    errors.openingPrompt = `Uvodna poruka moze imati najvise ${MAX_PROMPT_LENGTH} karaktera.`;
+    errors.openingPrompt = `Uvodna poruka može imati najviše ${MAX_PROMPT_LENGTH} karaktera.`;
   }
 
   return {
     errors,
     sanitized: {
       personId: personId || null,
-      title: title || "Saslusanje",
+      title: title || "Saslušanje",
       openingPrompt,
       nodes,
     },

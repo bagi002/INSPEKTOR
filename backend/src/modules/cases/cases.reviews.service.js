@@ -34,7 +34,7 @@ export async function getCaseReviews(
   if (readScope === CASE_READ_SCOPES.CREATE) {
     const caseRow = await findCaseByIdForAuthor(caseId, requesterUserId);
     if (!caseRow) {
-      throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+      throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
     }
 
     const [summary, reviews, solvedUsers] = await Promise.all([
@@ -66,7 +66,7 @@ export async function getCaseReviews(
   if (!isAuthor && !hasRated) {
     throw new HttpError(
       403,
-      "Pregled recenzija je dostupan nakon sto ocijenis slucaj koji si rijesio."
+      "Pregled recenzija je dostupan nakon sto ocijeniš slučaj koji si riješio."
     );
   }
 
@@ -96,20 +96,20 @@ export async function submitCaseReview(caseIdInput, payload, requesterUserId) {
   const caseRow = await assertTimelineReadAccess(caseId, requesterUserId);
 
   if (caseRow.authorUserId === requesterUserId) {
-    throw new HttpError(403, "Nije dozvoljeno ocjenjivanje sopstvenog slucaja.");
+    throw new HttpError(403, "Nije dozvoljeno ocjenjivanje sopstvenog slučaja.");
   }
 
   if (caseRow.publicationStatus !== "published") {
-    throw new HttpError(400, "Moguce je ocijeniti samo objavljen slucaj.");
+    throw new HttpError(400, "Moguće je ocijeniti samo objavljen slučaj.");
   }
 
   const progress = await ensureCaseUserProgressByCaseIdAndUserId(caseId, requesterUserId);
   if (progress.progressStatus !== "resolved") {
-    throw new HttpError(400, "Slucaj mozes ocijeniti tek nakon sto ga uspjesno rijesis.");
+    throw new HttpError(400, "Slučaj možeš ocijeniti tek nakon sto ga uspjesno riješiš.");
   }
 
   if (hasUserAlreadyRated(progress)) {
-    throw new HttpError(409, "Za ovaj slucaj si vec ostavio ocjenu.");
+    throw new HttpError(409, "Za ovaj slučaj si već ostavio ocjenu.");
   }
 
   const { errors, sanitized } = validateCaseReviewPayload(payload);

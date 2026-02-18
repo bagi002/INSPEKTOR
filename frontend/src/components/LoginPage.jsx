@@ -42,8 +42,8 @@ function LoginPage() {
       activePath={PUBLIC_ROUTES.LOGIN}
       eyebrow="Ulazak u sistem"
       title="Prijava korisnika"
-      description="Prijavi se postojecim nalogom da bi nastavio sa analizom slucajeva."
-      sidebarNote="Postojeci korisnici koriste email i lozinku za ulazak u aplikaciju."
+      description="Prijavi se postojećim nalogom da bi nastavio sa analizom slučajeva."
+      sidebarNote="Postojeći korisnici koriste email i lozinku za ulazak u aplikaciju."
     >
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         <div className="field-group">
@@ -55,7 +55,7 @@ function LoginPage() {
             value={formData.email}
             onChange={handleChange}
             autoComplete="email"
-            placeholder="ime.prezime@email.com"
+            placeholder="ime.prežime@email.com"
           />
           {errors.email ? <p className="field-error">{errors.email}</p> : null}
         </div>

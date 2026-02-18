@@ -37,12 +37,12 @@ export function validateCaseQuizPayload(payload) {
 
     if (question.explanationText.length < 8) {
       errors[`questions.${questionIndex}.explanationText`] =
-        "Objasnjenje mora imati najmanje 8 karaktera.";
+        "Objašnjenje mora imati najmanje 8 karaktera.";
     }
 
     if (question.options.length < 2 || question.options.length > 6) {
       errors[`questions.${questionIndex}.options`] =
-        "Svako pitanje mora imati izmedju 2 i 6 ponudjenih odgovora.";
+        "Svako pitanje mora imati između 2 i 6 ponudjenih odgovora.";
       return;
     }
 
@@ -60,7 +60,7 @@ export function validateCaseQuizPayload(payload) {
 
     if (correctCount !== 1) {
       errors[`questions.${questionIndex}.options.correct`] =
-        "Svako pitanje mora imati tacno jedan tacan odgovor.";
+        "Svako pitanje mora imati tačno jedan tačan odgovor.";
     }
   });
 
@@ -91,7 +91,7 @@ export function validateCaseQuizSubmissionPayload(payload, quizQuestions) {
     const selectedOptionId = toInteger(answer?.selectedOptionId, 0);
 
     if (!questionDirectory.has(questionId)) {
-      errors[`answers.${answerIndex}.questionId`] = "Pitanje ne postoji u trazenom kvizu.";
+      errors[`answers.${answerIndex}.questionId`] = "Pitanje ne postoji u traženom kvizu.";
       return;
     }
 
@@ -103,7 +103,7 @@ export function validateCaseQuizSubmissionPayload(payload, quizQuestions) {
     const validOptionIds = questionDirectory.get(questionId);
     if (!validOptionIds.has(selectedOptionId)) {
       errors[`answers.${answerIndex}.selectedOptionId`] =
-        "Izabrani odgovor ne pripada trazenom pitanju.";
+        "Izabrani odgovor ne pripada traženom pitanju.";
       return;
     }
 

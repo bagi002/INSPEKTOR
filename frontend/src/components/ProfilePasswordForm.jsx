@@ -56,7 +56,7 @@ function ProfilePasswordForm({
         </label>
 
         <button className="btn btn-primary profile-submit" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Cuvanje..." : "Promeni lozinku"}
+          {isSubmitting ? "Čuvanje..." : "Promeni lozinku"}
         </button>
         {formMessage ? (
           <p className={`profile-submit-feedback${Object.keys(formErrors).length > 0 ? " profile-submit-feedback-error" : ""}`}>

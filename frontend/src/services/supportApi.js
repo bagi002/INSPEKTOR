@@ -46,7 +46,7 @@ export async function fetchMySupportTickets() {
       return {
         ok: false,
         unauthorized: response.status === 401,
-        message: resolveMessage(payload, "Ucitavanje tiketa nije uspelo."),
+        message: resolveMessage(payload, "Učitavanje tiketa nije uspelo."),
       };
     }
 
@@ -58,7 +58,7 @@ export async function fetchMySupportTickets() {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
     };
   }
 }
@@ -99,14 +99,14 @@ export async function createSupportTicket(payload) {
 
     return {
       ok: true,
-      message: resolveMessage(responsePayload, "Tiket je uspesno kreiran."),
+      message: resolveMessage(responsePayload, "Tiket je uspešno kreiran."),
       data: responsePayload?.data || null,
     };
   } catch {
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }

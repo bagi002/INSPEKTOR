@@ -65,7 +65,7 @@ function CaseQuizReviewsSection({
       {isReviewVisibilityLocked && !isCaseResolved ? (
         <section className="card case-reviews-gated-card">
           <p className="create-case-summary">
-            Nakon sto uspjesno rijesis i ocijenis slucaj, dobices prikaz komentara i statistike
+            Nakon sto uspjesno riješiš i ocijenis slučaj, dobićes prikaz komentara i statistike
             recenzija.
           </p>
         </section>

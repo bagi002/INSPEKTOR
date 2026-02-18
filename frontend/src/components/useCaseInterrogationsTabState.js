@@ -40,7 +40,7 @@ export function useCaseInterrogationsTabState({ caseId, mode, onUnauthorized }) 
         onUnauthorized();
         return;
       }
-      setErrorMessage(result.message || "Ucitavanje saslusanja nije uspelo.");
+      setErrorMessage(result.message || "Učitavanje saslušanja nije uspelo.");
       setIsLoading(false);
       return;
     }
@@ -94,7 +94,7 @@ export function useCaseInterrogationsTabState({ caseId, mode, onUnauthorized }) 
       setActiveInterrogationId(linkedInterrogation.id);
       setIsChatModalOpen(true);
     } else {
-      setActionMessage("Za izabranu osobu jos nije evidentirano saslusanje.");
+      setActionMessage("Za izabranu osobu još nije evidentirano saslušanje.");
       if (isCreateMode) {
         createState.openCreateModal(linkedPersonId);
       }
@@ -125,11 +125,11 @@ export function useCaseInterrogationsTabState({ caseId, mode, onUnauthorized }) 
     const interrogation = findInterrogationByPerson(interrogations, selectedPersonId);
     if (!interrogation) {
       if (isCreateMode) {
-        setActionMessage("Za izabranu osobu nema saslusanja. Otvoren je modal za kreiranje.");
+        setActionMessage("Za izabranu osobu nema saslušanja. Otvoren je modal za kreiranje.");
         createState.openCreateModal(selectedPersonId);
         return;
       }
-      setActionMessage("Za izabranu osobu nije pronadjeno sacuvano saslusanje.");
+      setActionMessage("Za izabranu osobu nije pronađeno sačuvano saslušanje.");
       return;
     }
     setActionMessage("");

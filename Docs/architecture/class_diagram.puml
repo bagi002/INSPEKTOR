@@ -23,6 +23,25 @@ class DesktopGate {
   +render()
 }
 
+class LandingPage {
+  +render()
+}
+
+class PublicSidebar {
+  +activePath
+  +noteText
+  +render()
+}
+
+class PublicLandingContent {
+  +menuItems
+  +heroHighlights
+  +featureCards
+  +processSteps
+  +playerBenefitCards
+  +trustSignals
+}
+
 class LoggedHomePage {
   +loadHomeData()
   +handleStartPublicCase(caseId)
@@ -893,15 +912,22 @@ class SQLiteDatabase {
 
 App --> RouteUtils
 App --> DesktopGate
+App --> LandingPage
 App --> WikiPage
 App *-- AdminAnnouncementPopup
 App ..> AnnouncementsApiClient
+DesktopGate --> LandingPage
 DesktopGate --> LoggedHomePage
 DesktopGate --> CreateCasePage
 DesktopGate --> CaseWorkspacePage
 DesktopGate --> ProfilePage
 DesktopGate --> SupportPage
 DesktopGate --> WikiPage
+LandingPage *-- PublicSidebar
+LandingPage ..> PublicLandingContent
+LandingPage ..> RouteUtils
+PublicSidebar ..> PublicLandingContent
+PublicSidebar ..> RouteUtils
 App --> ProfilePage
 App --> SupportPage
 WikiPage --> RouteUtils

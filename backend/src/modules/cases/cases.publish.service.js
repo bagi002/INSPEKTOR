@@ -57,7 +57,7 @@ function buildPublishBlockers(readiness) {
   const blockers = [];
 
   if (readiness.totals.people <= 0) {
-    blockers.push("Dodaj najmanje jednu osobu i dosije prije objave slucaja.");
+    blockers.push("Dodaj najmanje jednu osobu i dosije prije objave slučaja.");
   }
 
   if (readiness.missing.requiredDocumentTypes.length > 0) {
@@ -68,7 +68,7 @@ function buildPublishBlockers(readiness) {
   }
 
   if (readiness.totals.timelineItems <= 0) {
-    blockers.push("Kreiraj vremensku liniju prije objave slucaja.");
+    blockers.push("Kreiraj vremensku liniju prije objave slučaja.");
   } else if (
     readiness.missing.timelinePeople.length > 0 ||
     readiness.missing.timelineDocuments.length > 0
@@ -92,7 +92,7 @@ function formatCaseSummary(caseRow) {
 async function assertAuthorAccess(caseId, requesterUserId) {
   const caseRow = await findCaseByIdForAuthor(caseId, requesterUserId);
   if (!caseRow) {
-    throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+    throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
   }
 
   return caseRow;
@@ -116,7 +116,7 @@ export async function publishCreatorCase(caseIdInput, requesterUserId) {
   const blockers = buildPublishBlockers(readiness);
 
   if (blockers.length > 0) {
-    throw new HttpError(400, "Slucaj nije spreman za objavu.", {
+    throw new HttpError(400, "Slučaj nije spreman za objavu.", {
       publish: blockers,
       readiness,
     });

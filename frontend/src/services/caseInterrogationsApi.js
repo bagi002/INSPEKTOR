@@ -65,7 +65,7 @@ async function requestCaseInterrogations(
 
     return {
       ok: true,
-      message: resolveMessage(responsePayload, "Zahtev je uspesan."),
+      message: resolveMessage(responsePayload, "Zahtev je uspešan."),
       data: responsePayload?.data || null,
       errors: null,
     };
@@ -73,7 +73,7 @@ async function requestCaseInterrogations(
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }
@@ -88,11 +88,11 @@ export function fetchCaseInterrogations(caseId, scope = "create") {
     caseId,
     "GET",
     null,
-    "Ucitavanje saslusanja nije uspelo.",
+    "Učitavanje saslušanja nije uspelo.",
     withScope("interrogations", scope)
   );
 }
 
 export function createCaseInterrogation(caseId, payload) {
-  return requestCaseInterrogations(caseId, "POST", payload, "Cuvanje saslusanja nije uspelo.");
+  return requestCaseInterrogations(caseId, "POST", payload, "Čuvanje saslušanja nije uspelo.");
 }

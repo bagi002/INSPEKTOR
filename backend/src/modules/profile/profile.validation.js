@@ -51,7 +51,7 @@ export function validateProfilePasswordPayload(payload) {
       `Nova lozinka mora imati najmanje ${AUTH_PASSWORD_MIN_LENGTH} karaktera.`;
   }
   if (!errors.newPassword && currentPassword === newPassword) {
-    errors.newPassword = "Nova lozinka mora biti razlicita od trenutne.";
+    errors.newPassword = "Nova lozinka mora biti različita od trenutne.";
   }
 
   return {

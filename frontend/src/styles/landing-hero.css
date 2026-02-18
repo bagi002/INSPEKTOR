@@ -1,0 +1,129 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-color: #b7cbe4;
+  background:
+    radial-gradient(circle at 78% 12%, rgba(255, 255, 255, 0.6), transparent 40%),
+    linear-gradient(148deg, rgba(214, 230, 251, 0.92), rgba(238, 245, 255, 0.96)),
+    #ffffff;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  right: -80px;
+  top: -86px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(20, 63, 125, 0.18), transparent 66%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  left: -70px;
+  bottom: -118px;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(194, 54, 69, 0.17), transparent 70%);
+  pointer-events: none;
+}
+
+.landing-hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 1.15rem;
+}
+
+.landing-hero-copy {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.hero h2 {
+  margin: 0.28rem 0 0;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.14;
+  color: #142943;
+}
+
+.hero p {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--ink-muted);
+  line-height: 1.52;
+}
+
+.hero-highlight-list {
+  margin: 0.14rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.44rem;
+}
+
+.hero-highlight-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.56rem;
+  color: #29486e;
+  font-weight: 650;
+}
+
+.hero-highlight-list li::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #143f7d, #c23645);
+  box-shadow: 0 0 0 4px rgba(194, 54, 69, 0.12);
+}
+
+.hero-signal-panel {
+  align-self: start;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #becfe4;
+  background: linear-gradient(170deg, rgba(255, 255, 255, 0.92), rgba(235, 243, 255, 0.95));
+  box-shadow: 0 14px 28px rgba(20, 63, 125, 0.13);
+}
+
+.hero-signal-title {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #2d4768;
+}
+
+.hero-signal-list {
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.58rem;
+}
+
+.hero-signal-list li {
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.75rem;
+  border-radius: 11px;
+  border: 1px solid #d1ddef;
+  background: #f8fbff;
+}
+
+.hero-signal-list strong {
+  color: #133a67;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
+
+.hero-signal-list span {
+  color: #536882;
+  line-height: 1.4;
+}

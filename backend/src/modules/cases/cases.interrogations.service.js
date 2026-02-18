@@ -28,12 +28,12 @@ function parseCaseId(caseIdInput) {
     typeof caseIdInput === "string" ? caseIdInput.trim() : String(caseIdInput ?? "");
 
   if (!/^\d+$/.test(normalizedValue)) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+    throw new HttpError(400, "Prosleđeni slučaj nije validan.");
   }
 
   const caseId = Number.parseInt(normalizedValue, 10);
   if (!Number.isInteger(caseId) || caseId <= 0) {
-    throw new HttpError(400, "Prosledjeni slucaj nije validan.");
+    throw new HttpError(400, "Prosleđeni slučaj nije validan.");
   }
 
   return caseId;
@@ -42,7 +42,7 @@ function parseCaseId(caseIdInput) {
 async function assertAuthorAccess(caseId, authorUserId) {
   const caseRow = await findCaseByIdForAuthor(caseId, authorUserId);
   if (!caseRow) {
-    throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
+    throw new HttpError(404, "Slučaj nije pronađen ili nemaš pristup ovom slučaju.");
   }
 }
 
@@ -61,11 +61,11 @@ function normalizeInterrogation(interrogation, peopleMap) {
 function validateInterrogationPerson(personId, peopleMap, errors) {
   const person = peopleMap.get(personId);
   if (!person) {
-    errors.personId = "Izabrana osoba ne postoji u trazenom slucaju.";
+    errors.personId = "Izabrana osoba ne postoji u traženom slučaju.";
     return;
   }
   if (!person.isAlive) {
-    errors.personId = "Saslusanje je dozvoljeno samo za zive osobe.";
+    errors.personId = "Saslušanje je dozvoljeno samo za žive osobe.";
   }
 }
 
@@ -138,11 +138,11 @@ export async function createCreatorCaseInterrogation(caseIdInput, payload, autho
   const peopleMap = buildPeopleMap(peopleDirectory);
 
   validateInterrogationPerson(sanitized.personId, peopleMap, errors);
-  throwValidationIfNeeded(errors, "Podaci saslusanja nisu validni.");
+  throwValidationIfNeeded(errors, "Podaci saslušanja nisu validni.");
 
   const interrogation = await upsertCaseInterrogationForPerson(caseId, sanitized, authorUserId);
   if (!interrogation) {
-    throw new HttpError(500, "Saslusanje je sacuvano, ali odgovor nije moguce ucitati.");
+    throw new HttpError(500, "Saslušanje je sačuvano, ali odgovor nije moguće učitati.");
   }
 
   return {

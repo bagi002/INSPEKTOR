@@ -61,12 +61,12 @@ export function validateCaseDocumentForm(formData, category) {
     errors.title = "Naslov mora imati najmanje 3 karaktera.";
   }
   if ((formData.content || "").trim().length < 30) {
-    errors.content = "Sadrzaj mora imati najmanje 30 karaktera.";
+    errors.content = "Sadržaj mora imati najmanje 30 karaktera.";
   }
 
   const sequenceOrder = Number.parseInt(formData.sequenceOrder, 10);
   if (!Number.isInteger(sequenceOrder) || sequenceOrder < 1) {
-    errors.sequenceOrder = "Redosled mora biti ceo broj veci od nule.";
+    errors.sequenceOrder = "Redosled mora biti ceo broj veći od nule.";
   }
 
   if ((formData.classificationLevel || "").trim().length === 0) {
@@ -81,7 +81,7 @@ export function validateCaseDocumentForm(formData, category) {
   }
 
   if (!supportsImageEvidenceForDocumentType(formData.documentType) && (formData.imageEvidence || []).length > 0) {
-    errors.imageEvidence = "Slike su dozvoljene samo za policijske i forenzicke dokumente.";
+    errors.imageEvidence = "Slike su dozvoljene samo za policijske i forenzičke dokumente.";
   }
   if ((formData.imageEvidence || []).length > MAX_DOCUMENT_IMAGE_COUNT) {
     errors.imageEvidence = `Maksimalan broj slika je ${MAX_DOCUMENT_IMAGE_COUNT}.`;

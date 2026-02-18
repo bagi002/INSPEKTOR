@@ -47,7 +47,7 @@ export function useCaseQuizTabState({ caseId, mode, onUnauthorized, onResolved }
         return;
       }
 
-      setErrorMessage(result.message || "Ucitavanje kviza nije uspelo.");
+      setErrorMessage(result.message || "Učitavanje kviza nije uspelo.");
       setIsLoading(false);
       return;
     }

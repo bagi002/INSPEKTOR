@@ -13,7 +13,7 @@ export async function getCaseReviewsController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Recenzije slucaja su uspesno ucitane.",
+    message: "Recenzije slučaja su uspešno učitane.",
     data: result,
   });
 }
@@ -23,7 +23,7 @@ export async function submitCaseReviewController(req, res) {
 
   res.status(201).json({
     ok: true,
-    message: "Ocjena i komentar su uspjesno sacuvani.",
+    message: "Ocjena i komentar su uspjesno sačuvani.",
     data: result,
   });
 }

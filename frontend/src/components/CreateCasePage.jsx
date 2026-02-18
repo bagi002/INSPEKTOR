@@ -11,11 +11,11 @@ function validateDraftForm(formData) {
   const errors = {};
 
   if ((formData.title || "").trim().length < MIN_TITLE_LENGTH) {
-    errors.title = `Naziv slucaja mora imati najmanje ${MIN_TITLE_LENGTH} karaktera.`;
+    errors.title = `Naziv slučaja mora imati najmanje ${MIN_TITLE_LENGTH} karaktera.`;
   }
 
   if ((formData.description || "").trim().length < MIN_DESCRIPTION_LENGTH) {
-    errors.description = `Opis slucaja mora imati najmanje ${MIN_DESCRIPTION_LENGTH} karaktera.`;
+    errors.description = `Opis slučaja mora imati najmanje ${MIN_DESCRIPTION_LENGTH} karaktera.`;
   }
 
   return errors;
@@ -95,14 +95,14 @@ function CreateCasePage({ user, onLogout }) {
           ...backendFormErrors,
         }));
       }
-      setSubmitError(result.message || "Kreiranje slucaja nije uspelo.");
+      setSubmitError(result.message || "Kreiranje slučaja nije uspelo.");
       setIsSubmitting(false);
       return;
     }
 
     const createdCaseId = result.data?.case?.id;
     if (!createdCaseId) {
-      setSubmitError("Slucaj je kreiran, ali nije vracen validan identifikator.");
+      setSubmitError("Slučaj je kreiran, ali nije vraćen validan identifikator.");
       setIsSubmitting(false);
       return;
     }
@@ -119,24 +119,24 @@ function CreateCasePage({ user, onLogout }) {
         onLogout={onLogout}
         activeTabSlug={DEFAULT_CASE_WORKSPACE_TAB}
         publishDisabled={true}
-        publishStatusMessage="Objava postaje dostupna nakon sto kreiras slucaj."
+        publishStatusMessage="Objava postaje dostupna nakon što kreiraš slučaj."
       />
 
       <main className="content create-case-content">
-        <section className="card logged-hero reveal delay-1" id="sekcija-pocetna">
-          <p className="eyebrow">Kreiranje slucaja</p>
-          <h2>Priprema novog istraznog scenarija</h2>
+        <section className="card logged-hero reveal delay-1" id="sekcija-početna">
+          <p className="eyebrow">Kreiranje slučaja</p>
+          <h2>Priprema novog istražnog scenarija</h2>
           <p>
-            Unesi naziv i opis, klikni na kreiranje i sistem ce odmah otvoriti
-            creatorski mod novog slucaja sa tabovima menija.
+            Unesi naziv i opis, klikni na kreiranje i sistem će odmah otvoriti
+            creatorski mod novog slučaja sa tabovima menija.
           </p>
         </section>
 
         <section className="card reveal delay-2">
-          <h3>Osnovni podaci slucaja</h3>
+          <h3>Osnovni podaci slučaja</h3>
           <form className="create-case-form" onSubmit={handleCreateCase} noValidate>
             <label className="create-case-field" htmlFor="create-case-title">
-              Naziv slucaja
+              Naziv slučaja
               <input
                 id="create-case-title"
                 name="title"
@@ -151,12 +151,12 @@ function CreateCasePage({ user, onLogout }) {
             </label>
 
             <label className="create-case-field" htmlFor="create-case-description">
-              Opis slucaja
+              Opis slučaja
               <textarea
                 id="create-case-description"
                 name="description"
                 className="create-case-textarea"
-                placeholder="Ukratko opisi kontekst slucaja, aktere i pocetno stanje istrage."
+                placeholder="Ukratko opiši kontekst slučaja, aktere i početno stanje istrage."
                 value={formData.description}
                 onChange={handleFieldChange}
                 disabled={isSubmitting}
@@ -170,17 +170,17 @@ function CreateCasePage({ user, onLogout }) {
 
             <div className="cta-row">
               <button className="btn btn-primary" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Kreiranje u toku..." : "Kreiraj slucaj"}
+                {isSubmitting ? "Kreiranje u toku..." : "Kreiraj slučaj"}
               </button>
             </div>
           </form>
         </section>
 
         <section className="card reveal delay-3">
-          <h3>Sta se desava nakon kreiranja?</h3>
+          <h3>Šta se dešava nakon kreiranja?</h3>
           <p className="create-case-summary">
-            Nakon uspesnog cuvanja draft slucaja bices automatski preusmeren na stranicu
-            tog slucaja u creatorskom modu i prvi tab menija.
+            Nakon uspešnog čuvanja draft slučaja bićeš automatski preusmeren na stranicu
+            tog slučaja u creatorskom modu i prvi tab menija.
           </p>
         </section>
       </main>

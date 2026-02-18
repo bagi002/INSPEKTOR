@@ -16,7 +16,7 @@ export function useCaseDocumentImageState({ formData, setFormData, setFormErrors
     if (!supportsImageEvidenceForDocumentType(formData.documentType)) {
       setFormErrors((previous) => ({
         ...previous,
-        imageEvidence: "Slike su dozvoljene samo za policijske i forenzicke dokumente.",
+        imageEvidence: "Slike su dozvoljene samo za policijske i forenzičke dokumente.",
       }));
       return;
     }
@@ -35,7 +35,7 @@ export function useCaseDocumentImageState({ formData, setFormData, setFormErrors
     if (selectedFiles.some((file) => file.size > MAX_DOCUMENT_IMAGE_FILE_SIZE_BYTES)) {
       setFormErrors((previous) => ({
         ...previous,
-        imageEvidence: "Jedna ili vise slika prelaze maksimalnu velicinu od 2MB.",
+        imageEvidence: "Jedna ili više slika prelaze maksimalnu velicinu od 2MB.",
       }));
       return;
     }
@@ -57,7 +57,7 @@ export function useCaseDocumentImageState({ formData, setFormData, setFormErrors
     } catch {
       setFormErrors((previous) => ({
         ...previous,
-        imageEvidence: "Slike nije moguce ucitati. Pokusaj ponovo.",
+        imageEvidence: "Slike nije moguće učitati. Pokušaj ponovo.",
       }));
     }
   }

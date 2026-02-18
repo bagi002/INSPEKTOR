@@ -38,19 +38,19 @@ export function buildQuizSolveBlockers(progress, totalQuestions, roleProgress = 
   const blockers = [];
 
   if (totalQuestions <= 0) {
-    blockers.push("Kviz za zavrsetak slucaja jos nije definisan od strane kreatora.");
+    blockers.push("Kviz za završetak slučaja još nije definisan od strane kreatora.");
   }
 
   const isTimelineReady =
     Number.isInteger(progress?.totalItems) && progress.totalItems > 0 && !progress.hasNextItem;
   if (!Number.isInteger(progress?.totalItems) || progress.totalItems <= 0) {
-    blockers.push("Vremenska linija slucaja nije definisana. Nije moguce potvrditi resenje.");
+    blockers.push("Vremenska linija slučaja nije definisana. Nije moguće potvrditi rešenje.");
   } else if (progress.hasNextItem) {
-    blockers.push("Prije zavrsnog kviza je potrebno otkljucati sve stavke vremenske linije.");
+    blockers.push("Prije završnog kviza je potrebno otključati sve stavke vremenske linije.");
   }
 
   if (isTimelineReady && !roleProgress?.allRolesResolved) {
-    blockers.push("Prije zavrsnog kviza je potrebno tacno postaviti uloge za sve otkljucane osobe.");
+    blockers.push("Prije završnog kviza je potrebno tačno postaviti uloge za sve otključane osobe.");
   }
 
   return blockers;

@@ -59,21 +59,21 @@ function validateCommonPayload(payload, { allowedTypes, fallbackType, requiresGi
     errors.title = "Naslov dokumenta mora imati najmanje 3 karaktera.";
   }
   if (requestedDocumentType.length > 0 && !allowedTypes.has(requestedDocumentType)) {
-    errors.documentType = "Tip dokumenta nije podrzan za izabranu sekciju.";
+    errors.documentType = "Tip dokumenta nije podržan za izabranu sekciju.";
   }
   if (title.length > MAX_TITLE_LENGTH) {
-    errors.title = `Naslov dokumenta moze imati najvise ${MAX_TITLE_LENGTH} karaktera.`;
+    errors.title = `Naslov dokumenta može imati najviše ${MAX_TITLE_LENGTH} karaktera.`;
   }
 
   if (content.length < 30) {
-    errors.content = "Sadrzaj dokumenta mora imati najmanje 30 karaktera.";
+    errors.content = "Sadržaj dokumenta mora imati najmanje 30 karaktera.";
   }
   if (content.length > MAX_CONTENT_LENGTH) {
-    errors.content = `Sadrzaj dokumenta moze imati najvise ${MAX_CONTENT_LENGTH} karaktera.`;
+    errors.content = `Sadržaj dokumenta može imati najviše ${MAX_CONTENT_LENGTH} karaktera.`;
   }
 
   if (sequenceOrder <= 0 || sequenceOrder > 9999) {
-    errors.sequenceOrder = "Redosled mora biti ceo broj izmedju 1 i 9999.";
+    errors.sequenceOrder = "Redosled mora biti ceo broj između 1 i 9999.";
   }
 
   if (recordedAt === null) {
@@ -81,37 +81,37 @@ function validateCommonPayload(payload, { allowedTypes, fallbackType, requiresGi
   }
 
   if (location.length > MAX_LOCATION_LENGTH) {
-    errors.location = `Lokacija moze imati najvise ${MAX_LOCATION_LENGTH} karaktera.`;
+    errors.location = `Lokacija može imati najviše ${MAX_LOCATION_LENGTH} karaktera.`;
   }
 
   if (!classificationLevel) {
-    errors.classificationLevel = "Klasifikacija dokumenta nije podrzana.";
+    errors.classificationLevel = "Klasifikacija dokumenta nije podržana.";
   }
 
   if (officerName.length > MAX_NAME_LENGTH) {
-    errors.officerName = `Ime sluzbenika moze imati najvise ${MAX_NAME_LENGTH} karaktera.`;
+    errors.officerName = `Ime službenika može imati najviše ${MAX_NAME_LENGTH} karaktera.`;
   }
 
   if (badgeNumber.length > MAX_BADGE_LENGTH) {
-    errors.badgeNumber = `Broj znacke moze imati najvise ${MAX_BADGE_LENGTH} karaktera.`;
+    errors.badgeNumber = `Broj značke može imati najviše ${MAX_BADGE_LENGTH} karaktera.`;
   }
 
   if (department.length > MAX_NAME_LENGTH) {
-    errors.department = `Jedinica moze imati najvise ${MAX_NAME_LENGTH} karaktera.`;
+    errors.department = `Jedinica može imati najviše ${MAX_NAME_LENGTH} karaktera.`;
   }
 
   if (evidenceReference.length > MAX_EVIDENCE_REF_LENGTH) {
     errors.evidenceReference =
-      `Referenca dokaza moze imati najvise ${MAX_EVIDENCE_REF_LENGTH} karaktera.`;
+      `Referenca dokaza može imati najviše ${MAX_EVIDENCE_REF_LENGTH} karaktera.`;
   }
 
   if (legalReference.length > MAX_EVIDENCE_REF_LENGTH) {
     errors.legalReference =
-      `Pravna referenca moze imati najvise ${MAX_EVIDENCE_REF_LENGTH} karaktera.`;
+      `Pravna referenca može imati najviše ${MAX_EVIDENCE_REF_LENGTH} karaktera.`;
   }
 
   if (notes.length > MAX_NOTES_LENGTH) {
-    errors.notes = `Napomene mogu imati najvise ${MAX_NOTES_LENGTH} karaktera.`;
+    errors.notes = `Napomene mogu imati najviše ${MAX_NOTES_LENGTH} karaktera.`;
   }
 
   if (relatedPersonIds === null) {
@@ -133,7 +133,7 @@ function validateCommonPayload(payload, { allowedTypes, fallbackType, requiresGi
   }
 
   if (hasGiverInput && (giverPersonId === null || giverPersonId <= 0)) {
-    errors.giverPersonId = "Davalac izjave mora biti validna osoba u slucaju.";
+    errors.giverPersonId = "Davalac izjave mora biti validna osoba u slučaju.";
   }
 
   if (requiresGiverPerson && !giverPersonId) {

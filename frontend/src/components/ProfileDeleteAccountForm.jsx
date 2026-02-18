@@ -44,7 +44,7 @@ function ProfileDeleteAccountForm({
         </label>
 
         <button className="btn btn-secondary profile-submit" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Brisanje..." : "Obrisi nalog"}
+          {isSubmitting ? "Brisanje..." : "Obriši nalog"}
         </button>
         {formMessage ? (
           <p className={`profile-submit-feedback${Object.keys(formErrors).length > 0 ? " profile-submit-feedback-error" : ""}`}>

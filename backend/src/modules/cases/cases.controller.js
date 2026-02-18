@@ -30,7 +30,7 @@ export async function createCaseController(req, res) {
 
   res.status(201).json({
     ok: true,
-    message: "Slucaj je uspesno sacuvan.",
+    message: "Slučaj je uspešno sačuvan.",
     data: result,
   });
 }
@@ -40,7 +40,7 @@ export async function getLoggedHomeOverviewController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Podaci za ulogovanu pocetnu su uspesno ucitani.",
+    message: "Podaci za ulogovanu početnu su uspešno učitani.",
     data: result,
   });
 }
@@ -50,7 +50,7 @@ export async function getCreatorCaseController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Slucaj za creatorski mod je uspesno ucitan.",
+    message: "Slučaj za creatorski mod je uspešno učitan.",
     data: result,
   });
 }
@@ -61,8 +61,8 @@ export async function publishCreatorCaseController(req, res) {
   res.status(200).json({
     ok: true,
     message: result.alreadyPublished
-      ? "Slucaj je vec objavljen."
-      : "Slucaj je uspesno objavljen.",
+      ? "Slučaj je već objavljen."
+      : "Slučaj je uspešno objavljen.",
     data: result,
   });
 }
@@ -76,7 +76,7 @@ export async function getCreatorCasePeopleController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Osobe i dosijei su uspesno ucitani.",
+    message: "Osobe i dosijei su uspešno učitani.",
     data: result,
   });
 }
@@ -86,7 +86,7 @@ export async function createCreatorCasePersonController(req, res) {
 
   res.status(201).json({
     ok: true,
-    message: "Osoba i dosije su uspesno sacuvani.",
+    message: "Osoba i dosije su uspešno sačuvani.",
     data: result,
   });
 }
@@ -100,7 +100,7 @@ export async function getCreatorCaseStatementsController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Izjave su uspesno ucitane.",
+    message: "Izjave su uspešno učitane.",
     data: result,
   });
 }
@@ -110,7 +110,7 @@ export async function createCreatorCaseStatementController(req, res) {
 
   res.status(201).json({
     ok: true,
-    message: "Izjava je uspesno sacuvana.",
+    message: "Izjava je uspešno sačuvana.",
     data: result,
   });
 }
@@ -124,7 +124,7 @@ export async function getCreatorCasePoliceDocumentsController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Policijski dokumenti su uspesno ucitani.",
+    message: "Policijski dokumenti su uspešno učitani.",
     data: result,
   });
 }
@@ -134,7 +134,7 @@ export async function createCreatorCasePoliceDocumentController(req, res) {
 
   res.status(201).json({
     ok: true,
-    message: "Policijski dokument je uspesno sacuvan.",
+    message: "Policijski dokument je uspešno sačuvan.",
     data: result,
   });
 }
@@ -148,7 +148,7 @@ export async function getCreatorCaseInterrogationsController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Saslusanja su uspesno ucitana.",
+    message: "Saslušanja su uspešno učitana.",
     data: result,
   });
 }
@@ -158,7 +158,7 @@ export async function createCreatorCaseInterrogationController(req, res) {
 
   res.status(201).json({
     ok: true,
-    message: "Saslusanje je uspesno sacuvano.",
+    message: "Saslušanje je uspešno sačuvano.",
     data: result,
   });
 }
@@ -168,7 +168,7 @@ export async function getCreatorCaseTimelineController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Vremenska linija je uspesno ucitana.",
+    message: "Vremenska linija je uspešno učitana.",
     data: result,
   });
 }
@@ -178,7 +178,7 @@ export async function replaceCreatorCaseTimelineController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Vremenska linija je uspesno sacuvana.",
+    message: "Vremenska linija je uspešno sačuvana.",
     data: result,
   });
 }
@@ -189,8 +189,8 @@ export async function advanceCaseTimelineController(req, res) {
   res.status(200).json({
     ok: true,
     message: result.hasNewUnlock
-      ? "Sledeca timeline stavka je uspesno otkljucana."
-      : "Sve timeline stavke su vec otkljucane.",
+      ? "Sledeca timeline stavka je uspešno otključana."
+      : "Sve timeline stavke su već otključane.",
     data: result,
   });
 }

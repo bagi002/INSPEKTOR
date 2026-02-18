@@ -45,19 +45,19 @@ function CaseQuizCreatePanel({
                 onChange={(event) =>
                   onQuestionFieldChange(question.localKey, "questionText", event.target.value)
                 }
-                placeholder="Npr. Koji je motiv osumnjicenog?"
+                placeholder="Npr. Koji je motiv osumnjičenog?"
               />
             </label>
 
             <label className="case-quiz-field">
-              Objasnjenje tacnog odgovora
+              Objašnjenje tačnog odgovora
               <textarea
                 rows={3}
                 value={question.explanationText}
                 onChange={(event) =>
                   onQuestionFieldChange(question.localKey, "explanationText", event.target.value)
                 }
-                placeholder="Kratko objasni zasto je odgovor tacan."
+                placeholder="Kratko objasni zašto je odgovor tačan."
               />
             </label>
 

@@ -1,132 +1,132 @@
 export const caseDefinition = {
-  title: "Sta je slucaj u INSPEKTOR-u?",
+  title: "Šta je slučaj u INSPEKTOR-u?",
   description:
-    "Slucaj je istrazni scenario koji je kreirao drugi korisnik. Tvoj cilj je da kroz tragove, izjave i saslusanja rekonstruises sta se desilo i potvrdis rjesenje zavrsnim kvizom.",
+    "Slučaj je istražni scenario koji je kreirao drugi korisnik. Tvoj cilj je da kroz tragove, izjave i saslušanja rekonstruišeš šta se desilo i potvrdiš rešenje završnim kvizom.",
   note:
-    "Svaki slucaj ima autora, naziv, opis, ocjenu zajednice i broj recenzija.",
+    "Svaki slučaj ima autora, naziv, opis, ocenu zajednice i broj recenzija.",
 };
 
 export const caseBuildingBlocks = [
   {
     title: "Vremenska linija",
     description:
-      "Definise redosled otkljucavanja tragova. U solve modu klik na 'Dalje' otvara sledecu stavku.",
+      "Definiše redosled otključavanja tragova. U solve modu klik na dugme Dalje otvara sledeću stavku.",
   },
   {
     title: "Osobe i dosijei",
     description:
-      "Lista svih ljudi u slucaju sa formalnim dosijeima i povezanim dokumentima.",
+      "Lista svih ljudi u slučaju sa formalnim dosijeima i povezanim dokumentima.",
   },
   {
     title: "Dokumenti",
     description:
-      "Policijski izvjestaji i forenzicki nalazi sa metapodacima i dokazima.",
+      "Policijski izvještaji i forenzički nalazi sa metapodacima i dokazima.",
   },
   {
     title: "Izjave",
     description:
-      "Formalne izjave svjedoka, osumnjicenih i zrtava povezane sa osobama.",
+      "Formalne izjave svjedoka, osumnjičenih i žrtava povezane sa osobama.",
   },
   {
-    title: "Saslusanja",
+    title: "Saslušanja",
     description:
       "Razgovor kroz stablo pitanja i odgovora koje je unaprijed pripremio kreator.",
   },
   {
-    title: "Zavrsni kviz",
+    title: "Završni kviz",
     description:
-      "Finalna potvrda rjesenja. Za prolaz je potreban rezultat strogo veci od 80%.",
+      "Finalna potvrda rešenja. Za prolaz je potreban rezultat strogo veći od 80%.",
   },
 ];
 
 export const solveGuideSteps = [
   {
-    title: "Izaberi javni slucaj",
+    title: "Izaberi javni slučaj",
     description:
-      "Na /app u sekciji 'Najocenjeniji javni slucajevi' klikni 'Pokreni resavanje'.",
+      "Na /app u sekciji `Najocenjeniji javni slučajevi` klikni `Pokreni rešavanje`.",
   },
   {
-    title: "Otkljucavaj tragove redom",
+    title: "Otključavaj tragove redom",
     description:
-      "U tabu 'Vremenska linija' koristi dugme 'Dalje' da postepeno dobijas nove informacije.",
+      "U tabu `Vremenska linija` koristi dugme Dalje da postepeno dobijaš nove informacije.",
   },
   {
     title: "Analiziraj sve tabove",
     description:
-      "Povezi informacije iz osoba, dokumenata, izjava i saslusanja prije finalne odluke.",
+      "Poveži informacije iz osoba, dokumenata, izjava i saslušanja pre finalne odluke.",
   },
   {
     title: "Postavi uloge osobama",
     description:
-      "U solve modu svakoj otkljucanoj osobi dodijeli procijenjenu ulogu (unknown/suspect/victim/witness).",
+      "U solve modu svakoj otključanoj osobi dodijeli procijenjenu ulogu (unknown/suspect/victim/witness).",
   },
   {
     title: "Predaj kviz",
     description:
-      "Kada su uslovi spremnosti ispunjeni, otvori tab 'Kviz' i predaj odgovore.",
+      "Kada su uslovi spremnosti ispunjeni, otvori tab `Kviz` i predaj odgovore.",
   },
   {
-    title: "Potvrdi rjesenje i ostavi recenziju",
+    title: "Potvrdi rešenje i ostavi recenziju",
     description:
-      "Ako je rezultat >80%, slucaj prelazi u resolved. Nakon toga mozes poslati ocjenu i komentar.",
+      "Ako je rezultat >80%, slučaj prelazi u resolved. Nakon toga možeš poslati ocjenu i komentar.",
   },
 ];
 
 export const createGuideSteps = [
   {
     title: "Kreiraj draft",
-    description: "Idi na /slucaj/novi, unesi naziv i opis slucaja.",
+    description: "Idi na /slucaj/novi, unesi naziv i opis slučaja.",
   },
   {
     title: "Dodaj osobe i dosijee",
     description:
-      "Prvo formiraj aktere slucaja, jer ce se kasnije povezivati sa dokumentima i izjavama.",
+      "Prvo formiraj aktere slučaja, jer će se kasnije povezivati sa dokumentima i izjavama.",
   },
   {
-    title: "Dodaj dokumente, izjave i saslusanja",
+    title: "Dodaj dokumente, izjave i saslušanja",
     description:
-      "Popuni kljucni istrazni materijal i provjeri da su veze izmedju entiteta ispravne.",
+      "Popuni ključni istražni materijal i proveri da su veze između entiteta ispravne.",
   },
   {
     title: "Sastavi vremensku liniju",
     description:
-      "Rasporedi sve osobe i dokumente po redosledu otkljucavanja.",
+      "Rasporedi sve osobe i dokumente po redosledu otključavanja.",
   },
   {
-    title: "Definisi zavrsni kviz",
+    title: "Definiši završni kviz",
     description:
-      "Kreiraj pitanja i tacne odgovore koji provjeravaju da li je igrac zaista razumio slucaj.",
+      "Kreiraj pitanja i tačne odgovore koji proveravaju da li je igrač zaista razumeo slučaj.",
   },
   {
-    title: "Objavi slucaj",
+    title: "Objavi slučaj",
     description:
-      "Klikni 'Objavi slucaj'. Ako postoje blokade, dopuni obavezne stavke i ponovi objavu.",
+      "Klikni `Objavi slučaj`. Ako postoje blokade, dopuni obavezne stavke i ponovi objavu.",
   },
 ];
 
 export const quickRoutes = [
-  { label: "Wiki", route: "/wiki", purpose: "Glavni GUIDE za aplikaciju." },
+  { label: "Wiki", route: "/wiki", purpose: "Glavni vodič za aplikaciju." },
   { label: "Registracija", route: "/registracija", purpose: "Kreiranje novog naloga." },
   { label: "Prijava", route: "/prijava", purpose: "Ulaz u aplikaciju." },
-  { label: "Pocetna (ulogovan)", route: "/app", purpose: "Pregled slucajeva i statistike." },
-  { label: "Kreiranje slucaja", route: "/slucaj/novi", purpose: "Start creatorskog toka." },
-  { label: "Podrska", route: "/podrska", purpose: "Prijava buga/predloga i pracenje tiketa." },
+  { label: "Početna (ulogovan)", route: "/app", purpose: "Pregled slučajeva i statistike." },
+  { label: "Kreiranje slučaja", route: "/slucaj/novi", purpose: "Start creatorskog toka." },
+  { label: "Podrška", route: "/podrska", purpose: "Prijava buga/predloga i praćenje tiketa." },
 ];
 
 export const guideFaq = [
   {
-    question: "Zasto ne vidim sve dokumente odmah?",
+    question: "Zašto ne vidim sve dokumente odmah?",
     answer:
-      "U solve rezimu vidis samo ono sto je trenutno otkljucano kroz vremensku liniju.",
+      "U solve režimu vidiš samo ono što je trenutno otključano kroz vremensku liniju.",
   },
   {
-    question: "Zasto ne mogu da predam kviz?",
+    question: "Zašto ne mogu da predam kviz?",
     answer:
-      "Najcesce nedostaju uslovi spremnosti: role assignment osoba i/ili dovoljan napredak kroz timeline.",
+      "Najčešće nedostaju uslovi spremnosti: role assignment osoba i/ili dovoljan napredak kroz timeline.",
   },
   {
-    question: "Zasto objava slucaja nije uspjela?",
+    question: "Zašto objava slučaja nije uspela?",
     answer:
-      "Backend provjerava obavezne tipove dokumenata, postojanje osoba i pokrivenost timeline-a.",
+      "Backend proverava obavezne tipove dokumenata, postojanje osoba i pokrivenost timeline-a.",
   },
 ];

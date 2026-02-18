@@ -34,23 +34,23 @@ function WikiPage({ user = null, onLogout = null }) {
       ) : (
         <PublicSidebar
           activePath={PUBLIC_ROUTES.WIKI}
-          noteText="Ovo je GUIDE kroz aplikaciju: sta je slucaj, od cega se sastoji i kako se rjesava."
+          noteText="Ovo je vodič kroz aplikaciju: šta je slučaj, od čega se sastoji i kako se rešava."
         />
       )}
 
       <main className="content wiki-content">
         <section className="card wiki-hero reveal delay-1">
-          <p className="eyebrow">INSPEKTOR GUIDE</p>
-          <h2>Jasno objasnjenje kako igra funkcionise</h2>
+          <p className="eyebrow">INSPEKTOR VODIČ</p>
+          <h2>Jasno objašnjenje kako igra funkcioniše</h2>
           <p>
-            Ovaj vodic je pisan za igrace i kreatore: prvo razumijes strukturu slucaja,
-            zatim korake resavanja, a nakon toga i tok kreiranja.
+            Ovaj vodič je pisan za igrače i kreatore: prvo razumeš strukturu slučaja,
+            zatim korake rešavanja, a nakon toga i tok kreiranja.
           </p>
           <div className="cta-row">
             {isLoggedIn ? (
               <>
-                <a className="btn btn-primary" href={AUTH_ROUTES.HOME}>Nazad na pocetnu</a>
-                <a className="btn btn-secondary" href={AUTH_ROUTES.CREATE_CASE}>Kreiraj slucaj</a>
+                <a className="btn btn-primary" href={AUTH_ROUTES.HOME}>Nazad na početnu</a>
+                <a className="btn btn-secondary" href={AUTH_ROUTES.CREATE_CASE}>Kreiraj slučaj</a>
               </>
             ) : (
               <>
@@ -76,12 +76,12 @@ function WikiPage({ user = null, onLogout = null }) {
         </section>
 
         <section className="card reveal delay-3">
-          <h3>Kako se slucaj rjesava? (korak po korak)</h3>
+          <h3>Kako se slučaj rešava? (korak po korak)</h3>
           <GuideStepList steps={solveGuideSteps} />
         </section>
 
         <section className="card reveal delay-3">
-          <h3>Kako se slucaj kreira? (korak po korak)</h3>
+          <h3>Kako se slučaj kreira? (korak po korak)</h3>
           <GuideStepList steps={createGuideSteps} />
         </section>
 

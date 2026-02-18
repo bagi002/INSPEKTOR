@@ -54,7 +54,7 @@ function AdminDashboard({ adminUser, onLogout }) {
 
     const failedResult = allResults.find((result) => !result.ok);
     if (failedResult) {
-      setErrorMessage(failedResult.message || "Ucitavanje admin podataka nije uspelo.");
+      setErrorMessage(failedResult.message || "Učitavanje admin podataka nije uspelo.");
       setIsLoading(false);
       return;
     }
@@ -152,7 +152,7 @@ function AdminDashboard({ adminUser, onLogout }) {
 
       {isLoading ? (
         <section className="admin-card">
-          <p>Ucitavanje admin podataka...</p>
+          <p>Učitavanje admin podataka...</p>
         </section>
       ) : null}
 
@@ -169,7 +169,7 @@ function AdminDashboard({ adminUser, onLogout }) {
             <div className="admin-stats-grid">
               <article className="admin-stat"><span>Korisnici</span><strong>{overview.usersCount}</strong></article>
               <article className="admin-stat"><span>Admini</span><strong>{overview.adminsCount}</strong></article>
-              <article className="admin-stat"><span>Slucajevi</span><strong>{overview.casesCount}</strong></article>
+              <article className="admin-stat"><span>Slučajevi</span><strong>{overview.casesCount}</strong></article>
               <article className="admin-stat"><span>Ticketi</span><strong>{overview.ticketsCount}</strong></article>
               <article className="admin-stat"><span>Open</span><strong>{overview.openTicketsCount}</strong></article>
               <article className="admin-stat"><span>In progress</span><strong>{overview.inProgressTicketsCount}</strong></article>

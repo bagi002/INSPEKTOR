@@ -39,7 +39,7 @@ function validateRegistrationInput(formData) {
   }
 
   if (lastName.length < 2) {
-    errors.lastName = "Prezime mora imati najmanje 2 karaktera.";
+    errors.lastName = "Prežime mora imati najmanje 2 karaktera.";
   }
 
   if (!EMAIL_PATTERN.test(email)) {
@@ -107,14 +107,14 @@ export async function registerUser(formData) {
 
     return {
       ok: true,
-      message: payload?.message || "Registracija je uspesna.",
+      message: payload?.message || "Registracija je uspešna.",
       user: payload?.data?.user || null,
     };
   } catch {
     return {
       ok: false,
       errors: {
-        general: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+        general: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       },
     };
   }
@@ -157,13 +157,13 @@ export async function loginUser(formData) {
       ok: true,
       token,
       user,
-      message: payload?.message || "Prijava je uspesna.",
+      message: payload?.message || "Prijava je uspešna.",
     };
   } catch {
     return {
       ok: false,
       errors: {
-        general: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+        general: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       },
     };
   }

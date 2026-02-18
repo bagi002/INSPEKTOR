@@ -60,7 +60,7 @@ async function requestCaseTimeline(caseId, method, payload, fallbackMessage, end
 
     return {
       ok: true,
-      message: resolveMessage(responsePayload, "Zahtev je uspesan."),
+      message: resolveMessage(responsePayload, "Zahtev je uspešan."),
       data: responsePayload?.data || null,
       errors: null,
     };
@@ -68,14 +68,14 @@ async function requestCaseTimeline(caseId, method, payload, fallbackMessage, end
     return {
       ok: false,
       unauthorized: false,
-      message: "Backend nije dostupan. Pokreni backend server i pokusaj ponovo.",
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
       errors: null,
     };
   }
 }
 
 export function fetchCaseTimeline(caseId) {
-  return requestCaseTimeline(caseId, "GET", null, "Ucitavanje vremenske linije nije uspelo.");
+  return requestCaseTimeline(caseId, "GET", null, "Učitavanje vremenske linije nije uspelo.");
 }
 
 export function replaceCaseTimeline(caseId, payload) {
@@ -83,7 +83,7 @@ export function replaceCaseTimeline(caseId, payload) {
     caseId,
     "PUT",
     payload,
-    "Cuvanje vremenske linije nije uspelo."
+    "Čuvanje vremenske linije nije uspelo."
   );
 }
 
@@ -92,7 +92,7 @@ export function advanceCaseTimeline(caseId) {
     caseId,
     "POST",
     {},
-    "Otkljucavanje sledece timeline stavke nije uspelo.",
+    "Otključavanje sledeće timeline stavke nije uspelo.",
     "timeline/advance"
   );
 }

@@ -5,7 +5,7 @@ export async function registerController(req, res) {
 
   res.status(201).json({
     ok: true,
-    message: "Registracija je uspesna.",
+    message: "Registracija je uspešna.",
     data: result,
   });
 }
@@ -15,7 +15,7 @@ export async function loginController(req, res) {
 
   res.status(200).json({
     ok: true,
-    message: "Prijava je uspesna.",
+    message: "Prijava je uspešna.",
     data: result,
   });
 }

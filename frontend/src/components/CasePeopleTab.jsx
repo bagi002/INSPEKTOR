@@ -86,7 +86,7 @@ function CasePeopleTab({ caseId, mode, onUnauthorized, onSolveRolesUpdated }) {
     <>
       {isLoading ? (
         <section className="card reveal delay-3">
-          <p>Ucitavam osobe i dosijee...</p>
+          <p>Učitavam osobe i dosijee...</p>
         </section>
       ) : null}
 
@@ -94,7 +94,7 @@ function CasePeopleTab({ caseId, mode, onUnauthorized, onSolveRolesUpdated }) {
         <section className="card reveal delay-3">
           <p className="error-banner">{errorMessage}</p>
           <button type="button" className="btn btn-primary inline-action" onClick={loadPeople}>
-            Pokusaj ponovo
+            Pokušaj ponovo
           </button>
         </section>
       ) : null}
