@@ -8,6 +8,7 @@ import LoggedHomePage from "./components/LoggedHomePage";
 import LoggedPlaceholderPage from "./components/LoggedPlaceholderPage";
 import RegistrationPage from "./components/RegistrationPage";
 import SupportPage from "./components/SupportPage";
+import WikiPage from "./components/WikiPage";
 import { clearSession, getSession } from "./services/sessionStorage";
 import {
   AUTH_ROUTES,
@@ -40,7 +41,14 @@ function App() {
   }
 
   let activePage = <LandingPage />;
-  if (!isLoggedIn) {
+  if (currentPath === PUBLIC_ROUTES.WIKI) {
+    activePage = (
+      <WikiPage
+        user={isLoggedIn ? session.user : null}
+        onLogout={isLoggedIn ? handleLogout : null}
+      />
+    );
+  } else if (!isLoggedIn) {
     if (currentPath === PUBLIC_ROUTES.LOGIN || isPrivatePath) {
       activePage = <LoginPage />;
     } else if (currentPath === PUBLIC_ROUTES.REGISTRATION) {

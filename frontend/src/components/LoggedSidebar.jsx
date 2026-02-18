@@ -1,4 +1,4 @@
-import { AUTH_ROUTES, normalizePath } from "../utils/routes";
+import { AUTH_ROUTES, PUBLIC_ROUTES, normalizePath } from "../utils/routes";
 
 const ADMIN_PANEL_URL = "http://localhost:5174";
 
@@ -8,6 +8,7 @@ function LoggedSidebar({ activePath, user, onLogout }) {
     { label: "Pocetna", href: AUTH_ROUTES.HOME },
     { label: "Kreiranje slucaja", href: AUTH_ROUTES.CREATE_CASE },
     { label: "Podrska", href: AUTH_ROUTES.SUPPORT },
+    { label: "Wiki igre", href: PUBLIC_ROUTES.WIKI },
     { label: "Profil", href: AUTH_ROUTES.PROFILE },
   ];
 

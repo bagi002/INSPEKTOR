@@ -2,6 +2,7 @@ export const PUBLIC_ROUTES = {
   HOME: "/",
   REGISTRATION: "/registracija",
   LOGIN: "/prijava",
+  WIKI: "/wiki",
 };
 
 export const AUTH_ROUTES = {

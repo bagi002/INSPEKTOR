@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Kreiranje, zavrsni kviz, recenzije i resavanje slucaja + korisnicka podrska + admin panel
+title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + korisnicka podrska + admin panel
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -17,6 +17,7 @@ participant "CasePoliceDocumentsTab" as DocsTab
 participant "CaseInterrogationsTab" as InterrogationsTab
 participant "CaseQuizTab" as QuizTab
 participant "SupportPage" as SupportPage
+participant "WikiPage (/wiki)" as WikiPage
 participant "Cases API Client" as CasesClient
 participant "Case Timeline API Client" as TimelineClient
 participant "Case People API Client" as PeopleClient
@@ -72,10 +73,14 @@ database "LocalStorage (session)" as SessionStore
 database "LocalStorage (admin session)" as AdminSessionStore
 participant "Desktop Notice View" as Notice
 
-User -> Router: Otvara /prijava
+User -> Router: Otvara /wiki
 Router -> Gate: Provera desktop pravila
 
 alt Desktop sirina
+  Gate -> WikiPage: Render wiki stranice
+  User -> WikiPage: Pregled obrasca koriscenja i ruta
+  WikiPage -> Router: Navigacija na /prijava
+  Router -> Gate: Provera desktop pravila
   Gate -> Login: Render prijavne forme
   User -> Login: Unos kredencijala i submit
   Login -> AuthClient: POST /api/auth/login

@@ -1,7 +1,7 @@
 # INSPEKTOR
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
-Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, ulogovana pocetna sa stvarnim podacima iz SQLite baze, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
+Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, javna Wiki stranica sa vodicem koriscenja, ulogovana pocetna sa stvarnim podacima iz SQLite baze, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
@@ -18,6 +18,7 @@ Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekran
 - `Instances/` - runtime podaci (npr. SQLite fajl baze)
 - `Docs/requirements/` - high-level i softverski requirements
 - `Docs/architecture/` - runtime, class i block PUML dijagrami
+- `Docs/wiki/` - Wiki dokumentacija igre i uputstva koriscenja
 - `Automation/` - alati za izgradnju dokumentacije (`docs_builder.py`)
 
 ## Pokretanje projekta (frontend + backend + admin panel)
@@ -61,6 +62,7 @@ Backend `.env` bitne promenljive za admin:
 
 ## Koriscenje auth stranica
 - Pocetna: `http://localhost:5173/`
+- Wiki igre: `http://localhost:5173/wiki`
 - Registracija: `http://localhost:5173/registracija`
 - Prijava: `http://localhost:5173/prijava`
 - Ulogovana pocetna: `http://localhost:5173/app`
@@ -133,6 +135,7 @@ Napomena:
   promenljivih (`ADMIN_BOOTSTRAP_*`).
 - Vite proxy prosledjuje `"/api/*"` zahteve ka backend-u (`http://localhost:3001`) i za
   korisnicki i za admin frontend.
+- Sadrzaj Wiki vodica je dostupan i kao projektni dokument u `Docs/wiki/game_wiki.md`.
 
 ## Backend API
 - `POST /api/auth/register`

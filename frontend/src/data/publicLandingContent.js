@@ -2,6 +2,7 @@ export const menuItems = [
   { label: "Pocetna", href: "/" },
   { label: "Registracija", href: "/registracija" },
   { label: "Prijava", href: "/prijava" },
+  { label: "Wiki igre", href: "/wiki" },
 ];
 
 export const featureCards = [

@@ -3,6 +3,7 @@ import { CASE_WORKSPACE_TABS } from "./caseWorkspaceTabs";
 import {
   AUTH_ROUTES,
   CASE_WORKSPACE_MODES,
+  PUBLIC_ROUTES,
   buildCaseWorkspaceRoute,
 } from "../utils/routes";
 import { resetCaseProgressToSolve } from "../services/caseProgressApi";
@@ -168,6 +169,9 @@ function CreateCaseSidebar({
 
       <a className="menu-link create-case-exit-link" href={AUTH_ROUTES.HOME}>
         {exitLabel}
+      </a>
+      <a className="menu-link create-case-exit-link" href={PUBLIC_ROUTES.WIKI}>
+        Wiki igre
       </a>
 
       <button type="button" className="btn btn-secondary logout-btn" onClick={onLogout}>

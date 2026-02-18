@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Case workspace + zavrsni kviz + recenzije + korisnicka podrska + admin panel
+title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + korisnicka podrska + admin panel
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -43,6 +43,11 @@ class LoggedCreatedCaseStatsModal {
 class SupportPage {
   +loadTickets()
   +handleSubmit(event)
+  +render()
+}
+
+class WikiPage {
+  +resolveUsagePatterns()
   +render()
 }
 
@@ -745,11 +750,14 @@ class SQLiteDatabase {
 
 App --> RouteUtils
 App --> DesktopGate
+App --> WikiPage
 DesktopGate --> LoggedHomePage
 DesktopGate --> CreateCasePage
 DesktopGate --> CaseWorkspacePage
 DesktopGate --> SupportPage
+DesktopGate --> WikiPage
 App --> SupportPage
+WikiPage --> RouteUtils
 
 CaseWorkspacePage *-- CreateCaseSidebar
 CaseWorkspacePage *-- CaseTimelineTab

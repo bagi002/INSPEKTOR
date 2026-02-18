@@ -21,7 +21,7 @@
 
 - id: REQ-SW-004
   name: Meni za neulogovane korisnike
-  status: Finished
+  status: In Review
   refines: REQ-006
   description: >
     Implementirati meni za neulogovano stanje kroz levi sidebar sa stavkama Pocetna,
@@ -113,7 +113,7 @@
 
 - id: REQ-SW-014
   name: Meni i routing za ulogovano stanje
-  status: Finished
+  status: In Review
   refines: REQ-006
   description: >
     Implementirati meni za ulogovane korisnike sa stavkama Pocetna, Kreiranje slucaja,
@@ -170,7 +170,7 @@
 
 - id: REQ-SW-020
   name: Meni za rezim kreiranja slucaja
-  status: Finished
+  status: In Review
   refines: REQ-029
   description: >
     Implementirati levi meni tokom kreiranja slucaja koji prikazuje tabove sekcija procesa
@@ -513,3 +513,14 @@
     koji trenutno rjesavaju i koji su rijesili slucaj, kao i listu korisnika sa
     ocjenama i komentarima, bez otvaranja kompletnog case workspace-a i bez
     prikaza ove statistike unutar `kviz` taba.
+
+- id: REQ-SW-052
+  name: Wiki stranica igre sa obrascima koriscenja i uputstvima
+  status: In Progress
+  refines: REQ-030
+  description: >
+    Implementirati javno dostupnu Wiki stranicu na ruti `/wiki` sa analiziranim
+    obrascima koriscenja aplikacije (gost, igrac, kreator, podrska/admin), mapom
+    kljucnih ruta i pravilima za uspesno rjesavanje slucaja. Obezbediti stavku
+    menija `Wiki igre` u javnom, ulogovanom i case-workspace meniju, kao i
+    trajni markdown vodic u `Docs/wiki/game_wiki.md`.

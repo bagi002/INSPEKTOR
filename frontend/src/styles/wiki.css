@@ -1,0 +1,157 @@
+.wiki-content {
+  gap: 1.15rem;
+}
+
+.wiki-hero p {
+  max-width: 78ch;
+}
+
+.wiki-lead {
+  margin-bottom: 0.55rem;
+  font-weight: 600;
+  color: #1e4069;
+}
+
+.wiki-note {
+  margin: 0 0 0.95rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px dashed #b7cce3;
+  border-radius: 12px;
+  background: #f3f8ff;
+  color: #294b73;
+}
+
+.wiki-block-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.wiki-block-card {
+  border: 1px solid #c8d8eb;
+  border-radius: 14px;
+  padding: 0.95rem;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
+}
+
+.wiki-block-card h4 {
+  margin: 0 0 0.46rem;
+  color: #173b62;
+}
+
+.wiki-block-card p {
+  margin: 0;
+}
+
+.wiki-guide-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.72rem;
+  counter-reset: wiki-step;
+}
+
+.wiki-guide-step {
+  position: relative;
+  padding: 0.85rem 0.9rem 0.85rem 3rem;
+  border: 1px solid #d0deee;
+  border-radius: 14px;
+  background: #f9fbff;
+}
+
+.wiki-guide-step::before {
+  counter-increment: wiki-step;
+  content: counter(wiki-step);
+  position: absolute;
+  left: 0.85rem;
+  top: 0.88rem;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #f7fbff;
+  background: linear-gradient(135deg, #184981, #2f6ab0);
+}
+
+.wiki-guide-step h4 {
+  margin: 0 0 0.34rem;
+  color: #173a61;
+}
+
+.wiki-guide-step p {
+  margin: 0;
+}
+
+.wiki-route-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.72rem;
+}
+
+.wiki-route-card {
+  border: 1px solid #c6d7eb;
+  border-radius: 14px;
+  padding: 0.85rem;
+  background: #f6faff;
+}
+
+.wiki-route-card h4 {
+  margin: 0 0 0.38rem;
+  color: #16395f;
+}
+
+.wiki-route-path {
+  margin: 0 0 0.38rem;
+}
+
+.wiki-route-path code {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #123d74;
+}
+
+.wiki-route-card p {
+  margin: 0;
+}
+
+.wiki-faq-list {
+  display: grid;
+  gap: 0.78rem;
+}
+
+.wiki-faq-item {
+  border: 1px solid #d6e2f1;
+  border-left: 4px solid #21528f;
+  border-radius: 12px;
+  padding: 0.72rem 0.86rem;
+  background: #f9fbff;
+}
+
+.wiki-faq-item h4 {
+  margin: 0 0 0.32rem;
+  color: #173a61;
+}
+
+.wiki-faq-item p {
+  margin: 0;
+}
+
+@media (max-width: 1380px) {
+  .wiki-block-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wiki-route-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1220px) {
+  .wiki-route-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Case workspace + zavrsni kviz + recenzije + korisnicka podrska + admin panel
+title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + korisnicka podrska + admin panel
 
 package "Frontend" {
   [App Shell]
@@ -8,6 +8,8 @@ package "Frontend" {
   [Protected Route Guard]
   [Route Utils]
   [Public Auth Pages]
+  [Wiki Page]
+  [Wiki Usage Guide View]
   [Logged Home Page]
   [Public Case Start Action]
   [Creator Case Stats Action]
@@ -151,12 +153,16 @@ database "support_tickets" as SupportDb
 [Desktop Policy Gate] --> [Desktop Warning View]
 [Route Resolver] --> [Protected Route Guard]
 [Route Resolver] --> [Public Auth Pages]
+[Route Resolver] --> [Wiki Page]
 [Route Resolver] --> [Route Utils]
 [Protected Route Guard] --> [Logged Home Page]
 [Protected Route Guard] --> [Support Page]
 [Protected Route Guard] --> [Create Case Start Page]
 [Protected Route Guard] --> [Case Workspace Page]
 [Public Auth Pages] --> [Auth API Client]
+[Wiki Page] --> [Wiki Usage Guide View]
+[Wiki Page] --> [Route Utils]
+[Wiki Page] --> [Logged Sidebar]
 
 [Logged Home Page] --> [Logged Sidebar]
 [Logged Home Page] --> [Cases API Client]
