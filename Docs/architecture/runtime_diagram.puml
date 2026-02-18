@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Kreiranje, zavrsni kviz i resavanje slucaja + korisnicka podrska + admin panel
+title Runtime Diagram - Kreiranje, zavrsni kviz, recenzije i resavanje slucaja + korisnicka podrska + admin panel
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -23,6 +23,7 @@ participant "Case People API Client" as PeopleClient
 participant "Case Documents API Client" as DocumentsClient
 participant "Case Interrogations API Client" as InterrogationsClient
 participant "Case Quiz API Client" as QuizClient
+participant "Case Reviews API Client" as ReviewsClient
 participant "Case Progress API Client" as ProgressClient
 participant "Support API Client" as SupportClient
 participant "Auth API Client" as AuthClient
@@ -38,6 +39,7 @@ participant "Case People Service" as PeopleService
 participant "Case Documents Service" as DocumentsService
 participant "Case Interrogations Service" as InterrogationsService
 participant "Case Quiz Service" as QuizService
+participant "Case Reviews Service" as ReviewsService
 participant "Case Progress Service" as ProgressService
 participant "Case Publish Service" as PublishService
 participant "Support Service" as SupportService
@@ -51,6 +53,7 @@ participant "Case People Repository" as PeopleRepo
 participant "Case Documents Repository" as DocumentsRepo
 participant "Case Interrogations Repository" as InterrogationsRepo
 participant "Case Quiz Repository" as QuizRepo
+participant "Case Reviews Repository" as ReviewsRepo
 participant "Case Publish Repository" as PublishRepo
 participant "Support Repository" as SupportRepo
 participant "Admin Repository" as AdminRepo
@@ -100,6 +103,22 @@ alt Desktop sirina
   LoggedHome -> Router: /slucaj/{caseId}/resavanje/vremenska-linija
   Router -> Guard: Provera sesije
   Guard -> Workspace: Otvaranje solve moda za izabrani javni slucaj
+
+  User -> LoggedHome: Klik "Otvori statistiku" na objavljenom kreiranom slucaju
+  LoggedHome -> ReviewsClient: GET /api/cases/{caseId}/reviews?scope=create
+  ReviewsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> ReviewsService: getCaseReviews(caseId, userId, "create")
+  ReviewsService -> CasesRepo: findCaseByIdForAuthor(caseId, userId)
+  ReviewsService -> ReviewsRepo: getCaseReviewSummary(caseId)
+  ReviewsService -> ReviewsRepo: getResolvedCaseUsersByCaseId(caseId)
+  ReviewsService -> ReviewsRepo: getCaseReviewsByCaseId(caseId)
+  ReviewsRepo -> CasesStore: SELECT progress/rating/komentari + korisnici
+  CasesStore --> ReviewsRepo: agregat + liste
+  ReviewsRepo --> ReviewsService: summary + solvedUsers + reviews
+  ReviewsService --> CasesApi: response payload
+  CasesApi --> ReviewsClient: JSON uspeh
+  ReviewsClient --> LoggedHome: Otvaranje popup panela statistike slucaja
 
   User -> LoggedHome: Klik "Kreiraj novi slucaj"
   LoggedHome -> Router: /slucaj/novi
@@ -412,6 +431,13 @@ alt Desktop sirina
   CasesApi --> QuizClient: JSON uspeh
   QuizClient --> QuizTab: Prikaz/edit pitanja, odgovora i objasnjenja
 
+  note right of QuizTab
+    Kreatorski pregled statistike i recenzija
+    nije dio `kviz` taba.
+    Prikazuje se kroz popup panel
+    sa ulogovane pocetne stranice.
+  end note
+
   User -> QuizTab: Dodaje pitanja i cuva zavrsni kviz
   QuizTab -> QuizClient: PUT /api/cases/{caseId}/quiz
   QuizClient -> CasesApi: HTTP zahtev
@@ -544,6 +570,26 @@ alt Desktop sirina
   CasesApi --> QuizClient: JSON uspeh
   QuizClient --> QuizTab: Prikaz opisa slucaja i pitanja kviza
 
+  QuizTab -> ReviewsClient: GET /api/cases/{caseId}/reviews?scope=solve
+  ReviewsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> ReviewsService: getCaseReviews(caseId, userId, "solve")
+  ReviewsService -> CasesRepo: findCaseById(caseId) + provera pristupa
+  ReviewsService -> ProgressRepo: getCaseUserProgressByCaseIdAndUserId(caseId, userId)
+  alt Korisnik je vec ostavio ocjenu
+    ReviewsService -> ReviewsRepo: getCaseReviewSummary(caseId)
+    ReviewsService -> ReviewsRepo: getCaseReviewsByCaseId(caseId)
+    ReviewsRepo -> CasesStore: SELECT recenzije + komentari
+    CasesStore --> ReviewsRepo: lista recenzija
+    ReviewsService --> CasesApi: response payload
+    CasesApi --> ReviewsClient: JSON uspeh
+    ReviewsClient --> QuizTab: Prikaz prosjeka, broja recenzija i komentara
+  else Korisnik jos nije ocijenio slucaj
+    ReviewsService --> CasesApi: 403 (zakljucan pregled recenzija)
+    CasesApi --> ReviewsClient: JSON greska
+    ReviewsClient --> QuizTab: Prikaz forme za jednokratno ocjenjivanje
+  end
+
   User -> QuizTab: Predaje odgovore zavrsnog kviza
   QuizTab -> QuizClient: POST /api/cases/{caseId}/quiz/submit
   QuizClient -> CasesApi: HTTP zahtev
@@ -558,6 +604,22 @@ alt Desktop sirina
     QuizService --> CasesApi: response payload sa review podacima
     CasesApi --> QuizClient: JSON uspeh (slucaj rijesen)
     QuizClient --> QuizTab: Prikaz tacnih odgovora + objasnjenja + vrijeme rjesavanja
+    User -> QuizTab: Salje jednokratnu ocjenu i opcioni komentar
+    QuizTab -> ReviewsClient: POST /api/cases/{caseId}/reviews
+    ReviewsClient -> CasesApi: HTTP zahtev
+    CasesApi -> JwtGuard: Verifikacija tokena
+    JwtGuard -> ReviewsService: submitCaseReview(caseId, payload, userId)
+    ReviewsService -> ProgressRepo: ensure/get case_user_progress za korisnika
+    ReviewsService -> ReviewsRepo: saveCaseUserReview(caseId, userId, rating+comment)
+    ReviewsRepo -> CasesStore: UPDATE case_user_progress(user_rating, user_review_comment, user_rated_at)
+    ReviewsService -> ReviewsRepo: recalculateCaseRatings(caseId)
+    ReviewsRepo -> CasesStore: UPDATE cases(average_rating, rating_count)
+    ReviewsService -> ReviewsRepo: getCaseReviewSummary + getCaseReviewsByCaseId
+    ReviewsRepo -> CasesStore: SELECT agregat + komentari
+    CasesStore --> ReviewsRepo: summary + reviews
+    ReviewsService --> CasesApi: response payload
+    CasesApi --> ReviewsClient: 201 JSON uspeh
+    ReviewsClient --> QuizTab: Prikaz prosjecne ocjene, broja recenzija i komentara
     QuizTab --> LoggedHome: Slucaj prelazi u listu "Reseni slucajevi"
   else Rezultat <= 80% tacnih
     QuizService --> CasesApi: response payload bez tacnih odgovora

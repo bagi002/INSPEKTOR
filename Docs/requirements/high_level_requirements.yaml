@@ -110,7 +110,7 @@
 
 - id: REQ-011
   name: Ocjena
-  status: Draft
+  status: Finished
   description: >  
     Svaki slucaj ima ocjenu koja se formira na osnovu ocjena koje su dali korisnici koji su rijesili slucaj
     Ocjena se formira na osnovu prosjeka svih ocjena koje su dali korisnici koji su rijesili slucaj
@@ -243,7 +243,7 @@
 
 - id: REQ-024
   name: Ocjenjivanje slucaja
-  status: Draft
+  status: Finished
   description: >
     Nakon sto korisnik rijesi slucaj, tada ce imati opciju da ocjeni slucaj
     Korisnik moze dati ocjenu od 1 do 5 zvjezdica, sa mogucnoscu polovine zvjezdice (npr. 4.5)
@@ -251,7 +251,7 @@
 
 - id: REQ-025
   name: Pregled Ko je sve rijesio vas slucaj i koje ocjene i kritike ste dobili
-  status: Draft
+  status: Finished
   description: >
     Kreator slucaja treba da ima opciju da vidi ko je sve rijesio njegov slucaj i koje ocjene i kritike su dobili
     Treba da ima opciju da vidi listu korisnika koji su rijesili njegov slucaj, sa njihovim ocjenama i komentarima

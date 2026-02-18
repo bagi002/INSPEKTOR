@@ -1,18 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import LoggedCaseSection from "./LoggedCaseSection";
+import LoggedCreatedCaseDetails from "./LoggedCreatedCaseDetails";
+import LoggedCreatedCaseStatsModal from "./LoggedCreatedCaseStatsModal";
 import LoggedSidebar from "./LoggedSidebar";
 import {
   EMPTY_HOME_DATA,
   formatAverageRating,
   formatResolvedAt,
   formatReviews,
-  formatStatus,
   normalizeHomeData,
 } from "./loggedHomeData";
 import { fetchLoggedHomeCases } from "../services/casesApi";
 import { AUTH_ROUTES, CASE_WORKSPACE_MODES, buildCaseWorkspaceRoute } from "../utils/routes";
+
 function LoggedHomePage({ user, onLogout }) {
   const [homeData, setHomeData] = useState(EMPTY_HOME_DATA);
+  const [selectedCreatedCaseForStats, setSelectedCreatedCaseForStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const quickStats = useMemo(
@@ -20,10 +23,7 @@ function LoggedHomePage({ user, onLogout }) {
       { label: "Aktivni slucajevi", value: String(homeData.summary.activeCount) },
       { label: "Reseni slucajevi", value: String(homeData.summary.resolvedCount) },
       { label: "Kreirani slucajevi", value: String(homeData.summary.createdCount) },
-      {
-        label: "Prosecna ocena",
-        value: formatAverageRating(homeData.summary.averageResolvedRating),
-      },
+      { label: "Prosecna ocena", value: formatAverageRating(homeData.summary.averageResolvedRating) },
     ],
     [homeData.summary]
   );
@@ -50,38 +50,39 @@ function LoggedHomePage({ user, onLogout }) {
     setHomeData(normalizeHomeData(result.data));
     setIsLoading(false);
   }, [onLogout]);
+
+  const handleOpenCreatedCaseStats = useCallback((item) => {
+    if (!item?.id) return;
+    setSelectedCreatedCaseForStats({ id: item.id, title: item.title || "Objavljeni slucaj" });
+  }, []);
+
+  const handleCloseCreatedCaseStats = useCallback(() => {
+    setSelectedCreatedCaseForStats(null);
+  }, []);
+
   useEffect(() => {
     void loadHomeData();
   }, [loadHomeData]);
+
   return (
     <div className="app-shell app-shell-logged" id="ulogovani-home">
       <LoggedSidebar activePath={AUTH_ROUTES.HOME} user={user} onLogout={onLogout} />
-
       <main className="content logged-content">
         <section className="card logged-hero reveal delay-1">
           <p className="eyebrow">Ulogovani rezim</p>
           <h2>Dobrodosao nazad, {user.firstName}.</h2>
-          <p>
-            U nastavku imas pregled slucajeva koje trenutno resavas, zavrsenih
-            istraga, najocenjenijih javnih slucajeva i scenarija koje si kreirao.
-          </p>
+          <p>U nastavku imas pregled slucajeva koje trenutno resavas, zavrsenih istraga, najocenjenijih javnih slucajeva i scenarija koje si kreirao.</p>
           <div className="cta-row">
-            <a className="btn btn-primary" href={AUTH_ROUTES.CREATE_CASE}>
-              Kreiraj novi slucaj
-            </a>
-            <a className="btn btn-secondary" href={AUTH_ROUTES.PROFILE}>
-              Otvori profil
-            </a>
+            <a className="btn btn-primary" href={AUTH_ROUTES.CREATE_CASE}>Kreiraj novi slucaj</a>
+            <a className="btn btn-secondary" href={AUTH_ROUTES.PROFILE}>Otvori profil</a>
           </div>
         </section>
-
         {isLoading ? (
           <section className="card reveal delay-2">
             <p className="eyebrow">Ucitavanje podataka</p>
             <h3>Pripremam stvarne slucajeve iz baze...</h3>
           </section>
         ) : null}
-
         {!isLoading && errorMessage ? (
           <section className="card reveal delay-2">
             <p className="error-banner">{errorMessage}</p>
@@ -90,7 +91,6 @@ function LoggedHomePage({ user, onLogout }) {
             </button>
           </section>
         ) : null}
-
         {!isLoading && !errorMessage ? (
           <>
             <section className="card reveal delay-2">
@@ -104,7 +104,6 @@ function LoggedHomePage({ user, onLogout }) {
                 ))}
               </div>
             </section>
-
             <LoggedCaseSection
               title="Slucajevi koje trenutno resavas"
               items={homeData.sections.activeCases}
@@ -113,16 +112,10 @@ function LoggedHomePage({ user, onLogout }) {
                 <>
                   <p className="case-meta">Faza istrage: {item.progressPercent || 0}%</p>
                   <p>{item.description}</p>
-                  <a
-                    className="btn btn-secondary inline-action case-inline-link"
-                    href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}
-                  >
-                    Nastavi resavanje
-                  </a>
+                  <a className="btn btn-secondary inline-action case-inline-link" href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}>Nastavi resavanje</a>
                 </>
               )}
             />
-
             <LoggedCaseSection
               title="Reseni slucajevi"
               items={homeData.sections.resolvedCases}
@@ -131,17 +124,11 @@ function LoggedHomePage({ user, onLogout }) {
               emptyMessage="Jos nemas resene slucajeve."
               renderDetails={(item) => (
                 <>
-                  <p>
-                    Ocena: <strong>{formatAverageRating(item.rating)}</strong> |{" "}
-                    {formatReviews(item.reviews)}
-                  </p>
-                  <p>
-                    Rijeseno: <strong>{formatResolvedAt(item.resolvedAt)}</strong>
-                  </p>
+                  <p>Ocena: <strong>{formatAverageRating(item.rating)}</strong> | {formatReviews(item.reviews)}</p>
+                  <p>Rijeseno: <strong>{formatResolvedAt(item.resolvedAt)}</strong></p>
                 </>
               )}
             />
-
             <LoggedCaseSection
               title="Slucajevi u fazi kreiranja"
               items={draftCreationCases}
@@ -150,19 +137,11 @@ function LoggedHomePage({ user, onLogout }) {
               emptyMessage="Trenutno nemas slucajeve u fazi kreiranja."
               renderDetails={(item) => (
                 <>
-                  <p>
-                    Status: <strong>{formatStatus(item.publicationStatus)}</strong>
-                  </p>
-                  <a
-                    className="btn btn-secondary inline-action case-inline-link"
-                    href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.CREATE)}
-                  >
-                    Nastavi kreiranje
-                  </a>
+                  <p>Status: <strong>U izradi</strong></p>
+                  <a className="btn btn-secondary inline-action case-inline-link" href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.CREATE)}>Nastavi kreiranje</a>
                 </>
               )}
             />
-
             <LoggedCaseSection
               title="Najocenjeniji javni slucajevi"
               items={homeData.sections.topRatedPublicCases}
@@ -171,35 +150,30 @@ function LoggedHomePage({ user, onLogout }) {
               emptyMessage="Nema javnih slucajeva za prikaz."
               renderDetails={(item) => (
                 <>
-                  <p>
-                    Ocena: <strong>{formatAverageRating(item.rating)}</strong> | Autor: {item.author}
-                  </p>
-                  <a
-                    className="btn btn-secondary inline-action case-inline-link"
-                    href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}
-                  >
-                    Pokreni resavanje
-                  </a>
+                  <p>Ocena: <strong>{formatAverageRating(item.rating)}</strong> | Autor: {item.author}</p>
+                  <a className="btn btn-secondary inline-action case-inline-link" href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}>Pokreni resavanje</a>
                 </>
               )}
             />
-
             <LoggedCaseSection
               title="Slucajevi koje si kreirao"
               items={homeData.sections.createdCases}
               gridClassName="case-grid case-grid-compact"
               delayClass="delay-4"
               emptyMessage="Jos nemas kreirane slucajeve."
-              renderDetails={(item) => (
-                <p>
-                  Status: <strong>{formatStatus(item.publicationStatus)}</strong> | Ocena:{" "}
-                  {formatAverageRating(item.rating)} ({formatReviews(item.reviews)})
-                </p>
-              )}
+              renderDetails={(item) => <LoggedCreatedCaseDetails item={item} onOpenStatistics={handleOpenCreatedCaseStats} />}
             />
           </>
         ) : null}
       </main>
+      {selectedCreatedCaseForStats ? (
+        <LoggedCreatedCaseStatsModal
+          caseId={selectedCreatedCaseForStats.id}
+          caseTitle={selectedCreatedCaseForStats.title}
+          onClose={handleCloseCreatedCaseStats}
+          onUnauthorized={onLogout}
+        />
+      ) : null}
     </div>
   );
 }

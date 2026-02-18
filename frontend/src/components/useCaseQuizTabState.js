@@ -3,6 +3,7 @@ import { fetchCaseQuiz } from "../services/caseQuizApi";
 import { CASE_WORKSPACE_MODES } from "../utils/routes";
 import { useCaseQuizCreateState } from "./useCaseQuizCreateState";
 import { useCaseQuizSolveState } from "./useCaseQuizSolveState";
+import { useCaseReviewState } from "./useCaseReviewState";
 
 export function useCaseQuizTabState({ caseId, mode, onUnauthorized, onResolved }) {
   const [caseSummary, setCaseSummary] = useState(null);
@@ -13,14 +14,30 @@ export function useCaseQuizTabState({ caseId, mode, onUnauthorized, onResolved }
 
   const createState = useCaseQuizCreateState({ caseId, onUnauthorized });
   const solveState = useCaseQuizSolveState({ caseId, onUnauthorized, onResolved });
+  const reviewState = useCaseReviewState({
+    caseId,
+    isCreateMode,
+    onUnauthorized,
+    onReviewPersisted: (payload) => {
+      if (payload?.case) {
+        setCaseSummary(payload.case);
+      }
+      if (typeof onResolved === "function") {
+        onResolved(payload);
+      }
+    },
+  });
+
   const { applyLoadedQuestions, clearCreateMessages } = createState;
   const { applyLoadedSolvePayload, clearSolveMessages } = solveState;
+  const { clearReviewMessages, loadReviews } = reviewState;
 
   const loadQuiz = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage("");
     clearCreateMessages();
     clearSolveMessages();
+    clearReviewMessages();
 
     const result = await fetchCaseQuiz(caseId, isCreateMode ? "create" : "solve");
     if (!result.ok) {
@@ -45,6 +62,14 @@ export function useCaseQuizTabState({ caseId, mode, onUnauthorized, onResolved }
       applyLoadedSolvePayload(payload);
     }
 
+    if (!isCreateMode) {
+      const reviewLoad = await loadReviews();
+      if (!reviewLoad.ok) {
+        setIsLoading(false);
+        return;
+      }
+    }
+
     setIsLoading(false);
   }, [
     caseId,
@@ -54,6 +79,8 @@ export function useCaseQuizTabState({ caseId, mode, onUnauthorized, onResolved }
     applyLoadedSolvePayload,
     clearCreateMessages,
     clearSolveMessages,
+    clearReviewMessages,
+    loadReviews,
   ]);
 
   useEffect(() => {
@@ -70,6 +97,16 @@ export function useCaseQuizTabState({ caseId, mode, onUnauthorized, onResolved }
     review: solveState.review,
     lastAttempt: solveState.lastAttempt,
     selectedAnswers: solveState.selectedAnswers,
+    reviewSummary: reviewState.reviewSummary,
+    reviewItems: reviewState.reviewItems,
+    solvedUsers: reviewState.solvedUsers,
+    userReview: reviewState.userReview,
+    reviewRatingInput: reviewState.reviewRatingInput,
+    reviewCommentInput: reviewState.reviewCommentInput,
+    isSubmittingReview: reviewState.isSubmittingReview,
+    reviewErrorMessage: reviewState.reviewErrorMessage,
+    reviewSuccessMessage: reviewState.reviewSuccessMessage,
+    isReviewVisibilityLocked: reviewState.isReviewVisibilityLocked,
     isCreateMode,
     isLoading,
     errorMessage,
@@ -90,5 +127,9 @@ export function useCaseQuizTabState({ caseId, mode, onUnauthorized, onResolved }
     handleSaveQuiz: createState.handleSaveQuiz,
     handleSolveAnswerChange: solveState.handleSolveAnswerChange,
     handleSubmitQuiz: solveState.handleSubmitQuiz,
+    handleReviewRatingChange: reviewState.handleReviewRatingChange,
+    handleReviewCommentChange: reviewState.handleReviewCommentChange,
+    handleSubmitReview: () =>
+      reviewState.handleSubmitReview(solveState.progress?.progressStatus === "resolved"),
   };
 }

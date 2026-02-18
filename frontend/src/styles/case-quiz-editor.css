@@ -46,6 +46,7 @@
 
 .case-quiz-field input,
 .case-quiz-field textarea,
+.case-quiz-field select,
 .case-quiz-option-row input[type="text"] {
   width: 100%;
   border-radius: 10px;
@@ -57,6 +58,7 @@
 
 .case-quiz-field input:focus,
 .case-quiz-field textarea:focus,
+.case-quiz-field select:focus,
 .case-quiz-option-row input[type="text"]:focus {
   outline: none;
   border-color: #4878b4;
@@ -146,4 +148,62 @@
 .case-quiz-review-item h4,
 .case-quiz-review-item p {
   margin: 0.2rem 0;
+}
+
+.case-review-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.case-review-stat-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.case-review-stat-card {
+  border: 1px solid #bfd1e6;
+  border-radius: 12px;
+  background: #f8fbff;
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.case-review-stat-card strong {
+  color: #1d3f68;
+}
+
+.case-review-stat-card span {
+  color: #546a84;
+  font-size: 0.8rem;
+}
+
+.case-reviews-list,
+.case-solved-users-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.case-review-item,
+.case-solved-user-item {
+  border: 1px solid #bfd1e6;
+  border-radius: 12px;
+  background: #f9fbff;
+  padding: 0.8rem;
+}
+
+.case-review-item h4,
+.case-solved-user-item h4 {
+  margin: 0 0 0.4rem;
+  color: #1d3f68;
+}
+
+.case-review-item p,
+.case-solved-user-item p {
+  margin: 0.22rem 0;
+}
+
+.case-review-comment {
+  color: #2f4862;
 }

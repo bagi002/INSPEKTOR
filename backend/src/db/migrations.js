@@ -128,6 +128,8 @@ const MIGRATIONS = [
         CHECK (progress_percent >= 0 AND progress_percent <= 100),
       user_rating REAL
         CHECK (user_rating >= 0 AND user_rating <= 5),
+      user_review_comment TEXT NOT NULL DEFAULT '',
+      user_rated_at TEXT,
       unlocked_timeline_count INTEGER NOT NULL DEFAULT 0
         CHECK (unlocked_timeline_count >= 0),
       last_unlocked_timeline_at TEXT NOT NULL DEFAULT '',
@@ -167,6 +169,8 @@ async function applyColumnMigrations(database) {
   await ensureColumnExists(database, "case_user_progress", "unlocked_timeline_count", "INTEGER NOT NULL DEFAULT 0");
   await ensureColumnExists(database, "case_user_progress", "last_unlocked_timeline_at", "TEXT NOT NULL DEFAULT ''");
   await ensureColumnExists(database, "case_user_progress", "resolved_at", "TEXT");
+  await ensureColumnExists(database, "case_user_progress", "user_review_comment", "TEXT NOT NULL DEFAULT ''");
+  await ensureColumnExists(database, "case_user_progress", "user_rated_at", "TEXT");
 }
 export async function applyMigrations(database) {
   for (const statement of MIGRATIONS) {

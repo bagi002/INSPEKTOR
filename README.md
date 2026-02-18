@@ -1,7 +1,7 @@
 # INSPEKTOR
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
-Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, ulogovana pocetna sa stvarnim podacima iz SQLite baze, kao i zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`.
+Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, ulogovana pocetna sa stvarnim podacima iz SQLite baze, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
@@ -110,17 +110,23 @@ Tok koriscenja:
     odgovara na pitanja i predaje kviz; potrebno je ostvariti strogo vise od 80% tacnih odgovora.
 19. Pri uspjesnom rezultatu slucaj prelazi u status `resolved` uz cuvanje vremena rjesavanja,
     prikaz tacnih odgovora i objasnjenja, i pomjeranje slucaja u sekciju `Reseni slucajevi`.
-20. U lijevom meniju creatorskog moda postoji opcija `Vrati slucaj u resavanje` koja autoru
+20. Nakon uspjesnog rjesenja korisnik moze jednom poslati ocjenu (1-5 sa korakom 0.5) i
+    opcioni komentar za taj tudji slucaj; nakon slanja dobija prikaz prosjecne ocjene,
+    broja recenzija i komentara.
+21. U sekciji `Slucajevi koje si kreirao`, za objavljen slucaj postoji akcija
+    `Otvori statistiku` koja otvara zaseban popup panel sa statistikama slucaja
+    (bez otvaranja kompletnog case workspace-a).
+22. U lijevom meniju creatorskog moda postoji opcija `Vrati slucaj u resavanje` koja autoru
     vraca sopstveni progress iz `resolved` u `in_progress`.
-21. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i verziju
+23. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i verziju
     aplikacije, i pratiti statuse svih svojih tiketa.
-22. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
+24. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
     email+lozinka naloga + lozinka admin panela (`ADMIN_PANEL_PASSWORD`).
-23. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
+25. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
-- Slucajevi i povezani podaci (osobe, dokumenti, timeline, korisnicki napredak i zavrsni kviz) cuvaju se u SQLite `case_*` tabelama.
+- Slucajevi i povezani podaci (osobe, dokumenti, timeline, korisnicki napredak, zavrsni kviz i recenzije) cuvaju se u SQLite `case_*` tabelama.
 - Ticketi podrske se cuvaju u tabeli `support_tickets`.
 - Pri uspesnoj prijavi backend vraca JWT token koji se cuva u `localStorage` na klijentu.
 - Pri prvom pokretanju backend automatski obezbedjuje bootstrap admin nalog na osnovu `.env`
@@ -146,9 +152,10 @@ Napomena:
   - napomena: trenutno je podrzano cuvanje napretka za autora slucaja (ulogovanog korisnika)
 - `GET /api/cases/:caseId/overview` (autorizacija: `Bearer <JWT>`)
   - vraca pregled slucaja za workspace (opis, autor, ocjenu, broj recenzija)
-  - `?scope=create` vraca creatorski pregled samo autoru slucaja
+  - `?scope=create` vraca creatorski pregled samo autoru slucaja, ukljucujuci community
+    metrike (`activeSolverCount`, `resolvedSolverCount`)
   - `?scope=solve` vraca solve pregled (sa korisnickim progresom, brojem kviz pitanja
-    i role readiness statusom) autoru, kao i korisnicima koji imaju pravo pristupa slucaju
+    i role readiness statusom), kao i community metrike
 - `GET /api/cases/:caseId/creator` (autorizacija: `Bearer <JWT>`)
   - vraca slucaj za creatorski mod samo ako je ulogovani korisnik autor tog slucaja
 - `POST /api/cases/:caseId/publish` (autorizacija: `Bearer <JWT>`)
@@ -257,6 +264,16 @@ Napomena:
   - uspjesan rezultat azurira `case_user_progress` na `resolved`, postavlja `resolved_at`
     i vraca review podatke sa tacnim odgovorima i objasnjenjima
   - neuspjesan rezultat ostavlja slucaj u `in_progress` bez prikaza tacnih odgovora
+- `GET /api/cases/:caseId/reviews` (autorizacija: `Bearer <JWT>`)
+  - `?scope=create` vraca kreatoru slucaja dashboard recenzija:
+    summary (prosjecna ocjena, broj recenzija, koliko trenutno rjesava i koliko je rijesilo),
+    listu korisnika koji su rijesili slucaj i listu recenzija/komentara;
+    koristi se za popup statistike na ulogovanoj pocetnoj
+  - `?scope=solve` vraca summary + recenzije korisniku koji je vec ocijenio taj slucaj
+- `POST /api/cases/:caseId/reviews` (autorizacija: `Bearer <JWT>`)
+  - cuva jednokratnu ocjenu (1-5, korak 0.5) i opcioni komentar za tudji objavljen slucaj
+  - dozvoljeno samo ako je korisnik prethodno uspjesno rijesio slucaj (`resolved`)
+  - nakon cuvanja backend automatski osvezava `average_rating` i `rating_count` slucaja
 - `GET /api/support/tickets/me` (autorizacija: `Bearer <JWT>`)
   - vraca sve tikete trenutno ulogovanog korisnika, ukljucujuci status i admin napomenu
 - `POST /api/support/tickets` (autorizacija: `Bearer <JWT>`)
@@ -311,6 +328,8 @@ Napomena:
   - pregled najocenjenijih javnih slucajeva iz baze
   - akcija `Pokreni resavanje` za javne slucajeve iz sekcije najocenjenijih
   - pregled slucajeva koje je korisnik kreirao (bez mock podataka)
+  - za objavljene slucajeve koje je korisnik kreirao dostupna je akcija
+    `Otvori statistiku` koja otvara zaseban popup panel sa statistikama slucaja
   - prikaz loading, greske i praznih stanja
   - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Podrska`, `Profil`, `Odjava`)
   - za admin korisnika dodatni link ka izdvojenom admin panelu (`http://localhost:5174`)
@@ -379,8 +398,12 @@ Napomena:
       u rezimu pregleda i pokusava auto-otvaranje chat modala
   - tab `kviz`:
     - u creatorskom modu omogucava kreiranje zavrsnog kviza (pitanja, ponudjeni odgovori i objasnjenja)
+    - creatorski dashboard recenzija/statistike nije u ovom tabu, vec u popup panelu
+      dostupan iz sekcije `Slucajevi koje si kreirao` na ulogovanoj pocetnoj
     - u rezimu resavanja prikazuje opis slucaja i kviz za potvrdu rjesenja
     - prikaz tacnih odgovora i objasnjenja je dostupan tek nakon uspjesnog rjesavanja slucaja
+    - nakon uspjesnog rjesenja omogucava jednokratnu ocjenu i opcioni komentar, pa prikaz
+      prosjeka, broja recenzija i komentara
 - Opcija objave:
   - u meniju rezima kreiranja postoji `Objavi slucaj` kao dugme
   - dugme ne vodi na novu rutu/stranicu
@@ -406,6 +429,8 @@ Napomena:
     otkljucana timeline sekvenca, postojeci kviz i tacno postavljene uloge svih otkljucanih osoba
   - tab `kviz` omogucava predaju zavrsnog kviza; rezultat >80% prebacuje slucaj u `resolved`
     i cuva vrijeme rjesavanja (`resolved_at`)
+  - nakon rjesenja korisnik moze jednom poslati ocjenu i komentar preko `POST /api/cases/:caseId/reviews`
+    i zatim dobiti community pregled recenzija kroz `GET /api/cases/:caseId/reviews?scope=solve`
 - Backend auth:
   - modularna Express struktura (routes/controller/service/repository)
   - SQLite migracije i maintenance podesavanja
@@ -417,4 +442,4 @@ Napomena:
   - prosiren `case_documents` model sa `metadata_json` za formalna polja izjava i
     policijskih dokumenata
   - JWT-zasticeni endpointi za cuvanje slucaja, prikaz ulogovane pocetne, workspace overview,
-    vremensku liniju, osobe/dosijee, izjave, policijska dokumenta, saslusanja i zavrsni kviz
+    vremensku liniju, osobe/dosijee, izjave, policijska dokumenta, saslusanja, zavrsni kviz i recenzije

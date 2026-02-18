@@ -13,7 +13,7 @@ import {
 } from "./cases.solve.visibility.js";
 import { assertTimelineReadAccess } from "./cases.timeline.service.shared.js";
 import { getSolvePeopleRoleState } from "./cases.solve.roles.service.js";
-
+import { getCaseCommunityStats } from "./cases.repository.reviews.js";
 function throwValidationIfNeeded(errors) {
   if (Object.keys(errors).length > 0) {
     throw new HttpError(400, "Podaci nisu validni.", errors);
@@ -22,7 +22,6 @@ function throwValidationIfNeeded(errors) {
 
 function validateTimelineReferences(sanitized, errors) {
   const usedOrders = new Set();
-
   sanitized.timeline.forEach((item, index) => {
     if (item.itemType === "document" && item.sourceIndex >= sanitized.documents.length) {
       errors[`timeline.${index}.sourceIndex`] = "Timeline dokument ne postoji u listi dokumenata.";
@@ -108,7 +107,6 @@ export async function createCase(payload, authorUserId) {
 
 export async function getLoggedHomeOverview(userId) {
   const rows = await getHomeOverviewRows(userId);
-
   return {
     summary: {
       activeCount: rows.stats.activeCount,
@@ -128,7 +126,6 @@ export async function getLoggedHomeOverview(userId) {
 export async function getCreatorCase(caseIdInput, userId) {
   const caseId = parseCaseId(caseIdInput);
   const caseRow = await findCaseByIdForAuthor(caseId, userId);
-
   if (!caseRow) {
     throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
   }
@@ -162,10 +159,14 @@ export async function getCaseWorkspaceOverview(
       throw new HttpError(404, "Slucaj nije pronadjen ili nemas pristup ovom slucaju.");
     }
 
-    const totalQuestions = await getCaseQuizQuestionCount(caseId);
+    const [totalQuestions, community] = await Promise.all([
+      getCaseQuizQuestionCount(caseId),
+      getCaseCommunityStats(caseId),
+    ]);
     return {
       scope: CASE_READ_SCOPES.CREATE,
       case: mapCaseOverview(caseRow),
+      community,
       progress: null,
       quiz: {
         totalQuestions,
@@ -174,9 +175,10 @@ export async function getCaseWorkspaceOverview(
   }
 
   const caseRow = await assertTimelineReadAccess(caseId, requesterUserId);
-  const [visibility, totalQuestions] = await Promise.all([
+  const [visibility, totalQuestions, community] = await Promise.all([
     getSolveVisibilityForUser(caseId, requesterUserId),
     getCaseQuizQuestionCount(caseId),
+    getCaseCommunityStats(caseId),
   ]);
   const solvePeopleState = await getSolvePeopleRoleState(
     caseId,
@@ -187,6 +189,7 @@ export async function getCaseWorkspaceOverview(
   return {
     scope: CASE_READ_SCOPES.SOLVE,
     case: mapCaseOverview(caseRow),
+    community,
     progress: visibility.progress,
     roleProgress: solvePeopleState.roleProgress,
     quiz: {

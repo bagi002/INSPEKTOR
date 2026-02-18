@@ -5,12 +5,13 @@ function mapCaseUserProgressRow(row) {
   if (!row) {
     return null;
   }
-
   return {
     caseId: row.case_id,
     userId: row.user_id,
     progressStatus: row.progress_status,
     progressPercent: row.progress_percent,
+    userReviewComment: row.user_review_comment || "",
+    userRatedAt: row.user_rated_at || null,
     unlockedTimelineCount: row.unlocked_timeline_count,
     lastUnlockedTimelineAt: row.last_unlocked_timeline_at || "",
     resolvedAt: row.resolved_at || null,
@@ -31,6 +32,8 @@ export async function getCaseUserProgressByCaseIdAndUserId(caseId, userId) {
         progress_status,
         progress_percent,
         user_rating,
+        user_review_comment,
+        user_rated_at,
         unlocked_timeline_count,
         last_unlocked_timeline_at,
         resolved_at,
@@ -42,7 +45,6 @@ export async function getCaseUserProgressByCaseIdAndUserId(caseId, userId) {
     `,
     [caseId, userId]
   );
-
   return mapCaseUserProgressRow(row);
 }
 
@@ -57,16 +59,17 @@ export async function ensureCaseUserProgressByCaseIdAndUserId(caseId, userId) {
         progress_status,
         progress_percent,
         user_rating,
+        user_review_comment,
+        user_rated_at,
         unlocked_timeline_count,
         last_unlocked_timeline_at,
         resolved_at
       )
-      VALUES (?, ?, 'in_progress', 0, NULL, 0, '', NULL)
+      VALUES (?, ?, 'in_progress', 0, NULL, '', NULL, 0, '', NULL)
       ON CONFLICT(case_id, user_id) DO NOTHING
     `,
     [caseId, userId]
   );
-
   return await getCaseUserProgressByCaseIdAndUserId(caseId, userId);
 }
 
@@ -78,7 +81,6 @@ export async function upsertCaseUserProgress(caseId, userId, payload) {
   const unlockedTimelineCount = Number.isInteger(rawUnlockedCount)
     ? Math.max(0, rawUnlockedCount)
     : 0;
-
   const database = getDatabase();
   await runQuery(
     database,
@@ -89,11 +91,13 @@ export async function upsertCaseUserProgress(caseId, userId, payload) {
         progress_status,
         progress_percent,
         user_rating,
+        user_review_comment,
+        user_rated_at,
         unlocked_timeline_count,
         last_unlocked_timeline_at,
         resolved_at
       )
-      VALUES (?, ?, ?, ?, NULL, ?, ?, ?)
+      VALUES (?, ?, ?, ?, NULL, '', NULL, ?, ?, ?)
       ON CONFLICT(case_id, user_id) DO UPDATE SET
         progress_status = excluded.progress_status,
         progress_percent = excluded.progress_percent,
@@ -112,7 +116,6 @@ export async function upsertCaseUserProgress(caseId, userId, payload) {
       payload.resolvedAt || null,
     ]
   );
-
   return await getCaseUserProgressByCaseIdAndUserId(caseId, userId);
 }
 

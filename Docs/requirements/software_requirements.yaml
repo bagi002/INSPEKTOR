@@ -102,7 +102,7 @@
 
 - id: REQ-SW-013
   name: Pocetna stranica za ulogovanog korisnika - Realni podaci iz baze
-  status: In Review
+  status: Finished
   refines: REQ-005
   description: >
     Implementirati pocetnu stranicu za ulogovanog korisnika koja prikazuje dobrodoslicu sa imenom
@@ -159,7 +159,7 @@
 
 - id: REQ-SW-019
   name: Kosturni prikaz prozora za kreiranje slucaja
-  status: In Review
+  status: Finished
   refines: REQ-029
   description: >
     Implementirati skeleton prikaz prozora creatorskog moda na ruti `/slucaj/:id/kreiranje`
@@ -170,7 +170,7 @@
 
 - id: REQ-SW-020
   name: Meni za rezim kreiranja slucaja
-  status: In Review
+  status: Finished
   refines: REQ-029
   description: >
     Implementirati levi meni tokom kreiranja slucaja koji prikazuje tabove sekcija procesa
@@ -213,7 +213,7 @@
 
 - id: REQ-SW-025
   name: Backend model i API za osobe i dosijee u slucaju
-  status: In Review
+  status: Finished
   refines: REQ-015
   description: >
     Implementirati prosiren SQLite model dosijea osobe (ukljucujuci administrativne
@@ -225,7 +225,7 @@
 
 - id: REQ-SW-026
   name: Tab osobe i dosijei - kreiranje i pregled
-  status: In Review
+  status: Finished
   refines: REQ-014
   description: >
     Implementirati funkcionalan tab `osobe-i-dosijei` u case workspace-u koji na glavnom
@@ -239,7 +239,7 @@
 
 - id: REQ-SW-027
   name: Backend API za izjave u slucaju
-  status: In Review
+  status: Finished
   refines: REQ-017
   description: >
     Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/statements` i
@@ -252,7 +252,7 @@
 
 - id: REQ-SW-028
   name: Backend API za policijska dokumenta u slucaju
-  status: In Review
+  status: Finished
   refines: REQ-018
   description: >
     Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/police-documents` i
@@ -265,7 +265,7 @@
 
 - id: REQ-SW-029
   name: Tab izjave - kreiranje i formalni pregled
-  status: In Review
+  status: Finished
   refines: REQ-017
   description: >
     Implementirati funkcionalan tab `izjave` u case workspace-u koji prikazuje listu i filtere,
@@ -276,7 +276,7 @@
 
 - id: REQ-SW-030
   name: Tab dokumenti - kreiranje i formalni pregled
-  status: In Review
+  status: Finished
   refines: REQ-018
   description: >
     Implementirati funkcionalan tab `dokumenti` u case workspace-u za policijske izvjestaje
@@ -415,7 +415,7 @@
 
 - id: REQ-SW-043
   name: Creatorsko definisanje zavrsnog kviza i prikaz opisa slucaja
-  status: In Review
+  status: Finished
   refines: REQ-026
   description: >
     Implementirati funkcionalan tab `kviz` u creatorskom modu koji omogucava
@@ -426,7 +426,7 @@
 
 - id: REQ-SW-044
   name: Potvrda rjesenja slucaja kroz zavrsni kviz
-  status: In Review
+  status: Finished
   refines: REQ-023
   description: >
     Implementirati backend i frontend tok potvrde rjesenja slucaja kroz predaju
@@ -438,7 +438,7 @@
 
 - id: REQ-SW-045
   name: Dodjela uloga osobama u toku resavanja kao uslov za zavrsni kviz
-  status: In Review
+  status: Finished
   refines: REQ-023
   description: >
     Implementirati solve workflow u kome korisnik za svaku otkljucanu osobu
@@ -450,7 +450,7 @@
 
 - id: REQ-SW-046
   name: Vracanje slucaja iz resolved u rezim resavanja za kreatora
-  status: In Review
+  status: Finished
   refines: REQ-027
   description: >
     Implementirati creatorsku opciju u meniju kreiranja slucaja koja za autora
@@ -460,7 +460,7 @@
 
 - id: REQ-SW-047
   name: Mehanizam objavljivanja slucaja sa proverom spremnosti
-  status: In Review
+  status: Finished
   refines: REQ-027
   description: >
     Implementirati end-to-end objavu slucaja iz creatorskog menija kroz endpoint
@@ -473,10 +473,43 @@
 
 - id: REQ-SW-048
   name: Pokretanje javnog slucaja sa ulogovane pocetne
-  status: In Review
+  status: Finished
   refines: REQ-005
   description: >
     U sekciji `Najocenjeniji javni slucajevi` na ulogovanoj pocetnoj strani
     obezbediti jasnu akciju `Pokreni resavanje` koja vodi na
     `/slucaj/:id/resavanje/vremenska-linija`, kako bi korisnik mogao odmah da
     udje u objavljeni slucaj i zapocne resavanje.
+
+- id: REQ-SW-049
+  name: Jednokratno ocjenjivanje objavljenog slucaja nakon uspjesnog rjesenja
+  status: Finished
+  refines: REQ-024
+  description: >
+    Implementirati JWT-zasticeni endpoint `POST /api/cases/:caseId/reviews` koji
+    dozvoljava korisniku da samo jednom ocijeni tudji objavljen slucaj nakon sto
+    mu je progress status `resolved`, uz validaciju ocjene u opsegu 1-5 sa korakom
+    0.5 i opcioni komentar.
+
+- id: REQ-SW-050
+  name: Agregacija i prikaz recenzija slucaja za ocjenjivace
+  status: Finished
+  refines: REQ-011
+  description: >
+    Implementirati backend i frontend tok koji nakon cuvanja recenzije azurira
+    agregat slucaja (`average_rating`, `rating_count`) i omogucava korisnicima koji
+    su ocijenili slucaj pregled prosjecne ocjene, ukupnog broja recenzija i liste
+    komentara kroz endpoint `GET /api/cases/:caseId/reviews?scope=solve`.
+
+- id: REQ-SW-051
+  name: Kreatorski pregled rjesavanja i recenzija po slucaju
+  status: Finished
+  refines: REQ-025
+  description: >
+    Implementirati creatorski dashboard recenzija kroz endpoint
+    `GET /api/cases/:caseId/reviews?scope=create` i zaseban popup panel na
+    ulogovanoj pocetnoj strani (sekcija `Slucajevi koje si kreirao`) koji autoru
+    objavljenog slucaja pokazuje prosjecnu ocjenu, broj recenzija, broj korisnika
+    koji trenutno rjesavaju i koji su rijesili slucaj, kao i listu korisnika sa
+    ocjenama i komentarima, bez otvaranja kompletnog case workspace-a i bez
+    prikaza ove statistike unutar `kviz` taba.

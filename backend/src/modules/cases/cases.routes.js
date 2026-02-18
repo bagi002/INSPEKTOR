@@ -24,6 +24,7 @@ import {
   submitCaseQuizController,
   upsertCreatorCaseQuizController,
 } from "./cases.quiz.controller.js";
+import { getCaseReviewsController, submitCaseReviewController } from "./cases.reviews.controller.js";
 import { updateSolveCasePersonRoleController } from "./cases.people.controller.js";
 import { resetCreatorCaseProgressToSolveController } from "./cases.progress.controller.js";
 
@@ -55,6 +56,8 @@ casesRoutes.post("/:caseId/interrogations", asyncHandler(createCreatorCaseInterr
 casesRoutes.get("/:caseId/quiz", asyncHandler(getCaseQuizController));
 casesRoutes.put("/:caseId/quiz", asyncHandler(upsertCreatorCaseQuizController));
 casesRoutes.post("/:caseId/quiz/submit", asyncHandler(submitCaseQuizController));
+casesRoutes.get("/:caseId/reviews", asyncHandler(getCaseReviewsController));
+casesRoutes.post("/:caseId/reviews", asyncHandler(submitCaseReviewController));
 casesRoutes.post(
   "/:caseId/progress/reset-to-solve",
   asyncHandler(resetCreatorCaseProgressToSolveController)

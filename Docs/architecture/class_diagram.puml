@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Case workspace + zavrsni kviz + korisnicka podrska + admin panel
+title Class Diagram - Case workspace + zavrsni kviz + recenzije + korisnicka podrska + admin panel
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -24,6 +24,19 @@ class DesktopGate {
 class LoggedHomePage {
   +loadHomeData()
   +handleStartPublicCase(caseId)
+  +handleOpenCreatedCaseStats(caseId)
+  +handleCloseCreatedCaseStats()
+  +render()
+}
+
+class LoggedCreatedCaseDetails {
+  +resolveCreatedCaseAction(item)
+  +render()
+}
+
+class LoggedCreatedCaseStatsModal {
+  +loadStats()
+  +handleClose()
   +render()
 }
 
@@ -135,6 +148,23 @@ class CaseQuizTab {
   +render()
 }
 
+class CaseQuizSolveInfoCards {
+  +render()
+}
+
+class CaseQuizReviewsSection {
+  +render()
+}
+
+class CaseReviewForm {
+  +handleSubmit(event)
+  +render()
+}
+
+class CaseReviewsPanel {
+  +render()
+}
+
 class CaseDocumentsTab {
   +category
   +loadDocuments()
@@ -163,6 +193,11 @@ class UseCaseQuizTabState {
   +loadQuiz()
   +handleSaveQuiz()
   +handleSubmitQuiz()
+}
+
+class UseCaseReviewState {
+  +loadReviews()
+  +handleSubmitReview(isCaseResolved)
 }
 
 class UseCaseInterrogationCreateState {
@@ -284,6 +319,11 @@ class CaseQuizApiClient {
   +submitCaseQuiz(caseId, payload)
 }
 
+class CaseReviewsApiClient {
+  +fetchCaseReviews(caseId, scope)
+  +submitCaseReview(caseId, payload)
+}
+
 class CaseTimelineApiClient {
   +fetchCaseTimeline(caseId)
   +replaceCaseTimeline(caseId, payload)
@@ -390,6 +430,8 @@ class CasesRoutes {
   +GET /:caseId/quiz
   +PUT /:caseId/quiz
   +POST /:caseId/quiz/submit
+  +GET /:caseId/reviews
+  +POST /:caseId/reviews
 }
 
 class SupportRoutes {
@@ -431,6 +473,11 @@ class CaseQuizController {
   +getCaseQuizController(req, res)
   +upsertCreatorCaseQuizController(req, res)
   +submitCaseQuizController(req, res)
+}
+
+class CaseReviewsController {
+  +getCaseReviewsController(req, res)
+  +submitCaseReviewController(req, res)
 }
 
 class CasePeopleController {
@@ -494,6 +541,11 @@ class CaseQuizService {
   +submitCaseQuiz(caseId, payload, userId)
 }
 
+class CaseReviewsService {
+  +getCaseReviews(caseId, userId, scope)
+  +submitCaseReview(caseId, payload, userId)
+}
+
 class CaseProgressService {
   +resetCreatorCaseProgressToSolve(caseId, userId)
 }
@@ -547,6 +599,10 @@ class CaseInterrogationsValidation {
 class CaseQuizValidation {
   +validateCaseQuizPayload(payload)
   +validateCaseQuizSubmissionPayload(payload, questions)
+}
+
+class CaseReviewsValidation {
+  +validateCaseReviewPayload(payload)
 }
 
 class SupportValidation {
@@ -619,6 +675,14 @@ class CaseQuizRepository {
   +upsertCaseQuizUserResult(caseId, userId, payload)
 }
 
+class CaseReviewsRepository {
+  +getCaseReviewSummary(caseId)
+  +getCaseReviewsByCaseId(caseId)
+  +getResolvedCaseUsersByCaseId(caseId)
+  +saveCaseUserReview(caseId, userId, payload)
+  +recalculateCaseRatings(caseId)
+}
+
 class CasePublishRepository {
   +getCasePublishReadinessSnapshot(caseId)
   +updateCasePublicationStatus(caseId, publicationStatus)
@@ -672,7 +736,7 @@ class SQLiteDatabase {
   +case_interrogations
   +case_interrogation_nodes
   +case_timeline_items
-  +case_user_progress(resolved_at)
+  +case_user_progress(user_rating, user_review_comment, user_rated_at, resolved_at)
   +case_quiz_questions
   +case_quiz_options
   +case_quiz_user_results
@@ -706,7 +770,13 @@ CaseInterrogationsTab *-- CaseInterrogationCreateModal
 CaseInterrogationsTab *-- CaseInterrogationChatModal
 CaseInterrogationsTab ..> UseCaseInterrogationsTabState
 CaseQuizTab ..> UseCaseQuizTabState
+CaseQuizTab *-- CaseQuizSolveInfoCards
+CaseQuizTab *-- CaseQuizReviewsSection
+CaseQuizReviewsSection *-- CaseReviewForm
+CaseQuizReviewsSection *-- CaseReviewsPanel
 UseCaseQuizTabState ..> CaseQuizApiClient
+UseCaseQuizTabState ..> UseCaseReviewState
+UseCaseReviewState ..> CaseReviewsApiClient
 UseCaseInterrogationsTabState ..> UseCaseInterrogationCreateState
 UseCaseInterrogationsTabState ..> CaseInterrogationsHelpers
 UseCaseInterrogationCreateState ..> CaseInterrogationsHelpers
@@ -738,6 +808,10 @@ CaseWorkspacePage ..> CasesApiClient
 CreateCaseSidebar ..> CaseProgressApiClient
 LoggedHomePage ..> CasesApiClient
 LoggedHomePage ..> RouteUtils
+LoggedHomePage *-- LoggedCreatedCaseDetails
+LoggedHomePage *-- LoggedCreatedCaseStatsModal
+LoggedCreatedCaseStatsModal *-- CaseReviewsPanel
+LoggedCreatedCaseStatsModal ..> CaseReviewsApiClient
 CreateCasePage ..> CasesApiClient
 SupportPage ..> SupportApiClient
 CasePeopleApiClient ..> SessionStorageService
@@ -745,6 +819,7 @@ CaseTimelineApiClient ..> SessionStorageService
 CaseDocumentsApiClient ..> SessionStorageService
 CaseInterrogationsApiClient ..> SessionStorageService
 CaseQuizApiClient ..> SessionStorageService
+CaseReviewsApiClient ..> SessionStorageService
 CaseProgressApiClient ..> SessionStorageService
 CasesApiClient ..> SessionStorageService
 SupportApiClient ..> SessionStorageService
@@ -763,6 +838,7 @@ CaseTimelineApiClient ..> ExpressApp
 CaseDocumentsApiClient ..> ExpressApp
 CaseInterrogationsApiClient ..> ExpressApp
 CaseQuizApiClient ..> ExpressApp
+CaseReviewsApiClient ..> ExpressApp
 CaseProgressApiClient ..> ExpressApp
 CasesApiClient ..> ExpressApp
 SupportApiClient ..> ExpressApp
@@ -773,6 +849,7 @@ ExpressApp --> AdminRoutes
 CasesRoutes --> AuthGuardMiddleware
 CasesRoutes --> CasesController
 CasesRoutes --> CaseQuizController
+CasesRoutes --> CaseReviewsController
 CasesRoutes --> CasePeopleController
 CasesRoutes --> CaseProgressController
 SupportRoutes --> AuthGuardMiddleware
@@ -788,6 +865,7 @@ CasesController --> CaseQuizService
 CasesController --> CasePublishService
 CaseQuizController --> CasesService
 CaseQuizController --> CaseQuizService
+CaseReviewsController --> CaseReviewsService
 CasePeopleController --> CasePeopleService
 CaseProgressController --> CaseProgressService
 SupportController --> SupportService
@@ -823,6 +901,10 @@ CaseQuizService --> CasesRepository
 CaseQuizService --> CaseQuizRepository
 CaseQuizService --> CaseProgressRepository
 CaseQuizService --> CaseSolveRolesService
+CaseReviewsService --> CaseReviewsValidation
+CaseReviewsService --> CasesRepository
+CaseReviewsService --> CaseProgressRepository
+CaseReviewsService --> CaseReviewsRepository
 CaseProgressService --> CasesRepository
 CaseProgressService --> CaseProgressRepository
 CasePublishService --> CasesRepository
@@ -845,6 +927,7 @@ CasePeopleRolesRepository --> DatabaseModule
 CaseDocumentsRepository --> DatabaseModule
 CaseInterrogationsRepository --> DatabaseModule
 CaseQuizRepository --> DatabaseModule
+CaseReviewsRepository --> DatabaseModule
 CasePublishRepository --> DatabaseModule
 SupportRepository --> DatabaseModule
 AdminRepository --> DatabaseModule

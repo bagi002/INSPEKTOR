@@ -1,7 +1,8 @@
 import CaseQuizCreatePanel from "./CaseQuizCreatePanel";
 import CaseQuizReviewPanel from "./CaseQuizReviewPanel";
 import CaseQuizSolvePanel from "./CaseQuizSolvePanel";
-import { formatAverageRating, formatReviews } from "./loggedHomeData";
+import CaseQuizReviewsSection from "./CaseQuizReviewsSection";
+import CaseQuizSolveInfoCards from "./CaseQuizSolveInfoCards";
 import { formatSolvedAt } from "./caseQuizHelpers";
 import { useCaseQuizTabState } from "./useCaseQuizTabState";
 
@@ -16,6 +17,16 @@ function CaseQuizTab({ caseId, mode, onUnauthorized, onResolved }) {
     review,
     lastAttempt,
     selectedAnswers,
+    reviewSummary,
+    reviewItems,
+    solvedUsers,
+    userReview,
+    reviewRatingInput,
+    reviewCommentInput,
+    isSubmittingReview,
+    reviewErrorMessage,
+    reviewSuccessMessage,
+    isReviewVisibilityLocked,
     isCreateMode,
     isLoading,
     errorMessage,
@@ -36,9 +47,14 @@ function CaseQuizTab({ caseId, mode, onUnauthorized, onResolved }) {
     handleSaveQuiz,
     handleSolveAnswerChange,
     handleSubmitQuiz,
+    handleReviewRatingChange,
+    handleReviewCommentChange,
+    handleSubmitReview,
   } = useCaseQuizTabState({ caseId, mode, onUnauthorized, onResolved });
 
   const hasReview = Array.isArray(review);
+  const isCaseResolved = progress?.progressStatus === "resolved";
+  const hasSubmittedCaseReview = Boolean(userReview);
 
   if (isLoading) {
     return (
@@ -109,44 +125,8 @@ function CaseQuizTab({ caseId, mode, onUnauthorized, onResolved }) {
         {submitSuccessMessage ? <p className="case-quiz-success">{submitSuccessMessage}</p> : null}
       </section>
 
-      {!isCreateMode && caseSummary ? (
-        <section className="card case-quiz-case-summary-card">
-          <p className="eyebrow">Opis slucaja</p>
-          <h3>{caseSummary.title}</h3>
-          <p className="create-case-summary">{caseSummary.description}</p>
-          <div className="case-quiz-case-meta">
-            <span>
-              Autor: <strong>{caseSummary.author || "Nepoznato"}</strong>
-            </span>
-            <span>
-              Ocjena: <strong>{formatAverageRating(caseSummary.averageRating)}</strong>
-            </span>
-            <span>{formatReviews(caseSummary.ratingCount)}</span>
-          </div>
-        </section>
-      ) : null}
-
-      {!isCreateMode && lastAttempt ? (
-        <section className="card case-quiz-attempt-card">
-          <p>
-            Poslednji rezultat: <strong>{lastAttempt.scorePercent}%</strong> ({lastAttempt.correctAnswers}/
-            {lastAttempt.totalQuestions})
-          </p>
-          <p>
-            Vrijeme predaje: <strong>{formatSolvedAt(lastAttempt.submittedAt) || "-"}</strong>
-          </p>
-        </section>
-      ) : null}
-
-      {!isCreateMode && blockers.length > 0 ? (
-        <section className="card case-quiz-blockers-card">
-          <h3>Sta je potrebno prije predaje kviza</h3>
-          <ul>
-            {blockers.map((blocker) => (
-              <li key={blocker}>{blocker}</li>
-            ))}
-          </ul>
-        </section>
+      {!isCreateMode ? (
+        <CaseQuizSolveInfoCards caseSummary={caseSummary} lastAttempt={lastAttempt} blockers={blockers} />
       ) : null}
 
       {isCreateMode ? (
@@ -175,6 +155,23 @@ function CaseQuizTab({ caseId, mode, onUnauthorized, onResolved }) {
       ) : null}
 
       {!isCreateMode && hasReview ? <CaseQuizReviewPanel review={review} /> : null}
+      <CaseQuizReviewsSection
+        isCreateMode={isCreateMode}
+        isCaseResolved={isCaseResolved}
+        hasSubmittedCaseReview={hasSubmittedCaseReview}
+        reviewRatingInput={reviewRatingInput}
+        reviewCommentInput={reviewCommentInput}
+        isSubmittingReview={isSubmittingReview}
+        reviewErrorMessage={reviewErrorMessage}
+        reviewSuccessMessage={reviewSuccessMessage}
+        reviewSummary={reviewSummary}
+        reviewItems={reviewItems}
+        solvedUsers={solvedUsers}
+        isReviewVisibilityLocked={isReviewVisibilityLocked}
+        onReviewRatingChange={handleReviewRatingChange}
+        onReviewCommentChange={handleReviewCommentChange}
+        onSubmitReview={handleSubmitReview}
+      />
     </div>
   );
 }

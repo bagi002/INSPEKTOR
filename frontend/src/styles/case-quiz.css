@@ -81,3 +81,16 @@
   gap: 0.45rem;
   color: #3f546f;
 }
+
+.case-reviews-panel {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.case-reviews-panel-top h3 {
+  margin: 0;
+}
+
+.case-reviews-gated-card {
+  background: linear-gradient(165deg, #f7fbff, #edf4ff);
+}
