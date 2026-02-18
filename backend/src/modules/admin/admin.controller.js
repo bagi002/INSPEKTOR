@@ -1,4 +1,5 @@
 import {
+  deleteAdminUser,
   getAdminOverview,
   getAdminTickets,
   listAdminCases,
@@ -65,6 +66,16 @@ export async function adminUpdateUserController(req, res) {
   res.status(200).json({
     ok: true,
     message: "Korisnik je uspesno izmenjen.",
+    data: result,
+  });
+}
+
+export async function adminDeleteUserController(req, res) {
+  const result = await deleteAdminUser(req.params.userId, req.adminAuth.userId);
+
+  res.status(200).json({
+    ok: true,
+    message: "Korisnik je uspesno obrisan.",
     data: result,
   });
 }

@@ -3,6 +3,7 @@ import { requireAdminPanelAuth } from "../../middleware/adminPanelAuthGuard.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import {
   adminCasesController,
+  adminDeleteUserController,
   adminLoginController,
   adminOverviewController,
   adminTicketsController,
@@ -22,6 +23,7 @@ adminRoutes.get("/tickets", asyncHandler(adminTicketsController));
 adminRoutes.patch("/tickets/:ticketId/status", asyncHandler(adminUpdateTicketStatusController));
 adminRoutes.get("/users", asyncHandler(adminUsersController));
 adminRoutes.patch("/users/:userId", asyncHandler(adminUpdateUserController));
+adminRoutes.delete("/users/:userId", asyncHandler(adminDeleteUserController));
 adminRoutes.get("/cases", asyncHandler(adminCasesController));
 adminRoutes.patch("/cases/:caseId", asyncHandler(adminUpdateCaseController));
 

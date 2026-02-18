@@ -18,6 +18,44 @@ function mapAdminUserRow(row) {
   };
 }
 
+export async function findAdminUserById(userId) {
+  const database = getDatabase();
+  const row = await getOne(
+    database,
+    `
+      SELECT
+        id,
+        first_name,
+        last_name,
+        email,
+        role,
+        created_at,
+        updated_at
+      FROM users
+      WHERE id = ?
+      LIMIT 1
+    `,
+    [userId]
+  );
+
+  return mapAdminUserRow(row);
+}
+
+export async function countAdminUsers() {
+  const database = getDatabase();
+  const row = await getOne(
+    database,
+    `
+      SELECT COUNT(*) AS admin_count
+      FROM users
+      WHERE role = 'admin'
+      LIMIT 1
+    `
+  );
+
+  return Number(row?.admin_count || 0);
+}
+
 export async function getAdminOverviewCounts() {
   const database = getDatabase();
   const row = await getOne(
@@ -112,4 +150,18 @@ export async function updateAdminUser(userId, updates) {
   );
 
   return mapAdminUserRow(row);
+}
+
+export async function deleteAdminUserById(userId) {
+  const database = getDatabase();
+  const result = await runQuery(
+    database,
+    `
+      DELETE FROM users
+      WHERE id = ?
+    `,
+    [userId]
+  );
+
+  return result.changes > 0;
 }

@@ -20,15 +20,6 @@ function AuthPageLayout({
         </section>
 
         <section className="card auth-form-card reveal delay-2">{children}</section>
-
-        <section className="card auth-note-card reveal delay-3">
-          <h3>Bezbednosna napomena</h3>
-          <p>
-            Autentifikacija koristi backend API sa SQLite bazom, dok se token
-            uspesne prijave cuva lokalno u browseru radi odrzavanja sesije na
-            klijentu.
-          </p>
-        </section>
       </main>
     </div>
   );

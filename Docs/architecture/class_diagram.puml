@@ -396,6 +396,7 @@ class AdminApiClient {
   +updateAdminTicketStatus(ticketId, payload)
   +fetchAdminUsers()
   +updateAdminUser(userId, payload)
+  +deleteAdminUser(userId)
   +fetchAdminCases()
   +updateAdminCase(caseId, payload)
 }
@@ -427,6 +428,7 @@ class AdminDashboard {
   +loadDashboardData()
   +handleUpdateTicket(ticketId, payload)
   +handleUpdateUser(userId, payload)
+  +handleDeleteUser(userId)
   +handleUpdateCase(caseId, payload)
   +render()
 }
@@ -438,6 +440,7 @@ class AdminTicketsSection {
 
 class AdminUsersSection {
   +handleSave()
+  +handleDelete(user)
   +render()
 }
 
@@ -495,6 +498,7 @@ class AdminRoutes {
   +PATCH /tickets/:ticketId/status
   +GET /users
   +PATCH /users/:userId
+  +DELETE /users/:userId
   +GET /cases
   +PATCH /cases/:caseId
 }
@@ -556,6 +560,7 @@ class AdminController {
   +adminUpdateTicketStatusController(req, res)
   +adminUsersController(req, res)
   +adminUpdateUserController(req, res)
+  +adminDeleteUserController(req, res)
   +adminCasesController(req, res)
   +adminUpdateCaseController(req, res)
 }
@@ -629,6 +634,7 @@ class AdminService {
   +patchAdminTicketStatus(ticketId, payload)
   +listAdminUsers()
   +patchAdminUser(userId, payload)
+  +deleteAdminUser(userId, requesterAdminUserId)
   +listAdminCases()
   +patchAdminCase(caseId, payload)
 }
@@ -776,8 +782,11 @@ class ProfileRepository {
 
 class AdminRepository {
   +getAdminOverviewCounts()
+  +findAdminUserById(userId)
+  +countAdminUsers()
   +getAdminUsers()
   +updateAdminUser(userId, updates)
+  +deleteAdminUserById(userId)
   +getAdminCases()
   +updateAdminCase(caseId, updates)
 }

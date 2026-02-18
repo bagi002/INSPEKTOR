@@ -173,3 +173,7 @@ textarea {
   color: #173b65;
   font-size: 0.92rem;
 }
+.admin-table-actions {
+  display: flex;
+  gap: 0.45rem;
+}

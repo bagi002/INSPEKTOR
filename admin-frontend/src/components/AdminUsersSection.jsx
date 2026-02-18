@@ -10,10 +10,11 @@ function createDraftFromUser(user) {
   };
 }
 
-function AdminUsersSection({ users, onUpdateUser }) {
+function AdminUsersSection({ users, onUpdateUser, onDeleteUser }) {
   const [editingUserId, setEditingUserId] = useState(null);
   const [draft, setDraft] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState(null);
   const [message, setMessage] = useState("");
 
   function handleStartEdit(user) {
@@ -56,6 +57,34 @@ function AdminUsersSection({ users, onUpdateUser }) {
     setDraft(null);
   }
 
+  async function handleDelete(user) {
+    if (!onDeleteUser) {
+      return;
+    }
+
+    const confirmed = typeof window !== "undefined"
+      ? window.confirm(`Da li sigurno zelis da obrises nalog korisnika ${user.email}?`)
+      : true;
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingUserId(user.id);
+    const result = await onDeleteUser(user.id);
+    setDeletingUserId(null);
+
+    if (!result.ok) {
+      setMessage(result.message || "Brisanje korisnika nije uspelo.");
+      return;
+    }
+
+    if (editingUserId === user.id) {
+      setEditingUserId(null);
+      setDraft(null);
+    }
+    setMessage(result.message || "Korisnik je uspesno obrisan.");
+  }
+
   return (
     <section className="admin-card">
       <h2>Korisnici</h2>
@@ -83,13 +112,23 @@ function AdminUsersSection({ users, onUpdateUser }) {
                   <td>{user.role}</td>
                   <td>{formatAdminDate(user.createdAt)}</td>
                   <td>
-                    <button
-                      type="button"
-                      className="admin-btn"
-                      onClick={() => handleStartEdit(user)}
-                    >
-                      Izmeni
-                    </button>
+                    <div className="admin-table-actions">
+                      <button
+                        type="button"
+                        className="admin-btn"
+                        onClick={() => handleStartEdit(user)}
+                      >
+                        Izmeni
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn-danger"
+                        onClick={() => void handleDelete(user)}
+                        disabled={deletingUserId === user.id}
+                      >
+                        {deletingUserId === user.id ? "Brisanje..." : "Obrisi"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

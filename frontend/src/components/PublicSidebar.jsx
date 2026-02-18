@@ -1,11 +1,9 @@
 import { menuItems } from "../data/publicLandingContent";
 import { PUBLIC_ROUTES, normalizePath } from "../utils/routes";
 
-const DEFAULT_NOTE =
-  "U neulogovanom rezimu dostupne su kljucne informacije i direktan ulaz ka registraciji i prijavi.";
-
-function PublicSidebar({ activePath = PUBLIC_ROUTES.HOME, noteText = DEFAULT_NOTE }) {
+function PublicSidebar({ activePath = PUBLIC_ROUTES.HOME, noteText = "" }) {
   const normalizedActivePath = normalizePath(activePath);
+  const resolvedNoteText = typeof noteText === "string" ? noteText.trim() : "";
 
   return (
     <aside className="left-sidebar reveal">
@@ -31,9 +29,11 @@ function PublicSidebar({ activePath = PUBLIC_ROUTES.HOME, noteText = DEFAULT_NOT
         </ul>
       </nav>
 
-      <div className="sidebar-note">
-        <p>{noteText}</p>
-      </div>
+      {resolvedNoteText ? (
+        <div className="sidebar-note">
+          <p>{resolvedNoteText}</p>
+        </div>
+      ) : null}
     </aside>
   );
 }

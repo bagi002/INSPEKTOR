@@ -1,4 +1,7 @@
 export {
+  countAdminUsers,
+  deleteAdminUserById,
+  findAdminUserById,
   getAdminOverviewCounts,
   getAdminUsers,
   updateAdminUser,

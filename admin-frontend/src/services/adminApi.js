@@ -180,6 +180,12 @@ export function updateAdminUser(userId, payload) {
   });
 }
 
+export function deleteAdminUser(userId) {
+  return requestAdmin(`/users/${userId}`, {
+    method: "DELETE",
+  });
+}
+
 export function fetchAdminCases() {
   return requestAdmin("/cases");
 }

@@ -8,6 +8,9 @@ import {
   updateSupportTicketStatus,
 } from "../support/support.repository.js";
 import {
+  countAdminUsers,
+  deleteAdminUserById,
+  findAdminUserById,
   getAdminCases,
   getAdminOverviewCounts,
   getAdminUsers,
@@ -163,5 +166,33 @@ export async function patchAdminCase(caseId, payload) {
 
   return {
     case: updatedCase,
+  };
+}
+
+export async function deleteAdminUser(userId, requesterAdminUserId) {
+  const parsedUserId = parseRequiredPositiveId(userId, "Identifikator korisnika nije validan.");
+  if (parsedUserId === requesterAdminUserId) {
+    throw new HttpError(400, "Ne mozes obrisati trenutno ulogovan admin nalog.");
+  }
+
+  const targetUser = await findAdminUserById(parsedUserId);
+  if (!targetUser) {
+    throw new HttpError(404, "Korisnik nije pronadjen.");
+  }
+
+  if (targetUser.role === "admin") {
+    const adminsCount = await countAdminUsers();
+    if (adminsCount <= 1) {
+      throw new HttpError(400, "Nije dozvoljeno brisanje poslednjeg admin naloga.");
+    }
+  }
+
+  const deleted = await deleteAdminUserById(parsedUserId);
+  if (!deleted) {
+    throw new HttpError(404, "Korisnik nije pronadjen.");
+  }
+
+  return {
+    deletedUserId: parsedUserId,
   };
 }

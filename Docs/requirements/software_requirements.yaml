@@ -562,3 +562,23 @@
     Implementirati endpoint `DELETE /api/profile` koji uz potvrdu lozinkom trajno
     brise korisnicki nalog i povezane podatke, kao i frontend potvrdu brisanja na
     profilnoj stranici koja po uspehu cisti sesiju i odjavljuje korisnika.
+
+- id: REQ-SW-057
+  name: Ciscenje javnog i auth pomocnog teksta
+  status: In Review
+  refines: REQ-006
+  description: >
+    Ukloniti podrazumevanu informativnu poruku iz javnog sidebara na pocetnoj
+    strani i ukloniti karticu `Bezbednosna napomena` sa stranica prijave i
+    registracije, kako bi javni/auth prikaz bio pregledniji i bez redundantnog
+    pomocnog teksta.
+
+- id: REQ-SW-058
+  name: Admin brisanje korisnickih naloga
+  status: In Review
+  refines: REQ-032
+  description: >
+    Implementirati administratorsko brisanje korisnickog naloga kroz endpoint
+    `DELETE /api/admin/users/:userId` i odgovarajucu akciju u admin panelu, uz
+    zastitu da admin ne moze obrisati trenutno ulogovan nalog i da nije dozvoljeno
+    brisanje poslednjeg admin naloga.

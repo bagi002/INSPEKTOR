@@ -53,7 +53,7 @@
 
 - id: REQ-006
   name: Meni
-  status: In Progress
+  status: In Review
   description: >
     Meni treba d a bude u vidu lijevog side bara sa opcijama menija priakzaom profila za ulogovanog korisnika
     U ne ulogovanom stanju treba da sadrzi opcije za pocetnu stranicu, registraciju i prijavu
@@ -315,7 +315,7 @@
 
 - id: REQ-032
   name: Admin panel
-  status: Finished
+  status: In Review
   description: >
     Treba da postoji admin panel koji je dostupan samo adminima aplikacije
     Treba d abude na drugom portu od glavne aplikacije

@@ -311,6 +311,9 @@ Napomena:
   - vraca sve korisnike bez `password_hash` polja
 - `PATCH /api/admin/users/:userId` (autorizacija: `Bearer <ADMIN_JWT>`)
   - menja korisnicke podatke (`firstName`, `lastName`, `email`, `role`)
+- `DELETE /api/admin/users/:userId` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - brise korisnicki nalog i povezane podatke (cascade)
+  - nije dozvoljeno brisanje trenutno ulogovanog admin naloga niti poslednjeg admin naloga
 - `GET /api/admin/cases` (autorizacija: `Bearer <ADMIN_JWT>`)
   - vraca sve slucajeve sa podacima autora
 - `PATCH /api/admin/cases/:caseId` (autorizacija: `Bearer <ADMIN_JWT>`)
@@ -365,7 +368,7 @@ Napomena:
   - login zahteva admin nalog i lozinku admin panela
   - dashboard prikazuje aggregate metrike (`/api/admin/overview`)
   - upravljanje ticketima (pregled svih + promena statusa i admin napomene)
-  - upravljanje korisnicima (pregled i izmena osnovnih podataka i role, bez lozinki)
+  - upravljanje korisnicima (pregled, izmena osnovnih podataka i role, kao i brisanje naloga; bez lozinki)
   - upravljanje slucajevima (pregled i izmena osnovnih polja)
 - Kreiranje slucaja (`/slucaj/novi`):
   - forma za unos naziva i opisa slucaja kao pocetni korak

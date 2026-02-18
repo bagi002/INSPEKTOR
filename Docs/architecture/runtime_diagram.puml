@@ -792,6 +792,21 @@ alt Desktop sirina
   AdminService --> AdminApi: response payload
   AdminApi --> AdminClient: JSON uspeh
   AdminClient --> AdminDashboard: Tabele korisnika i slucajeva
+
+  Admin -> AdminDashboard: Klik "Obrisi" na korisniku
+  AdminDashboard -> AdminClient: DELETE /api/admin/users/{userId}
+  AdminClient -> AdminApi: HTTP zahtev
+  AdminApi -> AdminGuard: Verifikacija admin tokena
+  AdminGuard -> AdminService: deleteAdminUser(userId, adminUserId)
+  AdminService -> AdminRepo: findAdminUserById(userId) + countAdminUsers()
+  AdminRepo -> UsersStore: SELECT korisnik + broj admin naloga
+  AdminService -> AdminRepo: deleteAdminUserById(userId)
+  AdminRepo -> UsersStore: DELETE users (cascade povezani podaci)
+  UsersStore --> AdminRepo: potvrda brisanja
+  AdminRepo --> AdminService: delete uspeh
+  AdminService --> AdminApi: 200 response
+  AdminApi --> AdminClient: JSON uspeh
+  AdminClient --> AdminDashboard: Osvjezena lista korisnika
 else Manja sirina od desktop praga
   Gate -> Notice: Render poruke "Aplikacija je samo za desktop"
   Notice --> User: Prikaz ogranicenog ekrana

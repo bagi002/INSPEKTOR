@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  deleteAdminUser,
   fetchAdminCases,
   fetchAdminOverview,
   fetchAdminTickets,
@@ -97,6 +98,17 @@ function AdminDashboard({ adminUser, onLogout }) {
     return result;
   }
 
+  async function handleDeleteUser(userId) {
+    const result = await deleteAdminUser(userId);
+    if (result.ok) {
+      await loadDashboardData();
+    }
+    if (!result.ok && result.unauthorized) {
+      onLogout();
+    }
+    return result;
+  }
+
   return (
     <main className="admin-shell">
       <section className="admin-card admin-header">
@@ -144,7 +156,11 @@ function AdminDashboard({ adminUser, onLogout }) {
           </section>
 
           <AdminTicketsSection tickets={tickets} onUpdateTicket={handleUpdateTicket} />
-          <AdminUsersSection users={users} onUpdateUser={handleUpdateUser} />
+          <AdminUsersSection
+            users={users}
+            onUpdateUser={handleUpdateUser}
+            onDeleteUser={handleDeleteUser}
+          />
           <AdminCasesSection cases={cases} onUpdateCase={handleUpdateCase} />
         </>
       ) : null}
