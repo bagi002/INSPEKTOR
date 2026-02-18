@@ -41,7 +41,7 @@
 
 - id: REQ-005
   name: Pocetna stranica za ulogovane korisnike
-  status: In Review
+  status: In Progress
   description: >
     Treba da sadrzi pregled slucajja koji se trenutno rijesava 
     Treba da sadrzi pregled slucaja koji su rijeseni
@@ -53,7 +53,7 @@
 
 - id: REQ-006
   name: Meni
-  status: In Review
+  status: In Progress
   description: >
     Meni treba d a bude u vidu lijevog side bara sa opcijama menija priakzaom profila za ulogovanog korisnika
     U ne ulogovanom stanju treba da sadrzi opcije za pocetnu stranicu, registraciju i prijavu
@@ -118,7 +118,7 @@
 
 - id: REQ-012
   name: Izgled prozora za slucaj
-  status: In Review
+  status: In Progress
   description: >
     U meniju ce se nakon sto korisnik udje u slucaj pojaviti pored opcije za izlazak iz slucajja i 
     Pocetna ( cini osnovne informacije o slucaju kao sto su naziv, opis, ocjena, broj recenzija i autor)
@@ -269,11 +269,13 @@
 
 - id: REQ-027
   name: Objavljivanje slucajja 
-  status: In Review
+  status: Finished
   description: >
     Nakon sto kretor zavrsi uredjivanje slucajja moze da ga objavi i tek tada ce ga ostali korisnici vidjeti i rijesvati
     Takdoej kreator za vrijemme kreiranja slucajja mzoe preci u mod za pregled d avidi kkao ce izgledati u pregledu za korisnika 
     koji ga rijesava
+    Da bi se slucaj objavio moraju biti dodati bar pojedna stavka za svaki tip dokumenta i osoba i 
+    mora biti kreirana vremenska linija sa svim stavkammaa dodatim u nju
 
 - id: REQ-028
   name: Aplikacija je samo za desktop

@@ -93,25 +93,30 @@ Tok koriscenja:
     u drugoj grani i odmah pokrenuti saslusanje kroz chat modal.
 12. U tabu `/slucaj/:id/kreiranje/kviz` kreator definise zavrsna pitanja, ponudjene odgovore
     i objasnjenje za svako pitanje; taj kviz se koristi za potvrdu rjesenja slucaja.
-13. Iz formalnog dosijea svake osobe mozes kliknuti `Saslusaj osobu`, sto otvara
+13. U lijevom meniju creatorskog moda klikni `Objavi slucaj`; backend proverava uslove objave
+    (osobe, obavezne tipove dokumenata i potpunu timeline pokrivenost svih osoba/dokumenata)
+    i vraca jasnu poruku o uspehu ili blockerima.
+14. U sekciji `Najocenjeniji javni slucajevi` klikni `Pokreni resavanje` da odmah udjes
+    u solve mod objavljenog slucaja (`/slucaj/:id/resavanje/vremenska-linija`).
+15. Iz formalnog dosijea svake osobe mozes kliknuti `Saslusaj osobu`, sto otvara
     `/slucaj/:id/resavanje/saslusanja` i pokusava automatski da pokrene chat za tu osobu.
-14. U tabu `/slucaj/:id/resavanje/vremenska-linija` koristi dugme `Dalje` za postepeno
+16. U tabu `/slucaj/:id/resavanje/vremenska-linija` koristi dugme `Dalje` za postepeno
     otkljucavanje sledece stavke; lista prikazuje najnovije otkljucano na vrhu, a
     `Trenutni datum` predstavlja datum poslednje otkljucane stavke.
-15. Kada su sve timeline stavke otkljucane, kviz postoji i korisnik tacno postavi ulogu
+17. Kada su sve timeline stavke otkljucane, kviz postoji i korisnik tacno postavi ulogu
     za svaku otkljucanu osobu (pocetno stanje je `unknown`), u lijevom meniju solve moda
     se pojavljuje opcija `Rijesi slucaj` koja vodi na `/slucaj/:id/resavanje/kviz`.
-16. U solve tabu `kviz` korisnik vidi opis slucaja (naziv, opis, autor, ocjena, broj recenzija),
+18. U solve tabu `kviz` korisnik vidi opis slucaja (naziv, opis, autor, ocjena, broj recenzija),
     odgovara na pitanja i predaje kviz; potrebno je ostvariti strogo vise od 80% tacnih odgovora.
-17. Pri uspjesnom rezultatu slucaj prelazi u status `resolved` uz cuvanje vremena rjesavanja,
+19. Pri uspjesnom rezultatu slucaj prelazi u status `resolved` uz cuvanje vremena rjesavanja,
     prikaz tacnih odgovora i objasnjenja, i pomjeranje slucaja u sekciju `Reseni slucajevi`.
-18. U lijevom meniju creatorskog moda postoji opcija `Vrati slucaj u resavanje` koja autoru
+20. U lijevom meniju creatorskog moda postoji opcija `Vrati slucaj u resavanje` koja autoru
     vraca sopstveni progress iz `resolved` u `in_progress`.
-19. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i verziju
+21. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i verziju
     aplikacije, i pratiti statuse svih svojih tiketa.
-20. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
+22. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
     email+lozinka naloga + lozinka admin panela (`ADMIN_PANEL_PASSWORD`).
-21. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
+23. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
@@ -146,6 +151,12 @@ Napomena:
     i role readiness statusom) autoru, kao i korisnicima koji imaju pravo pristupa slucaju
 - `GET /api/cases/:caseId/creator` (autorizacija: `Bearer <JWT>`)
   - vraca slucaj za creatorski mod samo ako je ulogovani korisnik autor tog slucaja
+- `POST /api/cases/:caseId/publish` (autorizacija: `Bearer <JWT>`)
+  - dostupno samo autoru slucaja; objavljuje slucaj i postavlja `publicationStatus=published`
+  - pre objave proverava da postoji najmanje jedna osoba, svi obavezni tipovi dokumenata
+    (`police_report`, `forensic_report`, `witness_statement`, `suspect_statement`, `victim_statement`)
+    i da su sve osobe/dokumenti ubaceni u vremensku liniju
+  - kada uslovi nisu ispunjeni vraca 400 sa listom `publish` blocker poruka
 - `POST /api/cases/:caseId/progress/reset-to-solve` (autorizacija: `Bearer <JWT>`)
   - dostupno samo autoru slucaja; vraca njegov progress status sa `resolved` na
     `in_progress` i cisti `resolved_at`
@@ -298,6 +309,7 @@ Napomena:
   - akcija `Nastavi resavanje` za aktivne slucajeve
   - pregled slucajeva u fazi kreiranja sa akcijom `Nastavi kreiranje`
   - pregled najocenjenijih javnih slucajeva iz baze
+  - akcija `Pokreni resavanje` za javne slucajeve iz sekcije najocenjenijih
   - pregled slucajeva koje je korisnik kreirao (bez mock podataka)
   - prikaz loading, greske i praznih stanja
   - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Podrska`, `Profil`, `Odjava`)
@@ -372,7 +384,9 @@ Napomena:
 - Opcija objave:
   - u meniju rezima kreiranja postoji `Objavi slucaj` kao dugme
   - dugme ne vodi na novu rutu/stranicu
-  - trenutno prikazuje placeholder status poruku (bez pune backend logike objave)
+  - klik poziva `POST /api/cases/:caseId/publish` i radi backend validaciju spremnosti
+  - backend vraca jasne blockere ako uslovi nisu ispunjeni (osobe, tipovi dokumenata, timeline pokrivenost)
+  - pri uspjehu dugme prelazi u stanje `Slucaj je objavljen`
 - Reset statusa za kreatora:
   - u meniju rezima kreiranja postoji opcija `Vrati slucaj u resavanje`
   - akcija poziva `POST /api/cases/:caseId/progress/reset-to-solve` i resetuje

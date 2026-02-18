@@ -3,6 +3,7 @@ import {
   getCreatorCase,
   getLoggedHomeOverview,
 } from "./cases.service.js";
+import { publishCreatorCase } from "./cases.publish.service.js";
 import {
   createCreatorCasePoliceDocument,
   createCreatorCaseStatement,
@@ -50,6 +51,18 @@ export async function getCreatorCaseController(req, res) {
   res.status(200).json({
     ok: true,
     message: "Slucaj za creatorski mod je uspesno ucitan.",
+    data: result,
+  });
+}
+
+export async function publishCreatorCaseController(req, res) {
+  const result = await publishCreatorCase(req.params.caseId, req.auth.userId);
+
+  res.status(200).json({
+    ok: true,
+    message: result.alreadyPublished
+      ? "Slucaj je vec objavljen."
+      : "Slucaj je uspesno objavljen.",
     data: result,
   });
 }

@@ -15,6 +15,7 @@ import {
   getCreatorCaseStatementsController,
   getCreatorCaseTimelineController,
   getLoggedHomeOverviewController,
+  publishCreatorCaseController,
   replaceCreatorCaseTimelineController,
 } from "./cases.controller.js";
 import {
@@ -32,6 +33,7 @@ casesRoutes.use(requireAuth);
 casesRoutes.get("/home", asyncHandler(getLoggedHomeOverviewController));
 casesRoutes.get("/:caseId/overview", asyncHandler(getCaseOverviewController));
 casesRoutes.get("/:caseId/creator", asyncHandler(getCreatorCaseController));
+casesRoutes.post("/:caseId/publish", asyncHandler(publishCreatorCaseController));
 casesRoutes.get("/:caseId/timeline", asyncHandler(getCreatorCaseTimelineController));
 casesRoutes.post("/:caseId/timeline/advance", asyncHandler(advanceCaseTimelineController));
 casesRoutes.put("/:caseId/timeline", asyncHandler(replaceCreatorCaseTimelineController));

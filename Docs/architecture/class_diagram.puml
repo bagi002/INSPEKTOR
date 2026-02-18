@@ -23,6 +23,7 @@ class DesktopGate {
 
 class LoggedHomePage {
   +loadHomeData()
+  +handleStartPublicCase(caseId)
   +render()
 }
 
@@ -42,6 +43,7 @@ class CaseWorkspacePage {
   +mode
   +activeTabSlug
   +loadCaseData()
+  +handlePublishClick()
   +renderTabContent()
   +render()
 }
@@ -50,6 +52,8 @@ class CreateCaseSidebar {
   +mode
   +caseId
   +activeTabSlug
+  +publishActionLabel
+  +isPublishing
   +resolveVisibleTabs(showSolveAction)
   +onPublish()
   +onLogout()
@@ -291,6 +295,7 @@ class CasesApiClient {
   +createCase(payload)
   +fetchCreatorCase(caseId)
   +fetchCaseOverview(caseId, scope)
+  +publishCase(caseId)
 }
 
 class CaseProgressApiClient {
@@ -368,6 +373,7 @@ class CasesRoutes {
   +POST /
   +GET /:caseId/overview
   +GET /:caseId/creator
+  +POST /:caseId/publish
   +POST /:caseId/progress/reset-to-solve
   +GET /:caseId/timeline
   +POST /:caseId/timeline/advance
@@ -406,6 +412,7 @@ class CasesController {
   +getLoggedHomeOverviewController(req, res)
   +createCaseController(req, res)
   +getCreatorCaseController(req, res)
+  +publishCreatorCaseController(req, res)
   +getCreatorCaseTimelineController(req, res)
   +advanceCaseTimelineController(req, res)
   +replaceCreatorCaseTimelineController(req, res)
@@ -489,6 +496,10 @@ class CaseQuizService {
 
 class CaseProgressService {
   +resetCreatorCaseProgressToSolve(caseId, userId)
+}
+
+class CasePublishService {
+  +publishCreatorCase(caseId, userId)
 }
 
 class SupportService {
@@ -608,6 +619,11 @@ class CaseQuizRepository {
   +upsertCaseQuizUserResult(caseId, userId, payload)
 }
 
+class CasePublishRepository {
+  +getCasePublishReadinessSnapshot(caseId)
+  +updateCasePublicationStatus(caseId, publicationStatus)
+}
+
 class SupportRepository {
   +createSupportTicket(payload)
   +getSupportTicketsByReporterUserId(userId)
@@ -721,6 +737,7 @@ CaseQuizTab ..> CaseQuizApiClient
 CaseWorkspacePage ..> CasesApiClient
 CreateCaseSidebar ..> CaseProgressApiClient
 LoggedHomePage ..> CasesApiClient
+LoggedHomePage ..> RouteUtils
 CreateCasePage ..> CasesApiClient
 SupportPage ..> SupportApiClient
 CasePeopleApiClient ..> SessionStorageService
@@ -768,6 +785,7 @@ CasesController --> CasePeopleService
 CasesController --> CaseDocumentsService
 CasesController --> CaseInterrogationsService
 CasesController --> CaseQuizService
+CasesController --> CasePublishService
 CaseQuizController --> CasesService
 CaseQuizController --> CaseQuizService
 CasePeopleController --> CasePeopleService
@@ -807,6 +825,8 @@ CaseQuizService --> CaseProgressRepository
 CaseQuizService --> CaseSolveRolesService
 CaseProgressService --> CasesRepository
 CaseProgressService --> CaseProgressRepository
+CasePublishService --> CasesRepository
+CasePublishService --> CasePublishRepository
 SupportService --> SupportValidation
 SupportService --> SupportRepository
 AdminService --> AdminValidation
@@ -825,6 +845,7 @@ CasePeopleRolesRepository --> DatabaseModule
 CaseDocumentsRepository --> DatabaseModule
 CaseInterrogationsRepository --> DatabaseModule
 CaseQuizRepository --> DatabaseModule
+CasePublishRepository --> DatabaseModule
 SupportRepository --> DatabaseModule
 AdminRepository --> DatabaseModule
 AdminBootstrap --> DatabaseModule

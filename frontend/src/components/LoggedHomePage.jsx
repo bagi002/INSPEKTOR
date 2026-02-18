@@ -170,9 +170,17 @@ function LoggedHomePage({ user, onLogout }) {
               delayClass="delay-3"
               emptyMessage="Nema javnih slucajeva za prikaz."
               renderDetails={(item) => (
-                <p>
-                  Ocena: <strong>{formatAverageRating(item.rating)}</strong> | Autor: {item.author}
-                </p>
+                <>
+                  <p>
+                    Ocena: <strong>{formatAverageRating(item.rating)}</strong> | Autor: {item.author}
+                  </p>
+                  <a
+                    className="btn btn-secondary inline-action case-inline-link"
+                    href={buildCaseWorkspaceRoute(item.id, CASE_WORKSPACE_MODES.SOLVE)}
+                  >
+                    Pokreni resavanje
+                  </a>
+                </>
               )}
             />
 

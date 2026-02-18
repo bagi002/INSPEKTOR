@@ -23,6 +23,7 @@ participant "Case People API Client" as PeopleClient
 participant "Case Documents API Client" as DocumentsClient
 participant "Case Interrogations API Client" as InterrogationsClient
 participant "Case Quiz API Client" as QuizClient
+participant "Case Progress API Client" as ProgressClient
 participant "Support API Client" as SupportClient
 participant "Auth API Client" as AuthClient
 participant "Express Auth API" as AuthApi
@@ -37,16 +38,20 @@ participant "Case People Service" as PeopleService
 participant "Case Documents Service" as DocumentsService
 participant "Case Interrogations Service" as InterrogationsService
 participant "Case Quiz Service" as QuizService
+participant "Case Progress Service" as ProgressService
+participant "Case Publish Service" as PublishService
 participant "Support Service" as SupportService
 participant "Admin Service" as AdminService
 participant "Case Solve Visibility Service" as SolveVisibility
 participant "Case Solve Roles Service" as SolveRoles
 participant "Cases Repository" as CasesRepo
 participant "Case Timeline Repository" as TimelineRepo
+participant "Case Progress Repository" as ProgressRepo
 participant "Case People Repository" as PeopleRepo
 participant "Case Documents Repository" as DocumentsRepo
 participant "Case Interrogations Repository" as InterrogationsRepo
 participant "Case Quiz Repository" as QuizRepo
+participant "Case Publish Repository" as PublishRepo
 participant "Support Repository" as SupportRepo
 participant "Admin Repository" as AdminRepo
 actor "Administrator" as Admin
@@ -91,6 +96,11 @@ alt Desktop sirina
   CasesApi --> CasesClient: JSON uspeh
   CasesClient --> LoggedHome: Prikaz kartica slucajeva
 
+  User -> LoggedHome: Klik "Pokreni resavanje" na javnom slucaju
+  LoggedHome -> Router: /slucaj/{caseId}/resavanje/vremenska-linija
+  Router -> Guard: Provera sesije
+  Guard -> Workspace: Otvaranje solve moda za izabrani javni slucaj
+
   User -> LoggedHome: Klik "Kreiraj novi slucaj"
   LoggedHome -> Router: /slucaj/novi
   Router -> Guard: Provera sesije
@@ -125,6 +135,37 @@ alt Desktop sirina
   CasesService --> CasesApi: response payload
   CasesApi --> CasesClient: JSON uspeh
   CasesClient --> Workspace: Osnovni podaci slucaja + kviz statistika
+
+  User -> WorkspaceSidebar: Klik "Objavi slucaj"
+  WorkspaceSidebar -> CasesClient: POST /api/cases/{caseId}/publish
+  CasesClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> PublishService: publishCreatorCase(caseId, authorUserId)
+  PublishService -> CasesRepo: findCaseByIdForAuthor(caseId, authorUserId)
+
+  alt Slucaj je vec objavljen
+    PublishService --> CasesApi: response payload (alreadyPublished=true)
+    CasesApi --> CasesClient: JSON uspeh
+    CasesClient --> WorkspaceSidebar: Status poruka "Slucaj je vec objavljen."
+  else Slucaj jos nije objavljen
+    PublishService -> PublishRepo: getCasePublishReadinessSnapshot(caseId)
+    PublishRepo -> PeopleStore: SELECT osobe + timeline pokrivenost osoba
+    PublishRepo -> DocumentsStore: SELECT obavezni tipovi + timeline pokrivenost dokumenata
+    PublishRepo -> CasesStore: SELECT broj timeline stavki
+
+    alt Publish uslovi nisu ispunjeni
+      PublishService --> CasesApi: 400 response sa blockerima
+      CasesApi --> CasesClient: JSON greska
+      CasesClient --> WorkspaceSidebar: Prikaz poruke o neuslovima za objavu
+    else Publish uslovi su ispunjeni
+      PublishService -> PublishRepo: updateCasePublicationStatus(caseId, "published")
+      PublishRepo -> CasesStore: UPDATE cases(publication_status='published')
+      CasesStore --> PublishRepo: potvrda promjene statusa
+      PublishService --> CasesApi: response payload (alreadyPublished=false)
+      CasesApi --> CasesClient: JSON uspeh
+      CasesClient --> WorkspaceSidebar: Potvrda uspesne objave
+    end
+  end
 
   User -> WorkspaceSidebar: Klik "Vrati slucaj u resavanje"
   WorkspaceSidebar -> ProgressClient: POST /api/cases/{caseId}/progress/reset-to-solve

@@ -15,6 +15,8 @@ function CreateCaseSidebar({
   activeTabSlug = "",
   onPublish = null,
   publishDisabled = true,
+  isPublishing = false,
+  publishActionLabel = "Objavi slucaj",
   publishStatusMessage = "",
   onOpenSolveQuiz = null,
   showSolveAction = false,
@@ -125,9 +127,9 @@ function CreateCaseSidebar({
             type="button"
             className="btn btn-primary create-case-publish-btn"
             onClick={onPublish || (() => null)}
-            disabled={publishDisabled}
+            disabled={publishDisabled || isPublishing}
           >
-            Objavi slucaj
+            {isPublishing ? "Objavljujem..." : publishActionLabel}
           </button>
           {publishStatusMessage ? (
             <p className="create-case-publish-status">{publishStatusMessage}</p>

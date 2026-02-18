@@ -12,17 +12,33 @@ import {
   resolveSolveActionState,
 } from "./caseWorkspaceModeHelpers";
 import { CASE_WORKSPACE_TABS, findCaseWorkspaceTab } from "./caseWorkspaceTabs";
-import { fetchCaseOverview } from "../services/casesApi";
+import { fetchCaseOverview, publishCase } from "../services/casesApi";
 import {
   AUTH_ROUTES,
   CASE_WORKSPACE_MODES,
   buildCaseWorkspaceRoute,
 } from "../utils/routes";
+
+function resolvePublishErrorMessage(result) {
+  const blockers = Array.isArray(result?.errors?.publish)
+    ? result.errors.publish.filter(
+        (blocker) => typeof blocker === "string" && blocker.trim().length > 0
+      )
+    : [];
+
+  if (blockers.length > 0) {
+    return [result?.message || "Objava slucaja nije uspela.", ...blockers].join(" ");
+  }
+
+  return result?.message || "Objava slucaja nije uspela.";
+}
+
 function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   const [caseOverview, setCaseOverview] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [publishStatusMessage, setPublishStatusMessage] = useState("");
+  const [isPublishing, setIsPublishing] = useState(false);
   const activeTab = useMemo(() => findCaseWorkspaceTab(activeTabSlug) || CASE_WORKSPACE_TABS[0], [activeTabSlug]);
   const modeTexts = useMemo(() => resolveModeTexts(mode), [mode]);
   const isTimelineTab = activeTab.slug === "vremenska-linija";
@@ -71,8 +87,30 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
   useEffect(() => {
     setPublishStatusMessage("");
   }, [caseId, mode]);
-  function handlePublishClick() {
-    setPublishStatusMessage("Objava slucaja je trenutno dostupna kao dugme u meniju. Potvrda objave i backend logika bice dodati u sledecoj fazi.");
+  async function handlePublishClick() {
+    if (!caseData || isPublishing || caseData.publicationStatus === "published") {
+      return;
+    }
+
+    setIsPublishing(true);
+    setPublishStatusMessage("");
+    const result = await publishCase(caseId);
+
+    if (!result.ok) {
+      if (result.unauthorized) {
+        setIsPublishing(false);
+        onLogout();
+        return;
+      }
+
+      setPublishStatusMessage(resolvePublishErrorMessage(result));
+      setIsPublishing(false);
+      return;
+    }
+
+    setPublishStatusMessage(result.message || "Slucaj je uspesno objavljen.");
+    await loadCaseData();
+    setIsPublishing(false);
   }
   function handleOpenSolveQuiz() {
     if (typeof window === "undefined") {
@@ -128,7 +166,19 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
     );
   }
   const showPublishButton = mode === CASE_WORKSPACE_MODES.CREATE;
-  const publishDisabled = !showPublishButton || !caseData || isLoading || Boolean(errorMessage);
+  const isCasePublished = caseData?.publicationStatus === "published";
+  const publishDisabled =
+    !showPublishButton ||
+    !caseData ||
+    isLoading ||
+    isPublishing ||
+    isCasePublished ||
+    Boolean(errorMessage);
+  const publishActionLabel = isCasePublished ? "Slucaj je objavljen" : "Objavi slucaj";
+  const resolvedPublishStatusMessage = showPublishButton
+    ? publishStatusMessage ||
+      (isCasePublished ? "Slucaj je vec objavljen i dostupan za resavanje." : "")
+    : "";
   const showTabSummaryCard =
     !isTimelineTab &&
     !isPeopleTab &&
@@ -146,7 +196,9 @@ function CaseWorkspacePage({ user, onLogout, caseId, mode, activeTabSlug }) {
         activeTabSlug={activeTab.slug}
         onPublish={handlePublishClick}
         publishDisabled={publishDisabled}
-        publishStatusMessage={showPublishButton ? publishStatusMessage : ""}
+        isPublishing={isPublishing}
+        publishActionLabel={publishActionLabel}
+        publishStatusMessage={resolvedPublishStatusMessage}
         onOpenSolveQuiz={handleOpenSolveQuiz}
         showSolveAction={showSolveAction}
         solveActionDisabled={solveActionDisabled}

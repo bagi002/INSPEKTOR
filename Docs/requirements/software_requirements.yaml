@@ -457,3 +457,26 @@
     slucaja poziva backend endpoint `POST /api/cases/:caseId/progress/reset-to-solve`
     i vraca njegov progress status sa `resolved` na `in_progress`, uz brisanje
     `resolved_at`, kako bi kreator mogao ponovo da resava sopstveni slucaj.
+
+- id: REQ-SW-047
+  name: Mehanizam objavljivanja slucaja sa proverom spremnosti
+  status: In Review
+  refines: REQ-027
+  description: >
+    Implementirati end-to-end objavu slucaja iz creatorskog menija kroz endpoint
+    `POST /api/cases/:caseId/publish` dostupan samo autoru, sa backend proverama da
+    slucaj ima najmanje jednu osobu i sve obavezne tipove dokumenata
+    (`police_report`, `forensic_report`, `witness_statement`, `suspect_statement`,
+    `victim_statement`), kao i da su sve osobe i dokumenti ubaceni u vremensku liniju.
+    Frontend treba da prikaze jasnu status poruku za uspesnu objavu, vec objavljen
+    slucaj i neuspesnu objavu sa konkretnim blockerima iz backend odgovora.
+
+- id: REQ-SW-048
+  name: Pokretanje javnog slucaja sa ulogovane pocetne
+  status: In Review
+  refines: REQ-005
+  description: >
+    U sekciji `Najocenjeniji javni slucajevi` na ulogovanoj pocetnoj strani
+    obezbediti jasnu akciju `Pokreni resavanje` koja vodi na
+    `/slucaj/:id/resavanje/vremenska-linija`, kako bi korisnik mogao odmah da
+    udje u objavljeni slucaj i zapocne resavanje.
