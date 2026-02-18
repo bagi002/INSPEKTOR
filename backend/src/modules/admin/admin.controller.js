@@ -1,4 +1,8 @@
 import {
+  createAdminAnnouncementMessage,
+  listAdminAnnouncements,
+} from "./admin.announcements.service.js";
+import {
   deleteAdminUser,
   getAdminOverview,
   getAdminTickets,
@@ -36,6 +40,29 @@ export async function adminTicketsController(req, res) {
   res.status(200).json({
     ok: true,
     message: "Admin lista tiketa je uspesno ucitana.",
+    data: result,
+  });
+}
+
+export async function adminAnnouncementsController(req, res) {
+  const result = await listAdminAnnouncements();
+
+  res.status(200).json({
+    ok: true,
+    message: "Admin lista obavjestenja je uspesno ucitana.",
+    data: result,
+  });
+}
+
+export async function adminCreateAnnouncementController(req, res) {
+  const result = await createAdminAnnouncementMessage(
+    req.body || {},
+    req.adminAuth.userId
+  );
+
+  res.status(201).json({
+    ok: true,
+    message: "Admin obavjestenje je uspesno kreirano.",
     data: result,
   });
 }

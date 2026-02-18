@@ -10,3 +10,10 @@ export {
   getAdminCases,
   updateAdminCase,
 } from "./admin.repository.cases.js";
+export {
+  createAdminAnnouncement,
+  dismissAdminAnnouncementForUser,
+  findPendingAdminAnnouncementForUserById,
+  getAdminAnnouncements,
+  getPendingAdminAnnouncementsForUser,
+} from "./admin.repository.announcements.js";

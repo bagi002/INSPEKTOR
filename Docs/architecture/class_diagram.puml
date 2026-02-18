@@ -1,10 +1,12 @@
 @startuml Class Diagram
-title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel
+title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel + admin popup obavjestenja
 
 class App {
   +resolveRoute(pathname): ReactNode
   +isLoggedIn(): boolean
   +handleLogout(): void
+  +loadPendingAnnouncements()
+  +handleCloseAnnouncement()
   +render()
 }
 
@@ -37,6 +39,13 @@ class LoggedCreatedCaseDetails {
 class LoggedCreatedCaseStatsModal {
   +loadStats()
   +handleClose()
+  +render()
+}
+
+class AdminAnnouncementPopup {
+  +announcement
+  +pendingCount
+  +onClose()
   +render()
 }
 
@@ -382,6 +391,11 @@ class SupportApiClient {
   +createSupportTicket(payload)
 }
 
+class AnnouncementsApiClient {
+  +fetchPendingAnnouncements()
+  +dismissAnnouncement(announcementId)
+}
+
 class ProfileApiClient {
   +fetchMyProfile()
   +updateMyProfileBasic(payload)
@@ -394,6 +408,8 @@ class AdminApiClient {
   +fetchAdminOverview()
   +fetchAdminTickets()
   +updateAdminTicketStatus(ticketId, payload)
+  +fetchAdminAnnouncements()
+  +createAdminAnnouncement(payload)
   +fetchAdminUsers()
   +updateAdminUser(userId, payload)
   +deleteAdminUser(userId)
@@ -427,6 +443,7 @@ class AdminLoginView {
 class AdminDashboard {
   +loadDashboardData()
   +handleUpdateTicket(ticketId, payload)
+  +handleCreateAnnouncement(payload)
   +handleUpdateUser(userId, payload)
   +handleDeleteUser(userId)
   +handleUpdateCase(caseId, payload)
@@ -435,6 +452,11 @@ class AdminDashboard {
 
 class AdminTicketsSection {
   +handleSave(ticketId)
+  +render()
+}
+
+class AdminAnnouncementsSection {
+  +handleSubmit(event)
   +render()
 }
 
@@ -496,11 +518,18 @@ class AdminRoutes {
   +GET /overview
   +GET /tickets
   +PATCH /tickets/:ticketId/status
+  +GET /announcements
+  +POST /announcements
   +GET /users
   +PATCH /users/:userId
   +DELETE /users/:userId
   +GET /cases
   +PATCH /cases/:caseId
+}
+
+class AnnouncementsRoutes {
+  +GET /pending
+  +POST /:announcementId/dismiss
 }
 
 class CasesController {
@@ -553,10 +582,17 @@ class ProfileController {
   +deleteMyProfileController(req, res)
 }
 
+class AnnouncementsController {
+  +getPendingAnnouncementsController(req, res)
+  +dismissPendingAnnouncementController(req, res)
+}
+
 class AdminController {
   +adminLoginController(req, res)
   +adminOverviewController(req, res)
   +adminTicketsController(req, res)
+  +adminAnnouncementsController(req, res)
+  +adminCreateAnnouncementController(req, res)
   +adminUpdateTicketStatusController(req, res)
   +adminUsersController(req, res)
   +adminUpdateUserController(req, res)
@@ -627,6 +663,11 @@ class ProfileService {
   +deleteMyProfile(userId, payload)
 }
 
+class AnnouncementsService {
+  +getPendingAnnouncements(userId)
+  +dismissPendingAnnouncement(announcementId, userId)
+}
+
 class AdminService {
   +loginToAdminPanel(payload)
   +getAdminOverview()
@@ -637,6 +678,11 @@ class AdminService {
   +deleteAdminUser(userId, requesterAdminUserId)
   +listAdminCases()
   +patchAdminCase(caseId, payload)
+}
+
+class AdminAnnouncementsService {
+  +listAdminAnnouncements()
+  +createAdminAnnouncementMessage(payload, adminUserId)
 }
 
 class CaseSolveVisibilityService {
@@ -689,6 +735,10 @@ class AdminValidation {
   +validateAdminTicketStatusPayload(payload)
   +validateAdminUserPatchPayload(payload)
   +validateAdminCasePatchPayload(payload)
+}
+
+class AdminAnnouncementsValidation {
+  +validateCreateAdminAnnouncementPayload(payload)
 }
 
 class CaseDocumentsTypeSpecificValidation {
@@ -791,6 +841,14 @@ class AdminRepository {
   +updateAdminCase(caseId, updates)
 }
 
+class AdminAnnouncementsRepository {
+  +createAdminAnnouncement(payload)
+  +getAdminAnnouncements(limit)
+  +getPendingAdminAnnouncementsForUser(userId)
+  +findPendingAdminAnnouncementForUserById(announcementId, userId)
+  +dismissAdminAnnouncementForUser(announcementId, userId)
+}
+
 UseCaseInterrogationCreateState --> CaseInterrogationCreateStateUtils
 CaseInterrogationCreateModal --> CaseInterrogationNodeBuilderSection
 CaseInterrogationNodeBuilderSection --> CaseInterrogationTreePreview
@@ -829,11 +887,15 @@ class SQLiteDatabase {
   +case_quiz_options
   +case_quiz_user_results
   +support_tickets
+  +admin_announcements
+  +admin_announcement_dismissals
 }
 
 App --> RouteUtils
 App --> DesktopGate
 App --> WikiPage
+App *-- AdminAnnouncementPopup
+App ..> AnnouncementsApiClient
 DesktopGate --> LoggedHomePage
 DesktopGate --> CreateCasePage
 DesktopGate --> CaseWorkspacePage
@@ -914,6 +976,7 @@ ProfilePage *-- ProfileDeleteAccountForm
 UseProfilePageState ..> ProfileApiClient
 UseProfilePageState ..> SessionStorageService
 SupportPage ..> SupportApiClient
+AdminAnnouncementPopup ..> AnnouncementsApiClient
 CasePeopleApiClient ..> SessionStorageService
 CaseTimelineApiClient ..> SessionStorageService
 CaseDocumentsApiClient ..> SessionStorageService
@@ -924,14 +987,17 @@ CaseProgressApiClient ..> SessionStorageService
 CasesApiClient ..> SessionStorageService
 ProfileApiClient ..> SessionStorageService
 SupportApiClient ..> SessionStorageService
+AnnouncementsApiClient ..> SessionStorageService
 CasesApiClient ..> RouteUtils
 AdminApp --> AdminLoginView
 AdminApp --> AdminDashboard
 AdminDashboard *-- AdminTicketsSection
+AdminDashboard *-- AdminAnnouncementsSection
 AdminDashboard *-- AdminUsersSection
 AdminDashboard *-- AdminCasesSection
 AdminLoginView ..> AdminApiClient
 AdminDashboard ..> AdminApiClient
+AdminAnnouncementsSection ..> AdminApiClient
 AdminApiClient ..> AdminSessionStorageService
 
 CasePeopleApiClient ..> ExpressApp
@@ -944,11 +1010,13 @@ CaseProgressApiClient ..> ExpressApp
 CasesApiClient ..> ExpressApp
 ProfileApiClient ..> ExpressApp
 SupportApiClient ..> ExpressApp
+AnnouncementsApiClient ..> ExpressApp
 AdminApiClient ..> ExpressApp
 ExpressApp --> CasesRoutes
 ExpressApp --> ProfileRoutes
 ExpressApp --> SupportRoutes
 ExpressApp --> AdminRoutes
+ExpressApp --> AnnouncementsRoutes
 CasesRoutes --> AuthGuardMiddleware
 CasesRoutes --> CasesController
 CasesRoutes --> CaseQuizController
@@ -961,6 +1029,8 @@ SupportRoutes --> AuthGuardMiddleware
 SupportRoutes --> SupportController
 AdminRoutes --> AdminPanelAuthGuard
 AdminRoutes --> AdminController
+AnnouncementsRoutes --> AuthGuardMiddleware
+AnnouncementsRoutes --> AnnouncementsController
 CasesController --> CasesService
 CasesController --> CaseTimelineService
 CasesController --> CasePeopleService
@@ -975,7 +1045,9 @@ CasePeopleController --> CasePeopleService
 CaseProgressController --> CaseProgressService
 ProfileController --> ProfileService
 SupportController --> SupportService
+AnnouncementsController --> AnnouncementsService
 AdminController --> AdminService
+AdminController --> AdminAnnouncementsService
 CasesService --> CasesRepository
 CasesService --> CaseSolveVisibilityService
 CasesService --> CaseSolveRolesService
@@ -1019,9 +1091,12 @@ ProfileService --> ProfileValidation
 ProfileService --> ProfileRepository
 SupportService --> SupportValidation
 SupportService --> SupportRepository
+AnnouncementsService --> AdminAnnouncementsRepository
 AdminService --> AdminValidation
 AdminService --> AdminRepository
 AdminService --> SupportRepository
+AdminAnnouncementsService --> AdminAnnouncementsValidation
+AdminAnnouncementsService --> AdminAnnouncementsRepository
 CaseSolveVisibilityService --> CaseTimelineRepository
 CaseSolveVisibilityService --> CaseProgressRepository
 CaseSolveRolesService --> CasePeopleRepository
@@ -1040,6 +1115,7 @@ CasePublishRepository --> DatabaseModule
 ProfileRepository --> DatabaseModule
 SupportRepository --> DatabaseModule
 AdminRepository --> DatabaseModule
+AdminAnnouncementsRepository --> DatabaseModule
 AdminBootstrap --> DatabaseModule
 DatabaseModule --> SQLiteDatabase
 @enduml

@@ -582,3 +582,15 @@
     `DELETE /api/admin/users/:userId` i odgovarajucu akciju u admin panelu, uz
     zastitu da admin ne moze obrisati trenutno ulogovan nalog i da nije dozvoljeno
     brisanje poslednjeg admin naloga.
+
+- id: REQ-SW-059
+  name: Admin popup obavjestenja za korisnike
+  status: In Review
+  refines: REQ-033
+  description: >
+    Implementirati end-to-end mehanizam admin obavjestenja: admin panel mora imati
+    formu za kreiranje obavjestenja (naslov + sadrzaj), backend mora cuvati
+    obavjestenja i omoguciti endpoint za pending prikaz korisniku i dismiss akciju,
+    a korisnicki frontend mora prikazati popup svim korisnicima koji su bili
+    registrovani u trenutku kreiranja obavjestenja, ukljucujuci i prikaz pri
+    sledecoj prijavi ako korisnik nije bio online kada je obavjestenje kreirano.

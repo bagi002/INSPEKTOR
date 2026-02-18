@@ -169,6 +169,17 @@ export function updateAdminTicketStatus(ticketId, payload) {
   });
 }
 
+export function fetchAdminAnnouncements() {
+  return requestAdmin("/announcements");
+}
+
+export function createAdminAnnouncement(payload) {
+  return requestAdmin("/announcements", {
+    method: "POST",
+    body: payload,
+  });
+}
+
 export function fetchAdminUsers() {
   return requestAdmin("/users");
 }

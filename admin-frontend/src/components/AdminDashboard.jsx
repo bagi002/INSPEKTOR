@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  createAdminAnnouncement,
   deleteAdminUser,
+  fetchAdminAnnouncements,
   fetchAdminCases,
   fetchAdminOverview,
   fetchAdminTickets,
@@ -9,6 +11,7 @@ import {
   updateAdminTicketStatus,
   updateAdminUser,
 } from "../services/adminApi";
+import AdminAnnouncementsSection from "./AdminAnnouncementsSection";
 import AdminCasesSection from "./AdminCasesSection";
 import AdminTicketsSection from "./AdminTicketsSection";
 import AdminUsersSection from "./AdminUsersSection";
@@ -25,6 +28,7 @@ const EMPTY_OVERVIEW = {
 function AdminDashboard({ adminUser, onLogout }) {
   const [overview, setOverview] = useState(EMPTY_OVERVIEW);
   const [tickets, setTickets] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [users, setUsers] = useState([]);
   const [cases, setCases] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,13 +38,14 @@ function AdminDashboard({ adminUser, onLogout }) {
     setIsLoading(true);
     setErrorMessage("");
 
-    const [overviewResult, ticketsResult, usersResult, casesResult] = await Promise.all([
+    const [overviewResult, ticketsResult, announcementsResult, usersResult, casesResult] = await Promise.all([
       fetchAdminOverview(),
       fetchAdminTickets(),
+      fetchAdminAnnouncements(),
       fetchAdminUsers(),
       fetchAdminCases(),
     ]);
-    const allResults = [overviewResult, ticketsResult, usersResult, casesResult];
+    const allResults = [overviewResult, ticketsResult, announcementsResult, usersResult, casesResult];
 
     if (allResults.some((result) => !result.ok && result.unauthorized)) {
       onLogout();
@@ -56,6 +61,11 @@ function AdminDashboard({ adminUser, onLogout }) {
 
     setOverview(overviewResult.data?.overview || EMPTY_OVERVIEW);
     setTickets(Array.isArray(ticketsResult.data?.tickets) ? ticketsResult.data.tickets : []);
+    setAnnouncements(
+      Array.isArray(announcementsResult.data?.announcements)
+        ? announcementsResult.data.announcements
+        : []
+    );
     setUsers(Array.isArray(usersResult.data?.users) ? usersResult.data.users : []);
     setCases(Array.isArray(casesResult.data?.cases) ? casesResult.data.cases : []);
     setIsLoading(false);
@@ -78,6 +88,17 @@ function AdminDashboard({ adminUser, onLogout }) {
 
   async function handleUpdateUser(userId, payload) {
     const result = await updateAdminUser(userId, payload);
+    if (result.ok) {
+      await loadDashboardData();
+    }
+    if (!result.ok && result.unauthorized) {
+      onLogout();
+    }
+    return result;
+  }
+
+  async function handleCreateAnnouncement(payload) {
+    const result = await createAdminAnnouncement(payload);
     if (result.ok) {
       await loadDashboardData();
     }
@@ -156,6 +177,10 @@ function AdminDashboard({ adminUser, onLogout }) {
           </section>
 
           <AdminTicketsSection tickets={tickets} onUpdateTicket={handleUpdateTicket} />
+          <AdminAnnouncementsSection
+            announcements={announcements}
+            onCreateAnnouncement={handleCreateAnnouncement}
+          />
           <AdminUsersSection
             users={users}
             onUpdateUser={handleUpdateUser}

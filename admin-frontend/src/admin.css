@@ -152,6 +152,17 @@ textarea {
   padding: 0.82rem;
   background: linear-gradient(170deg, #f9fbff, #edf4fc);
 }
+.admin-announcement-list {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.72rem;
+}
+.admin-announcement-item {
+  border: 1px solid #c6d7ea;
+  border-radius: 12px;
+  padding: 0.82rem;
+  background: linear-gradient(170deg, #f9fbff, #edf4fc);
+}
 .admin-meta {
   font-size: 0.93rem;
 }

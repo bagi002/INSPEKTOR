@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel
+title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel + admin popup obavjestenja
 
 package "Frontend" {
   [App Shell]
@@ -79,10 +79,12 @@ package "Frontend" {
   [Profile API Client]
   [Support API Client]
   [Cases API Client]
+  [Announcements API Client]
   [Auth API Client]
   [Session Storage]
   [Logout Action]
   [Desktop Warning View]
+  [Admin Announcement Popup]
 }
 
 package "Admin Frontend (port 5174)" {
@@ -90,6 +92,7 @@ package "Admin Frontend (port 5174)" {
   [Admin Login View]
   [Admin Dashboard]
   [Admin Tickets Section]
+  [Admin Announcements Section]
   [Admin Users Section]
   [Admin User Delete Action]
   [Admin Cases Section]
@@ -104,6 +107,7 @@ package "Backend (Node.js + Express)" {
   [Profile Routes]
   [Support Routes]
   [Admin Routes]
+  [Announcements Routes]
   [Auth Guard Middleware]
   [Admin Panel Auth Guard]
   [Auth Service]
@@ -111,6 +115,8 @@ package "Backend (Node.js + Express)" {
   [Profile Service]
   [Support Service]
   [Admin Service]
+  [Announcements Service]
+  [Admin Announcements Service]
   [Case Timeline Service]
   [Case People Service]
   [Case Documents Service]
@@ -124,6 +130,7 @@ package "Backend (Node.js + Express)" {
   [Support Validation]
   [Profile Validation]
   [Admin Validation]
+  [Admin Announcements Validation]
   [Cases Validation]
   [Case Timeline Validation]
   [Case People Validation]
@@ -147,6 +154,7 @@ package "Backend (Node.js + Express)" {
   [Support Repository]
   [Profile Repository]
   [Admin Repository]
+  [Admin Announcements Repository]
   [Admin Bootstrap]
   [SQLite Module]
   [Migration Runner]
@@ -160,6 +168,7 @@ database "metadata_json u case_documents" as MetadataDb
 database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
 database "case_quiz_*" as QuizDb
 database "support_tickets" as SupportDb
+database "admin_announcements + admin_announcement_dismissals" as AnnouncementsDb
 
 [App Shell] --> [Desktop Policy Gate]
 [Desktop Policy Gate] --> [Route Resolver]
@@ -173,6 +182,8 @@ database "support_tickets" as SupportDb
 [Protected Route Guard] --> [Support Page]
 [Protected Route Guard] --> [Create Case Start Page]
 [Protected Route Guard] --> [Case Workspace Page]
+[App Shell] --> [Admin Announcement Popup]
+[App Shell] --> [Announcements API Client]
 [Public Auth Pages] --> [Auth API Client]
 [Wiki Page] --> [Wiki Usage Guide View]
 [Wiki Page] --> [Route Utils]
@@ -200,6 +211,7 @@ database "support_tickets" as SupportDb
 [Profile State Hook] --> [Session Storage]
 [Profile Delete Action] --> [Profile API Client]
 [Support Page] --> [Support API Client]
+[Admin Announcement Popup] --> [Announcements API Client]
 
 [Create Case Start Page] --> [Shared Case Sidebar]
 [Create Case Start Page] --> [Cases API Client]
@@ -299,6 +311,7 @@ database "support_tickets" as SupportDb
 [Case Progress API Client] --> [Session Storage]
 [Profile API Client] --> [Session Storage]
 [Support API Client] --> [Session Storage]
+[Announcements API Client] --> [Session Storage]
 [Logout Action] --> [Session Storage]
 [Logged Sidebar] --> [Logout Action]
 [Shared Case Sidebar] --> [Logout Action]
@@ -307,11 +320,13 @@ database "support_tickets" as SupportDb
 [Admin App Shell] --> [Admin Dashboard]
 [Admin Login View] --> [Admin API Client]
 [Admin Dashboard] --> [Admin Tickets Section]
+[Admin Dashboard] --> [Admin Announcements Section]
 [Admin Dashboard] --> [Admin Users Section]
 [Admin Users Section] --> [Admin User Delete Action]
 [Admin User Delete Action] --> [Admin API Client]
 [Admin Dashboard] --> [Admin Cases Section]
 [Admin Dashboard] --> [Admin API Client]
+[Admin Announcements Section] --> [Admin API Client]
 [Admin API Client] --> [Admin Session Storage]
 
 [Auth API Client] --> [Express App]
@@ -326,12 +341,14 @@ database "support_tickets" as SupportDb
 [Profile API Client] --> [Express App]
 [Support API Client] --> [Express App]
 [Admin API Client] --> [Express App]
+[Announcements API Client] --> [Express App]
 
 [Express App] --> [Auth Routes]
 [Express App] --> [Cases Routes]
 [Express App] --> [Profile Routes]
 [Express App] --> [Support Routes]
 [Express App] --> [Admin Routes]
+[Express App] --> [Announcements Routes]
 [Express App] --> [Health Route]
 
 [Auth Routes] --> [Auth Service]
@@ -351,6 +368,9 @@ database "support_tickets" as SupportDb
 [Support Routes] --> [Support Service]
 [Admin Routes] --> [Admin Panel Auth Guard]
 [Admin Routes] --> [Admin Service]
+[Admin Routes] --> [Admin Announcements Service]
+[Announcements Routes] --> [Auth Guard Middleware]
+[Announcements Routes] --> [Announcements Service]
 
 [Auth Guard Middleware] --> [JWT Token Service]
 [Admin Panel Auth Guard] --> [JWT Token Service]
@@ -364,6 +384,9 @@ database "support_tickets" as SupportDb
 [Admin Service] --> [Admin Repository]
 [Admin Service] --> [Support Repository]
 [Admin Service] --> [User Repository]
+[Admin Announcements Service] --> [Admin Announcements Validation]
+[Admin Announcements Service] --> [Admin Announcements Repository]
+[Announcements Service] --> [Admin Announcements Repository]
 [Cases Service] --> [Cases Validation]
 [Cases Service] --> [Cases Repository]
 [Cases Service] --> [Case Solve Visibility Service]
@@ -422,6 +445,7 @@ database "support_tickets" as SupportDb
 [Support Repository] --> [SQLite Module]
 [Profile Repository] --> [SQLite Module]
 [Admin Repository] --> [SQLite Module]
+[Admin Announcements Repository] --> [SQLite Module]
 [Admin Bootstrap] --> [User Repository]
 
 [SQLite Module] --> Db
@@ -431,6 +455,7 @@ database "support_tickets" as SupportDb
 [SQLite Module] --> InterrogationsDb
 [SQLite Module] --> QuizDb
 [SQLite Module] --> SupportDb
+[SQLite Module] --> AnnouncementsDb
 [Migration Runner] --> Db
 [Health Route] --> [SQLite Module]
 @enduml

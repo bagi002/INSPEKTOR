@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + korisnicka podrska + admin panel
+title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + korisnicka podrska + admin panel + admin popup obavjestenja
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -7,6 +7,7 @@ participant "DesktopGate" as Gate
 participant "LoginPage" as Login
 participant "App Route Guard" as Guard
 participant "LoggedHomePage" as LoggedHome
+participant "Admin Announcement Popup" as AnnouncementPopup
 participant "CreateCasePage (/slucaj/novi)" as CreateCaseStart
 participant "CaseWorkspacePage" as Workspace
 participant "CreateCaseSidebar" as WorkspaceSidebar
@@ -29,12 +30,14 @@ participant "Case Reviews API Client" as ReviewsClient
 participant "Case Progress API Client" as ProgressClient
 participant "Profile API Client" as ProfileClient
 participant "Support API Client" as SupportClient
+participant "Announcements API Client" as AnnouncementsClient
 participant "Auth API Client" as AuthClient
 participant "Express Auth API" as AuthApi
 participant "Express Cases API" as CasesApi
 participant "Express Profile API" as ProfileApi
 participant "Express Support API" as SupportApi
 participant "Express Admin API" as AdminApi
+participant "Express Announcements API" as AnnouncementsApi
 participant "Auth Guard (JWT)" as JwtGuard
 participant "Admin Panel Guard (JWT scope)" as AdminGuard
 participant "Cases Service" as CasesService
@@ -49,6 +52,8 @@ participant "Case Publish Service" as PublishService
 participant "Profile Service" as ProfileService
 participant "Support Service" as SupportService
 participant "Admin Service" as AdminService
+participant "Announcements Service" as AnnouncementsService
+participant "Admin Announcements Service" as AdminAnnouncementsService
 participant "Case Solve Visibility Service" as SolveVisibility
 participant "Case Solve Roles Service" as SolveRoles
 participant "Cases Repository" as CasesRepo
@@ -63,6 +68,7 @@ participant "Case Publish Repository" as PublishRepo
 participant "Profile Repository" as ProfileRepo
 participant "Support Repository" as SupportRepo
 participant "Admin Repository" as AdminRepo
+participant "Admin Announcements Repository" as AdminAnnouncementsRepo
 actor "Administrator" as Admin
 participant "Admin Login View" as AdminLoginView
 participant "Admin Dashboard" as AdminDashboard
@@ -74,6 +80,7 @@ database "SQLite case_documents(metadata_json)" as DocumentsStore
 database "SQLite case_interrogations + nodes" as InterrogationsStore
 database "SQLite case_quiz_questions/options/results" as QuizStore
 database "SQLite support_tickets" as SupportStore
+database "SQLite admin_announcements + dismissals" as AdminAnnouncementsStore
 database "LocalStorage (session)" as SessionStore
 database "LocalStorage (admin session)" as AdminSessionStore
 participant "Desktop Notice View" as Notice
@@ -96,6 +103,20 @@ alt Desktop sirina
   Login -> Router: Navigacija na /app
   Router -> Guard: Provera sesije
   Guard -> LoggedHome: Render ulogovane pocetne
+
+  LoggedHome -> AnnouncementsClient: GET /api/announcements/pending
+  AnnouncementsClient -> AnnouncementsApi: HTTP zahtev
+  AnnouncementsApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> AnnouncementsService: getPendingAnnouncements(userId)
+  AnnouncementsService -> AdminAnnouncementsRepo: getPendingAdminAnnouncementsForUser(userId)
+  AdminAnnouncementsRepo -> UsersStore: SELECT users(created_at) za userId
+  AdminAnnouncementsRepo -> AdminAnnouncementsStore: SELECT nedismissovana obavjestenja za korisnika
+  UsersStore --> AdminAnnouncementsRepo: created_at korisnika
+  AdminAnnouncementsStore --> AdminAnnouncementsRepo: lista obavjestenja
+  AdminAnnouncementsRepo --> AnnouncementsService: pending obavjestenja
+  AnnouncementsService --> AnnouncementsApi: response payload
+  AnnouncementsApi --> AnnouncementsClient: JSON uspeh
+  AnnouncementsClient --> AnnouncementPopup: Prikaz popup obavjestenja
 
   LoggedHome -> CasesClient: GET /api/cases/home
   CasesClient -> CasesApi: HTTP zahtev
@@ -732,6 +753,22 @@ alt Desktop sirina
   SupportApi --> SupportClient: JSON uspeh
   SupportClient --> SupportPage: Osvjezenje liste tiketa
 
+  User -> AnnouncementPopup: Klik "Zatvori obavjestenje"
+  AnnouncementPopup -> AnnouncementsClient: POST /api/announcements/{announcementId}/dismiss
+  AnnouncementsClient -> AnnouncementsApi: HTTP zahtev
+  AnnouncementsApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> AnnouncementsService: dismissPendingAnnouncement(announcementId, userId)
+  AnnouncementsService -> AdminAnnouncementsRepo: findPendingAdminAnnouncementForUserById(...)
+  AdminAnnouncementsRepo -> UsersStore: SELECT users(created_at) za userId
+  AdminAnnouncementsRepo -> AdminAnnouncementsStore: SELECT obavjestenje + dismiss status
+  AnnouncementsService -> AdminAnnouncementsRepo: dismissAdminAnnouncementForUser(...)
+  AdminAnnouncementsRepo -> AdminAnnouncementsStore: UPSERT dismiss zapisa
+  AdminAnnouncementsStore --> AdminAnnouncementsRepo: potvrda dismiss zapisa
+  AdminAnnouncementsRepo --> AnnouncementsService: dismiss uspeh
+  AnnouncementsService --> AnnouncementsApi: response payload
+  AnnouncementsApi --> AnnouncementsClient: JSON uspeh
+  AnnouncementsClient --> AnnouncementPopup: Uklanjanje trenutnog popup obavjestenja
+
   Admin -> AdminLoginView: Otvara http://localhost:5174 i unosi kredencijale
   AdminLoginView -> AdminClient: POST /api/admin/login
   AdminClient -> AdminApi: HTTP zahtev
@@ -767,6 +804,33 @@ alt Desktop sirina
   AdminService --> AdminApi: response payload
   AdminApi --> AdminClient: JSON uspeh
   AdminClient --> AdminDashboard: Lista tiketa
+
+  AdminDashboard -> AdminClient: GET /api/admin/announcements
+  AdminClient -> AdminApi: HTTP zahtev
+  AdminApi -> AdminGuard: Verifikacija admin tokena
+  AdminGuard -> AdminAnnouncementsService: listAdminAnnouncements()
+  AdminAnnouncementsService -> AdminAnnouncementsRepo: getAdminAnnouncements()
+  AdminAnnouncementsRepo -> AdminAnnouncementsStore: SELECT sva admin obavjestenja
+  AdminAnnouncementsRepo -> UsersStore: JOIN admin kreatora obavjestenja
+  AdminAnnouncementsStore --> AdminAnnouncementsRepo: lista obavjestenja
+  UsersStore --> AdminAnnouncementsRepo: podaci admin kreatora
+  AdminAnnouncementsRepo --> AdminAnnouncementsService: mapirana lista
+  AdminAnnouncementsService --> AdminApi: response payload
+  AdminApi --> AdminClient: JSON uspeh
+  AdminClient --> AdminDashboard: Lista admin obavjestenja
+
+  Admin -> AdminDashboard: Kreira novo popup obavjestenje
+  AdminDashboard -> AdminClient: POST /api/admin/announcements
+  AdminClient -> AdminApi: HTTP zahtev
+  AdminApi -> AdminGuard: Verifikacija admin tokena
+  AdminGuard -> AdminAnnouncementsService: createAdminAnnouncementMessage(payload, adminUserId)
+  AdminAnnouncementsService -> AdminAnnouncementsRepo: createAdminAnnouncement(payload)
+  AdminAnnouncementsRepo -> AdminAnnouncementsStore: INSERT novo obavjestenje
+  AdminAnnouncementsStore --> AdminAnnouncementsRepo: announcementId
+  AdminAnnouncementsRepo --> AdminAnnouncementsService: kreirano obavjestenje
+  AdminAnnouncementsService --> AdminApi: 201 response
+  AdminApi --> AdminClient: JSON uspeh
+  AdminClient --> AdminDashboard: Osvjezena lista obavjestenja
 
   Admin -> AdminDashboard: Menja status tiketa
   AdminDashboard -> AdminClient: PATCH /api/admin/tickets/{ticketId}/status

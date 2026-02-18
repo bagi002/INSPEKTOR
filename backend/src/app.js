@@ -3,6 +3,7 @@ import express from "express";
 import { env } from "./config/env.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 import adminRoutes from "./modules/admin/admin.routes.js";
+import announcementsRoutes from "./modules/announcements/announcements.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import casesRoutes from "./modules/cases/cases.routes.js";
 import healthRoutes from "./modules/health/health.routes.js";
@@ -45,6 +46,7 @@ export function createApp() {
   app.use("/api/health", healthRoutes);
   app.use("/api/auth", authRoutes);
   app.use("/api/profile", profileRoutes);
+  app.use("/api/announcements", announcementsRoutes);
   app.use("/api/cases", casesRoutes);
   app.use("/api/support", supportRoutes);
   app.use("/api/admin", adminRoutes);

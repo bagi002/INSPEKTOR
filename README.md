@@ -2,6 +2,7 @@
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
 Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, javna Wiki stranica sa vodicem koriscenja, ulogovana pocetna sa stvarnim podacima iz SQLite baze, profil korisnika sa pregledom aktivnosti i upravljanjem nalogom, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
+Admin panel sada podrzava i kreiranje hitnih popup obavjestenja koja se prikazuju korisnicima unutar glavne aplikacije.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
@@ -14,7 +15,7 @@ Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekran
 ## Struktura projekta
 - `frontend/` - React aplikacija za korisnike (`landing`, auth, slucajevi, podrska)
 - `admin-frontend/` - zaseban React admin panel (port `5174`)
-- `backend/` - Express backend (`/api/auth`, `/api/profile`, `/api/cases`, `/api/support`, `/api/admin`, `/api/health`) i SQLite pristup
+- `backend/` - Express backend (`/api/auth`, `/api/profile`, `/api/cases`, `/api/support`, `/api/announcements`, `/api/admin`, `/api/health`) i SQLite pristup
 - `Instances/` - runtime podaci (npr. SQLite fajl baze)
 - `Docs/requirements/` - high-level i softverski requirements
 - `Docs/architecture/` - runtime, class i block PUML dijagrami
@@ -128,11 +129,19 @@ Tok koriscenja:
 25. Nakon admin prijave dostupni su pregledi i izmene korisnika, slucajeva i svih tiketa.
 26. U ruti `/profil` mozes pregledati svoje aktivnosti, azurirati osnovne podatke,
     promeniti lozinku ili trajno obrisati nalog uz potvrdu.
+27. U admin panelu postoji sekcija `Admin obavjestenja` gdje admin unosi naslov i sadrzaj
+    hitne poruke, pa objavljuje popup obavjestenje.
+28. U korisnickoj aplikaciji, ulogovani korisnik automatski dobija pending popup
+    obavjestenja i moze ih zatvoriti akcijom `Zatvori obavjestenje`.
+29. Korisnici koji su bili registrovani u trenutku objave obavjestenja dobijaju
+    isto obavjestenje i pri sledecoj prijavi ako ga ranije nisu zatvorili.
 
 Napomena:
 - Korisnici se trajno cuvaju u SQLite bazi (`Instances/inspektor.sqlite`).
 - Slucajevi i povezani podaci (osobe, dokumenti, timeline, korisnicki napredak, zavrsni kviz i recenzije) cuvaju se u SQLite `case_*` tabelama.
 - Ticketi podrske se cuvaju u tabeli `support_tickets`.
+- Admin popup obavjestenja i dismiss zapisi cuvaju se u tabelama
+  `admin_announcements` i `admin_announcement_dismissals`.
 - Pri uspesnoj prijavi backend vraca JWT token koji se cuva u `localStorage` na klijentu.
 - Pri prvom pokretanju backend automatski obezbedjuje bootstrap admin nalog na osnovu `.env`
   promenljivih (`ADMIN_BOOTSTRAP_*`).
@@ -297,6 +306,12 @@ Napomena:
   - kreira novi tiket za podrsku
   - body: `ticketType`, `title`, `description`, `appLocation`, `appVersion`
   - status tiketa se inicijalno postavlja na `open`
+- `GET /api/announcements/pending` (autorizacija: `Bearer <JWT>`)
+  - vraca sva pending admin obavjestenja za trenutno ulogovanog korisnika
+  - prikazuje samo obavjestenja kreirana nakon datuma registracije korisnika
+    i koja korisnik jos nije zatvorio
+- `POST /api/announcements/:announcementId/dismiss` (autorizacija: `Bearer <JWT>`)
+  - oznacava konkretno obavjestenje kao zatvoreno za trenutno ulogovanog korisnika
 - `POST /api/admin/login`
   - body: `{ "email": "...", "password": "...", "panelPassword": "..." }`
   - pristup odobrava samo za korisnike sa `role=admin` i validnom lozinkom admin panela
@@ -307,6 +322,11 @@ Napomena:
   - vraca sve tikete sa podacima naloga koji ih je prijavio
 - `PATCH /api/admin/tickets/:ticketId/status` (autorizacija: `Bearer <ADMIN_JWT>`)
   - menja status tiketa i opcionu `adminNote`
+- `GET /api/admin/announcements` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - vraca listu svih admin obavjestenja sa podacima admina koji je objavio poruku
+- `POST /api/admin/announcements` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - kreira novo admin popup obavjestenje
+  - body: `{ "title": "...", "content": "..." }`
 - `GET /api/admin/users` (autorizacija: `Bearer <ADMIN_JWT>`)
   - vraca sve korisnike bez `password_hash` polja
 - `PATCH /api/admin/users/:userId` (autorizacija: `Bearer <ADMIN_JWT>`)
@@ -353,6 +373,9 @@ Napomena:
   - prikaz loading, greske i praznih stanja
   - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Podrska`, `Profil`, `Odjava`)
   - za admin korisnika dodatni link ka izdvojenom admin panelu (`http://localhost:5174`)
+  - globalni popup admin obavjestenja za pending poruke korisnika
+    (integracija preko `GET /api/announcements/pending` i
+    `POST /api/announcements/:announcementId/dismiss`)
 - Profil korisnika (`/profil`):
   - prikaz osnovnih podataka korisnika (ime, prezime, email, datum registracije)
   - pregled aktivnosti kroz statistiku i liste (kreirani slucajevi, reseni slucajevi, poslednje date ocene)
@@ -368,6 +391,8 @@ Napomena:
   - login zahteva admin nalog i lozinku admin panela
   - dashboard prikazuje aggregate metrike (`/api/admin/overview`)
   - upravljanje ticketima (pregled svih + promena statusa i admin napomene)
+  - sekcija za kreiranje i pregled popup admin obavjestenja
+    (`GET /api/admin/announcements`, `POST /api/admin/announcements`)
   - upravljanje korisnicima (pregled, izmena osnovnih podataka i role, kao i brisanje naloga; bez lozinki)
   - upravljanje slucajevima (pregled i izmena osnovnih polja)
 - Kreiranje slucaja (`/slucaj/novi`):

@@ -29,6 +29,44 @@ export const SUPPORT_ADMIN_MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_support_tickets_created_at
     ON support_tickets(created_at);
   `,
+  `
+    CREATE TABLE IF NOT EXISTS admin_announcements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_by_admin_user_id INTEGER NOT NULL,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (created_by_admin_user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `,
+  `
+    CREATE INDEX IF NOT EXISTS idx_admin_announcements_created_at
+    ON admin_announcements(created_at);
+  `,
+  `
+    CREATE INDEX IF NOT EXISTS idx_admin_announcements_created_by
+    ON admin_announcements(created_by_admin_user_id);
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS admin_announcement_dismissals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      announcement_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      dismissed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (announcement_id) REFERENCES admin_announcements(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE (announcement_id, user_id)
+    );
+  `,
+  `
+    CREATE INDEX IF NOT EXISTS idx_admin_announcement_dismissals_user_id
+    ON admin_announcement_dismissals(user_id);
+  `,
+  `
+    CREATE INDEX IF NOT EXISTS idx_admin_announcement_dismissals_announcement_id
+    ON admin_announcement_dismissals(announcement_id);
+  `,
 ];
 
 export async function applySupportAdminColumnMigrations(database, ensureColumnExists) {

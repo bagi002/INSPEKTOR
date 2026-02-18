@@ -315,10 +315,21 @@
 
 - id: REQ-032
   name: Admin panel
-  status: In Review
+  status: Finished
   description: >
     Treba da postoji admin panel koji je dostupan samo adminima aplikacije
     Treba d abude na drugom portu od glavne aplikacije
     KAda se admin prvi put tu prijavi unjece lozinku polje ce je unostii svaki put 
     Na panelu trbea d amoze da s e vidi i uredjuje sve u bazi podatak sem lzoinka 
     KAo i d abude pregled ticketsa koje su korisnici kreirali i opcija za promjenu njihovog statusa
+
+- id: REQ-033
+  name: Po-up  admin obavjestenja 
+  status: Finished
+  description: >
+    Admin na admin panelu ce sad aimati opciju da napise obavjestenje koje ce iskociti kao pop-up svim korisnicima 
+    Obavjestenje ce imati naslov i sadrzaj koji admin unese i opciju da ga zatvorite
+    Ova funkcionalnost je namjenjena za slucajeve kada je potrebno obavjestiti korisnike o necem hitnom
+    ili vaznom vezanom za aplikaciju
+    ako korisnik kojij je registrovan u vrjemme kreiranja obavjestenja psotovanja od strane admina sa dmin panela ce isto odbiti prilikom 
+    prijave na nalog sledeci put .
