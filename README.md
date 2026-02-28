@@ -134,8 +134,10 @@ Tok koriscenja:
     `Obavjestenja`, `Korisnici`, `Slucajevi`, `Podesavanja`) sa odvojenim radnim sekcijama.
 26. U tabu `Podesavanja` admin moze i da promjeni sopstvenu lozinku kroz formu
     (trenutna + nova + potvrda).
-27. U tabu `Ticketi` tiketi su grupisani po statusu i sortirani po datumu prijave
-    (najnoviji prvo) unutar svake grupe.
+27. U tabu `Ticketi` tiketi su razdvojeni po tipu (`bug_report`, `improvement_suggestion`)
+    i statusu, sortirani po datumu prijave (najnoviji prvo), uz filtere i pretragu
+    za brzi rad admina; promjena statusa se automatski cuva bez dugmeta potvrde,
+    a kartice su vizuelno istaknute bojama tipa i statusa.
 28. U tabu `Podesavanja` admin unosi aktivnu verziju aplikacije koja se automatski
     preuzima u korisnickoj support formi.
 29. U ruti `/profil` mozes pregledati svoje aktivnosti, azurirati osnovne podatke,
@@ -425,7 +427,7 @@ Napomena:
   - tabovani dashboard sa sekcijama `Pregled`, `Ticketi`, `Obavjestenja`, `Korisnici`, `Slucajevi`, `Podesavanja`
   - dashboard prikazuje aggregate metrike (`/api/admin/overview`) i aktivnu verziju (`/api/admin/settings`)
   - u tabu `Podesavanja` postoji forma za promjenu admin lozinke (`PATCH /api/admin/settings/password`)
-  - upravljanje ticketima (statusne grupe + sortiranje po datumu + promena statusa i admin napomene)
+  - upravljanje ticketima (matrica tip/status + sortiranje po datumu + filteri/pretraga + automatsko cuvanje promjene statusa + admin napomena + kolor akcenti kartica po tipu/statusu)
   - upravljanje aktivnom verzijom aplikacije kroz endpoint `PATCH /api/admin/settings/active-app-version`
   - sekcija za kreiranje i pregled popup admin obavjestenja
     (`GET /api/admin/announcements`, `POST /api/admin/announcements`)

@@ -1,0 +1,133 @@
+.admin-ticket-board {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.admin-ticket-board-head p {
+  margin-top: 0.35rem;
+}
+
+.admin-ticket-type-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.72rem;
+}
+
+.admin-ticket-type-overview {
+  border: 1px solid #c6d7ea;
+  border-left-width: 4px;
+  border-radius: 12px;
+  padding: 0.72rem 0.8rem;
+  background: linear-gradient(170deg, #fafcff, #eef4fb);
+}
+
+.admin-ticket-type-overview h3 {
+  margin-bottom: 0.35rem;
+}
+
+.admin-ticket-type-overview p {
+  margin: 0.2rem 0 0;
+}
+
+.admin-ticket-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.7rem;
+  align-items: end;
+}
+
+.admin-ticket-inline-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 40px;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #c3d4e8;
+  border-radius: 10px;
+  background: #f6faff;
+  font-weight: 700;
+  color: #19436e;
+}
+
+.admin-ticket-inline-check input {
+  width: auto;
+  margin: 0;
+}
+
+.admin-ticket-type-board-list {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.admin-ticket-type-board {
+  border: 1px solid #c3d4e8;
+  border-left-width: 4px;
+  border-radius: 14px;
+  padding: 0.82rem;
+  background: linear-gradient(175deg, #fcfdff, #edf4fc);
+}
+
+.admin-ticket-type-board-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-bottom: 0.55rem;
+}
+
+.admin-ticket-item-head h4,
+.admin-ticket-group-head h4 {
+  margin: 0;
+  color: #173c66;
+}
+
+.admin-ticket-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.admin-ticket-type-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 0.62rem;
+  border-radius: 999px;
+  border: 1px solid #b8cbe2;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: #193f69;
+  background: #eaf2fb;
+}
+
+.admin-ticket-type-chip.admin-ticket-type-bug_report {
+  border-color: #9d2f40;
+  color: #7b1f2c;
+  background: #f9e4e8;
+}
+
+.admin-ticket-type-chip.admin-ticket-type-improvement_suggestion {
+  border-color: #2f6c9f;
+  color: #154975;
+  background: #deecfb;
+}
+
+.admin-ticket-type-overview.admin-ticket-type-bug_report,
+.admin-ticket-type-board.admin-ticket-type-bug_report {
+  border-left-color: #b74456;
+}
+
+.admin-ticket-type-overview.admin-ticket-type-improvement_suggestion,
+.admin-ticket-type-board.admin-ticket-type-improvement_suggestion {
+  border-left-color: #2f6c9f;
+}
+
+.admin-ticket-inline-editor {
+  margin-top: 0.62rem;
+}
+
+.admin-ticket-empty {
+  margin-top: 0.35rem;
+  color: #5a7595;
+}

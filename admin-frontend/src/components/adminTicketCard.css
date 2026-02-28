@@ -1,0 +1,77 @@
+.admin-ticket-item {
+  position: relative;
+  overflow: hidden;
+  border-width: 1px 1px 1px 6px;
+  border-style: solid;
+  border-color: #b9cbde;
+  border-left-color: var(--ticket-type-accent, #2f6c9f);
+  border-radius: 14px;
+  background: linear-gradient(170deg, #fcfeff, #eef4fc);
+  box-shadow: 0 12px 24px rgba(21, 58, 97, 0.12);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.admin-ticket-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--ticket-type-accent, #2f6c9f) 0%,
+    var(--ticket-status-accent, #2f6fb0) 100%
+  );
+}
+
+.admin-ticket-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(18, 53, 89, 0.16);
+}
+
+.admin-ticket-item-type-bug_report {
+  --ticket-type-accent: #b74456;
+  background: linear-gradient(170deg, #fff8f9, #eef4fc);
+}
+
+.admin-ticket-item-type-improvement_suggestion {
+  --ticket-type-accent: #2f6c9f;
+  background: linear-gradient(170deg, #f7fbff, #edf4fc);
+}
+
+.admin-ticket-item-status-open {
+  --ticket-status-accent: #2f6fb0;
+}
+
+.admin-ticket-item-status-reviewed {
+  --ticket-status-accent: #3b6b59;
+}
+
+.admin-ticket-item-status-in_progress {
+  --ticket-status-accent: #967021;
+}
+
+.admin-ticket-item-status-rejected {
+  --ticket-status-accent: #8f3f4b;
+}
+
+.admin-ticket-item-status-closed {
+  --ticket-status-accent: #5d6674;
+}
+
+.admin-ticket-item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed rgba(62, 92, 127, 0.3);
+}
+
+@media (max-width: 940px) {
+  .admin-ticket-item-head {
+    flex-direction: column;
+  }
+}

@@ -862,7 +862,8 @@ alt Desktop sirina
   SupportRepo --> AdminService: ticketi + reporter podaci
   AdminService --> AdminApi: response payload
   AdminApi --> AdminClient: JSON uspeh
-  AdminClient --> AdminDashboard: Lista tiketa grupisana po statusu
+  AdminClient --> AdminDashboard: Lista tiketa sa tipom, statusom i reporter metapodacima
+  AdminDashboard -> AdminDashboard: Prikaz matrice tiketa po tipu/statusu + filteri/pretraga + kolor akcenti kartica po tipu i statusu
 
   AdminDashboard -> AdminClient: GET /api/admin/announcements
   AdminClient -> AdminApi: HTTP zahtev
@@ -891,7 +892,7 @@ alt Desktop sirina
   AdminApi --> AdminClient: JSON uspeh
   AdminClient --> AdminDashboard: Osvjezena lista obavjestenja
 
-  Admin -> AdminDashboard: Menja status tiketa
+  Admin -> AdminDashboard: Menja status tiketa (automatsko cuvanje bez dugmeta)
   AdminDashboard -> AdminClient: PATCH /api/admin/tickets/{ticketId}/status
   AdminClient -> AdminApi: HTTP zahtev
   AdminApi -> AdminGuard: Verifikacija admin tokena
@@ -902,7 +903,7 @@ alt Desktop sirina
   SupportRepo --> AdminService: azuriran tiket
   AdminService --> AdminApi: 200 response
   AdminApi --> AdminClient: JSON uspeh
-  AdminClient --> AdminDashboard: Osvjezen status tiketa
+  AdminClient --> AdminDashboard: Osvjezen status tiketa i board prikaz
 
   Admin -> AdminDashboard: Menja aktivnu verziju aplikacije
   AdminDashboard -> AdminClient: PATCH /api/admin/settings/active-app-version

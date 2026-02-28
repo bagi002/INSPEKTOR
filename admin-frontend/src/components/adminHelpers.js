@@ -6,6 +6,11 @@ export const ADMIN_TICKET_STATUS_OPTIONS = [
   { value: "closed", label: "Zatvoren" },
 ];
 export const ADMIN_TICKET_STATUS_ORDER = ADMIN_TICKET_STATUS_OPTIONS.map((option) => option.value);
+export const ADMIN_TICKET_TYPE_OPTIONS = [
+  { value: "bug_report", label: "Prijava baga" },
+  { value: "improvement_suggestion", label: "Predlog poboljsanja" },
+];
+export const ADMIN_TICKET_TYPE_ORDER = ADMIN_TICKET_TYPE_OPTIONS.map((option) => option.value);
 
 const TICKET_TYPE_LABELS = {
   bug_report: "Prijava baga",

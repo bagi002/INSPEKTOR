@@ -629,13 +629,17 @@
     administrativnim akcijama.
 
 - id: REQ-SW-063
-  name: Grupisanje i sortiranje support tiketa po statusu u admin panelu
+  name: Jasna podjela support tiketa po tipu i statusu u admin panelu
   status: In Review
   refines: REQ-032
   description: >
-    U sekciji admin tiketa obezbediti statusno razdvajanje tiketa (`open`,
-    `reviewed`, `in_progress`, `rejected`, `closed`) u odvojene kartice/grupe i
-    sortiranje tiketa po datumu prijave (najnoviji prvo) unutar svake statusne grupe.
+    U sekciji admin tiketa obezbediti matricni prikaz tiketa po tipu
+    (`bug_report`, `improvement_suggestion`) i statusu (`open`, `reviewed`,
+    `in_progress`, `rejected`, `closed`), uz sortiranje po datumu prijave
+    (najnoviji prvo), pregledne brojace po tipu/statusu, filtere za brzo
+    pronalazenje tiketa tokom administracije i automatsko cuvanje promjene
+    statusa tiketa bez posebnog dugmeta za potvrdu, kao i vizuelno istaknute
+    pojedinacne kartice tiketa sa jasnim kolor akcentima za tip i status.
 
 - id: REQ-SW-064
   name: Centralna aktivna verzija aplikacije za support tiket workflow

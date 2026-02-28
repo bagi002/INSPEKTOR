@@ -470,8 +470,38 @@ class AdminDashboard {
 }
 
 class AdminTicketsSection {
-  +handleSave(ticketId)
+  +handleFilterChange(fieldName, value)
+  +handleTicketStatusChange(ticket, nextStatus)
+  +handleTicketAdminNoteBlur(ticket, nextAdminNote)
   +render()
+}
+
+class AdminTicketFilters {
+  +onFilterChange(fieldName, value)
+  +onReset()
+  +render()
+}
+
+class AdminTicketOverview {
+  +render()
+}
+
+class AdminTicketTypeBoard {
+  +render()
+}
+
+class AdminTicketCard {
+  +resolveVisualAccent(type, status)
+  +onStatusChange(nextStatus)
+  +onAdminNoteBlur(nextAdminNote)
+  +render()
+}
+
+class AdminTicketBoardHelpers {
+  +normalizeAdminTicketForBoard(ticket)
+  +filterAdminTickets(tickets, filters)
+  +buildTicketSummary(tickets)
+  +buildTicketTypeStatusMatrix(tickets)
 }
 
 class AdminAnnouncementsSection {
@@ -1079,6 +1109,11 @@ AdminDashboard *-- AdminAnnouncementsSection
 AdminDashboard *-- AdminUsersSection
 AdminDashboard *-- AdminCasesSection
 AdminDashboard *-- AdminSettingsSection
+AdminTicketsSection *-- AdminTicketOverview
+AdminTicketsSection *-- AdminTicketFilters
+AdminTicketsSection *-- AdminTicketTypeBoard
+AdminTicketTypeBoard *-- AdminTicketCard
+AdminTicketsSection ..> AdminTicketBoardHelpers
 AdminDashboard ..> UseAdminDashboardData
 AdminLoginView ..> AdminApiClient
 AdminAnnouncementsSection ..> AdminApiClient
