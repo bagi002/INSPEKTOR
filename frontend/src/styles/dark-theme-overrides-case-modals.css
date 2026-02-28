@@ -1,0 +1,71 @@
+:root[data-theme="dark"] .case-doc-modal-overlay,
+:root[data-theme="dark"] .case-people-modal-overlay,
+:root[data-theme="dark"] .case-interrogation-modal-overlay {
+  background: rgba(4, 11, 20, 0.78);
+}
+
+:root[data-theme="dark"] .case-doc-modal,
+:root[data-theme="dark"] .case-people-modal,
+:root[data-theme="dark"] .case-interrogation-create-modal,
+:root[data-theme="dark"] .case-interrogation-chat-modal {
+  border-color: var(--surface-soft-border);
+  background: linear-gradient(170deg, #182e47 0%, #13263c 100%);
+  box-shadow: 0 24px 56px rgba(2, 9, 18, 0.55);
+}
+
+:root[data-theme="dark"] .case-doc-type-specific-section,
+:root[data-theme="dark"] .case-doc-image-section,
+:root[data-theme="dark"] .case-doc-people-picker,
+:root[data-theme="dark"] .case-people-photo-block,
+:root[data-theme="dark"] .case-interrogation-node-builder,
+:root[data-theme="dark"] .case-interrogation-source-preview,
+:root[data-theme="dark"] .case-interrogation-tree-panel,
+:root[data-theme="dark"] .case-interrogation-chat-log,
+:root[data-theme="dark"] .case-interrogation-chat-footer {
+  border-color: var(--surface-soft-border);
+  background: linear-gradient(170deg, #13263b 0%, #102034 100%);
+}
+
+:root[data-theme="dark"] .case-doc-person-option,
+:root[data-theme="dark"] .case-doc-file,
+:root[data-theme="dark"] .case-doc-image-card,
+:root[data-theme="dark"] .case-interrogation-node-item,
+:root[data-theme="dark"] .case-interrogation-tree-card,
+:root[data-theme="dark"] .dossier-document,
+:root[data-theme="dark"] .dossier-document-meta,
+:root[data-theme="dark"] .dossier-document-person,
+:root[data-theme="dark"] .dossier-document-grid,
+:root[data-theme="dark"] .dossier-document-long,
+:root[data-theme="dark"] .dossier-document-linked-docs,
+:root[data-theme="dark"] .dossier-linked-link {
+  border-color: var(--profile-list-border);
+  background: #102337;
+  color: var(--ink-main);
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .case-doc-file-header,
+:root[data-theme="dark"] .case-interrogation-chat-header,
+:root[data-theme="dark"] .dossier-document-header {
+  border-color: var(--surface-soft-border);
+}
+
+:root[data-theme="dark"] .case-interrogation-bubble {
+  border-color: var(--profile-list-border);
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .case-interrogation-bubble-investigator {
+  background: #223e5f;
+  border-color: #48698f;
+}
+
+:root[data-theme="dark"] .case-interrogation-bubble-person {
+  background: #42312a;
+  border-color: #6c5347;
+}
+
+:root[data-theme="dark"] .case-interrogation-bubble-system {
+  background: #1e3248;
+  border-color: #3d5a7c;
+}

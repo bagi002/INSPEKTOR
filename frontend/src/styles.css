@@ -16,3 +16,6 @@
 @import "./styles/desktop-notice.css";
 @import "./styles/admin-announcement-popup.css";
 @import "./styles/animations.css";
+@import "./styles/dark-theme-overrides-public.css";
+@import "./styles/dark-theme-overrides-case.css";
+@import "./styles/dark-theme-overrides-case-modals.css";

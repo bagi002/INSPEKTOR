@@ -1,10 +1,14 @@
 @startuml Class Diagram
-title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
+title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + svijetla/tamna tema + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
 class App {
+  +themePreference
+  +themeScope
   +resolveRoute(pathname): ReactNode
   +isLoggedIn(): boolean
   +handleLogout(): void
+  +handleThemePreferenceChange(nextThemePreference)
+  +syncThemePreference()
   +loadPendingAnnouncements()
   +handleCloseAnnouncement()
   +render()
@@ -97,6 +101,11 @@ class ProfileBasicForm {
 
 class ProfilePasswordForm {
   +onSubmit()
+  +render()
+}
+
+class ProfileThemeForm {
+  +onThemeChange(theme)
   +render()
 }
 
@@ -422,6 +431,15 @@ class ProfileApiClient {
   +updateMyProfileBasic(payload)
   +updateMyProfilePassword(payload)
   +deleteMyProfile(payload)
+}
+
+class ThemeStorageService {
+  +normalizeThemePreference(value)
+  +resolveThemePreferenceScope(user)
+  +getStoredThemePreference(scope)
+  +setStoredThemePreference(theme, scope)
+  +applyThemePreference(theme)
+  +initializeThemePreference(scope)
 }
 
 class AdminApiClient {
@@ -1080,10 +1098,12 @@ LoggedHomePage *-- LoggedCreatedCaseStatsModal
 LoggedCreatedCaseStatsModal *-- CaseReviewsPanel
 LoggedCreatedCaseStatsModal ..> CaseReviewsApiClient
 CreateCasePage ..> CasesApiClient
+App ..> ThemeStorageService
 ProfilePage ..> UseProfilePageState
 ProfilePage *-- ProfileActivityPanel
 ProfilePage *-- ProfileBasicForm
 ProfilePage *-- ProfilePasswordForm
+ProfilePage *-- ProfileThemeForm
 ProfilePage *-- ProfileDeleteAccountForm
 UseProfilePageState ..> ProfileApiClient
 UseProfilePageState ..> SessionStorageService

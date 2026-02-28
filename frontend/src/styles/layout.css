@@ -15,7 +15,11 @@
   padding: 1.45rem;
   border-radius: 18px;
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, #f8fbff 0%, #edf4fc 100%);
+  background: linear-gradient(
+    180deg,
+    var(--surface-sidebar-start) 0%,
+    var(--surface-sidebar-end) 100%
+  );
   box-shadow: var(--shadow);
 }
 
@@ -23,7 +27,7 @@
   margin: 0.5rem 0 0;
   font-size: 1.62rem;
   line-height: 1.26;
-  color: #18304d;
+  color: var(--sidebar-brand-ink);
 }
 
 .brand-kicker {
@@ -49,21 +53,25 @@
   text-decoration: none;
   font-weight: 700;
   border-radius: 12px;
-  border: 1px solid #bfd0e6;
-  background: #f4f8ff;
+  border: 1px solid var(--menu-link-border);
+  background: var(--menu-link-bg);
   transition: background 200ms ease, transform 200ms ease, border-color 200ms ease;
 }
 
 .menu-link:hover {
-  background: #e5effd;
-  border-color: #8eb0da;
+  background: var(--menu-link-hover-bg);
+  border-color: var(--menu-link-hover-border);
   transform: translateX(3px);
 }
 
 .menu-link.is-active {
-  border-color: #3f69a0;
-  background: linear-gradient(140deg, #dceafe, #edf4ff);
-  color: #123863;
+  border-color: var(--menu-link-active-border);
+  background: linear-gradient(
+    140deg,
+    var(--menu-link-active-bg-start),
+    var(--menu-link-active-bg-end)
+  );
+  color: var(--menu-link-active-ink);
 }
 
 .menu-link.is-disabled {
@@ -75,8 +83,8 @@
 .sidebar-note {
   padding: 1rem;
   border-radius: 12px;
-  border: 1px dashed #a7bdd7;
-  background: #edf4ff;
+  border: 1px dashed var(--sidebar-note-border);
+  background: var(--sidebar-note-bg);
 }
 
 .sidebar-note p {
@@ -101,7 +109,7 @@
 .card h3 {
   margin: 0 0 0.7rem;
   font-size: 1.35rem;
-  color: #1a3455;
+  color: var(--ink-heading);
 }
 
 .eyebrow {
@@ -111,9 +119,9 @@
   font-size: 0.86rem;
   font-weight: 700;
   border-radius: 999px;
-  border: 1px solid rgba(194, 54, 69, 0.38);
-  color: #8c1f2a;
-  background: #fbe8ea;
+  border: 1px solid var(--eyebrow-border);
+  color: var(--eyebrow-ink);
+  background: var(--eyebrow-bg);
 }
 
 .cta-row {
@@ -141,13 +149,13 @@
 }
 
 .btn-primary {
-  color: #f7fbff;
-  background: linear-gradient(135deg, #113b74, #22579c);
-  box-shadow: 0 10px 22px rgba(20, 63, 125, 0.28);
+  color: var(--btn-primary-ink);
+  background: linear-gradient(135deg, var(--btn-primary-start), var(--btn-primary-end));
+  box-shadow: var(--btn-primary-shadow);
 }
 
 .btn-secondary {
-  color: #fff5f6;
-  background: linear-gradient(135deg, #ab2a39, #ca4351);
-  box-shadow: 0 10px 22px rgba(194, 54, 69, 0.24);
+  color: var(--btn-secondary-ink);
+  background: linear-gradient(135deg, var(--btn-secondary-start), var(--btn-secondary-end));
+  box-shadow: var(--btn-secondary-shadow);
 }

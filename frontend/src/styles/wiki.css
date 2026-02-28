@@ -9,16 +9,16 @@
 .wiki-lead {
   margin-bottom: 0.55rem;
   font-weight: 600;
-  color: #1e4069;
+  color: var(--accent-blue-dark);
 }
 
 .wiki-note {
   margin: 0 0 0.95rem;
   padding: 0.7rem 0.8rem;
-  border: 1px dashed #b7cce3;
+  border: 1px dashed var(--sidebar-note-border);
   border-radius: 12px;
-  background: #f3f8ff;
-  color: #294b73;
+  background: var(--sidebar-note-bg);
+  color: var(--ink-muted);
 }
 
 .wiki-block-grid {
@@ -28,15 +28,15 @@
 }
 
 .wiki-block-card {
-  border: 1px solid #c8d8eb;
+  border: 1px solid var(--surface-soft-border);
   border-radius: 14px;
   padding: 0.95rem;
-  background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
+  background: linear-gradient(180deg, var(--surface-soft-start) 0%, var(--surface-soft-end) 100%);
 }
 
 .wiki-block-card h4 {
   margin: 0 0 0.46rem;
-  color: #173b62;
+  color: var(--ink-heading);
 }
 
 .wiki-block-card p {
@@ -55,9 +55,9 @@
 .wiki-guide-step {
   position: relative;
   padding: 0.85rem 0.9rem 0.85rem 3rem;
-  border: 1px solid #d0deee;
+  border: 1px solid var(--profile-list-border);
   border-radius: 14px;
-  background: #f9fbff;
+  background: var(--profile-list-bg);
 }
 
 .wiki-guide-step::before {
@@ -73,13 +73,13 @@
   place-items: center;
   font-size: 0.82rem;
   font-weight: 800;
-  color: #f7fbff;
-  background: linear-gradient(135deg, #184981, #2f6ab0);
+  color: var(--btn-primary-ink);
+  background: linear-gradient(135deg, var(--btn-primary-start), var(--btn-primary-end));
 }
 
 .wiki-guide-step h4 {
   margin: 0 0 0.34rem;
-  color: #173a61;
+  color: var(--ink-heading);
 }
 
 .wiki-guide-step p {
@@ -93,15 +93,15 @@
 }
 
 .wiki-route-card {
-  border: 1px solid #c6d7eb;
+  border: 1px solid var(--surface-soft-border);
   border-radius: 14px;
   padding: 0.85rem;
-  background: #f6faff;
+  background: var(--surface-soft-start);
 }
 
 .wiki-route-card h4 {
   margin: 0 0 0.38rem;
-  color: #16395f;
+  color: var(--ink-heading);
 }
 
 .wiki-route-path {
@@ -111,7 +111,7 @@
 .wiki-route-path code {
   font-size: 0.82rem;
   font-weight: 800;
-  color: #123d74;
+  color: var(--accent-blue-dark);
 }
 
 .wiki-route-card p {
@@ -124,16 +124,16 @@
 }
 
 .wiki-faq-item {
-  border: 1px solid #d6e2f1;
-  border-left: 4px solid #21528f;
+  border: 1px solid var(--profile-list-border);
+  border-left: 4px solid var(--accent-blue-dark);
   border-radius: 12px;
   padding: 0.72rem 0.86rem;
-  background: #f9fbff;
+  background: var(--profile-list-bg);
 }
 
 .wiki-faq-item h4 {
   margin: 0 0 0.32rem;
-  color: #173a61;
+  color: var(--ink-heading);
 }
 
 .wiki-faq-item p {

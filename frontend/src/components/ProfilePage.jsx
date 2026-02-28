@@ -4,10 +4,11 @@ import ProfileActivityPanel from "./ProfileActivityPanel";
 import ProfileBasicForm from "./ProfileBasicForm";
 import ProfileDeleteAccountForm from "./ProfileDeleteAccountForm";
 import ProfilePasswordForm from "./ProfilePasswordForm";
+import ProfileThemeForm from "./ProfileThemeForm";
 import { formatProfileDate } from "./profileHelpers";
 import { useProfilePageState } from "./useProfilePageState";
 
-function ProfilePage({ user, onLogout }) {
+function ProfilePage({ user, onLogout, themePreference, onThemePreferenceChange }) {
   const {
     profileData,
     isLoading,
@@ -73,6 +74,10 @@ function ProfilePage({ user, onLogout }) {
                 isSubmitting={isSavingPassword}
                 onFieldChange={handlePasswordFieldChange}
                 onSubmit={handlePasswordSubmit}
+              />
+              <ProfileThemeForm
+                themePreference={themePreference}
+                onThemeChange={onThemePreferenceChange}
               />
             </section>
             <ProfileDeleteAccountForm

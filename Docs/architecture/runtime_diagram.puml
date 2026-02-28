@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
+title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + svijetla/tamna tema + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -30,6 +30,7 @@ participant "Case Quiz API Client" as QuizClient
 participant "Case Reviews API Client" as ReviewsClient
 participant "Case Progress API Client" as ProgressClient
 participant "Profile API Client" as ProfileClient
+participant "Theme Storage Service" as ThemeStorage
 participant "Support API Client" as SupportClient
 participant "Announcements API Client" as AnnouncementsClient
 participant "Auth API Client" as AuthClient
@@ -88,11 +89,17 @@ database "SQLite support_tickets" as SupportStore
 database "SQLite admin_announcements + dismissals" as AdminAnnouncementsStore
 database "SQLite app_settings" as AppSettingsStore
 database "LocalStorage (session)" as SessionStore
+database "LocalStorage (theme preference)" as ThemeStore
 database "LocalStorage (admin session)" as AdminSessionStore
 participant "Desktop Notice View" as Notice
 
 alt Desktop sirina
   User -> Router: Otvara /
+  Router -> SessionStore: Citanje aktivne sesije korisnika (ako postoji)
+  Router -> ThemeStorage: initializeThemePreference()
+  ThemeStorage -> ThemeStore: localStorage.getItem(theme_key:{userScope})
+  ThemeStore --> ThemeStorage: "light" | "dark" | null (scope korisnika)
+  ThemeStorage --> Router: Primena root data-theme atributa
   Router -> Gate: Provera desktop pravila
   Gate -> Landing: Render marketinske javne pocetne
   User -> Landing: Pregled benefita igre i CTA sekcija
@@ -691,6 +698,12 @@ alt Desktop sirina
   ProfileService --> ProfileApi: response payload
   ProfileApi --> ProfileClient: JSON uspeh
   ProfileClient --> ProfilePage: Prikaz profila i aktivnosti
+
+  User -> ProfilePage: U podesavanjima menja temu (svijetla/tamna)
+  ProfilePage -> ThemeStorage: setStoredThemePreference(theme, userScope)
+  ThemeStorage -> ThemeStore: localStorage.setItem(theme_key:{userScope}, theme)
+  ProfilePage -> ThemeStorage: applyThemePreference(theme)
+  ThemeStorage --> ProfilePage: Potvrda aktivne teme
 
   User -> ProfilePage: Menja osnovne podatke
   ProfilePage -> ProfileClient: PUT /api/profile/basic

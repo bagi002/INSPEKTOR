@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
+title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + svijetla/tamna tema + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
 package "Frontend" {
   [App Shell]
@@ -24,6 +24,7 @@ package "Frontend" {
   [Profile Activity Panel]
   [Profile Basic Form]
   [Profile Password Form]
+  [Profile Theme Form]
   [Profile Delete Action]
   [Profile State Hook]
   [Support Page]
@@ -87,6 +88,9 @@ package "Frontend" {
   [Announcements API Client]
   [Auth API Client]
   [Session Storage]
+  [Theme Preference Storage]
+  [Theme Scope Resolver]
+  [Theme Storage Service]
   [Logout Action]
   [Desktop Warning View]
   [Admin Announcement Popup]
@@ -193,6 +197,10 @@ database "admin_accounts" as AdminAccountsDb
 database "admin_announcements + admin_announcement_dismissals" as AnnouncementsDb
 
 [App Shell] --> [Desktop Policy Gate]
+[App Shell] --> [Theme Scope Resolver]
+[App Shell] --> [Theme Storage Service]
+[Theme Scope Resolver] --> [Session Storage]
+[Theme Scope Resolver] --> [Theme Storage Service]
 [Desktop Policy Gate] --> [Route Resolver]
 [Desktop Policy Gate] --> [Desktop Warning View]
 [Route Resolver] --> [Protected Route Guard]
@@ -235,9 +243,11 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Profile Page] --> [Profile Activity Panel]
 [Profile Page] --> [Profile Basic Form]
 [Profile Page] --> [Profile Password Form]
+[Profile Page] --> [Profile Theme Form]
 [Profile Page] --> [Profile Delete Action]
 [Profile Page] --> [Profile State Hook]
 [Profile Page] --> [Profile API Client]
+[Profile Theme Form] --> [Theme Storage Service]
 [Profile State Hook] --> [Profile API Client]
 [Profile State Hook] --> [Session Storage]
 [Profile Delete Action] --> [Profile API Client]
@@ -346,6 +356,7 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Profile API Client] --> [Session Storage]
 [Support API Client] --> [Session Storage]
 [Announcements API Client] --> [Session Storage]
+[Theme Storage Service] --> [Theme Preference Storage]
 [Logout Action] --> [Session Storage]
 [Logged Sidebar] --> [Logout Action]
 [Shared Case Sidebar] --> [Logout Action]

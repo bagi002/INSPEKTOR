@@ -1,8 +1,8 @@
 .support-hero {
-  border-color: #b9cce3;
+  border-color: var(--profile-hero-border);
   background:
-    linear-gradient(168deg, rgba(221, 234, 250, 0.82), rgba(255, 255, 255, 0.95)),
-    #ffffff;
+    linear-gradient(168deg, var(--profile-hero-start), var(--profile-hero-end)),
+    var(--surface-card);
 }
 
 .support-form {
@@ -14,18 +14,18 @@
   display: grid;
   gap: 0.38rem;
   font-weight: 700;
-  color: #17385f;
+  color: var(--profile-hero-heading);
 }
 
 .support-form input,
 .support-form textarea,
 .support-form select {
   width: 100%;
-  border: 1px solid #bdcee4;
+  border: 1px solid var(--input-border);
   border-radius: 10px;
   padding: 0.62rem 0.72rem;
-  color: #173459;
-  background: #f7faff;
+  color: var(--input-ink);
+  background: var(--input-bg);
 }
 
 .support-form textarea {
@@ -34,7 +34,7 @@
 }
 
 .support-field-error {
-  color: #822230;
+  color: var(--danger-ink);
   font-size: 0.9rem;
 }
 
@@ -44,12 +44,12 @@
 
 .support-submit-feedback {
   margin: 0;
-  color: #1a4d2f;
+  color: var(--success-ink);
   font-weight: 700;
 }
 
 .support-submit-feedback-error {
-  color: #822230;
+  color: var(--danger-ink);
 }
 
 .support-ticket-list {
@@ -60,19 +60,19 @@
 .support-ticket-item {
   padding: 0.88rem;
   border-radius: 12px;
-  border: 1px solid #c8d7e9;
-  background: linear-gradient(160deg, #f8fbff 0%, #edf4fc 100%);
+  border: 1px solid var(--surface-soft-border);
+  background: linear-gradient(160deg, var(--surface-soft-start) 0%, var(--surface-soft-end) 100%);
 }
 
 .support-ticket-item h4 {
   margin: 0;
-  color: #16395f;
+  color: var(--ink-heading);
   font-size: 1.02rem;
 }
 
 .support-ticket-item p {
   margin: 0.5rem 0 0;
-  color: #4c6482;
+  color: var(--ink-muted);
   line-height: 1.45;
 }
 

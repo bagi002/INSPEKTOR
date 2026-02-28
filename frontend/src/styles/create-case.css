@@ -24,7 +24,7 @@
 .create-case-publish-status {
   margin: 0;
   font-size: 0.86rem;
-  color: #4f6782;
+  color: var(--ink-muted);
   line-height: 1.45;
 }
 
@@ -41,16 +41,16 @@
   display: grid;
   gap: 0.4rem;
   font-weight: 700;
-  color: #1d3a5d;
+  color: var(--profile-hero-heading);
 }
 
 .create-case-input,
 .create-case-textarea {
   width: 100%;
   border-radius: 12px;
-  border: 1px solid #bacde3;
-  background: #f7fbff;
-  color: #173254;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-ink);
   padding: 0.78rem 0.9rem;
 }
 
@@ -69,7 +69,7 @@
 
 .create-case-error {
   font-size: 0.88rem;
-  color: #952c39;
+  color: var(--danger-ink);
 }
 
 .create-case-summary {
@@ -89,14 +89,14 @@
   gap: 0.62rem;
   padding: 1rem;
   border-radius: 14px;
-  border: 1px solid #c4d5e8;
-  background: linear-gradient(165deg, #f7fbff, #edf4fc);
+  border: 1px solid var(--surface-soft-border);
+  background: linear-gradient(165deg, var(--surface-soft-start), var(--surface-soft-end));
 }
 
 .create-case-skeleton-card h4 {
   margin: 0;
   font-size: 1.05rem;
-  color: #16375e;
+  color: var(--ink-heading);
 }
 
 .create-case-skeleton-card p {
@@ -109,9 +109,9 @@
   width: fit-content;
   padding: 0.26rem 0.6rem;
   border-radius: 999px;
-  border: 1px solid #c7a4ab;
-  background: #fbecee;
-  color: #8f2b37;
+  border: 1px solid var(--danger-border);
+  background: var(--danger-bg);
+  color: var(--danger-ink);
   font-size: 0.8rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -119,8 +119,12 @@
 
 .create-case-disabled-btn {
   margin-top: 0.2rem;
-  color: #173a61;
-  background: linear-gradient(150deg, #d9e7f8, #e8f1fc);
+  color: var(--menu-link-active-ink);
+  background: linear-gradient(
+    150deg,
+    var(--menu-link-active-bg-start),
+    var(--menu-link-active-bg-end)
+  );
   cursor: not-allowed;
   box-shadow: none;
 }

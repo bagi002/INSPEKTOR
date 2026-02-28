@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./styles.css";
 import AdminAnnouncementPopup from "./components/AdminAnnouncementPopup";
 import CaseWorkspacePage from "./components/CaseWorkspacePage";
@@ -16,6 +16,14 @@ import {
   fetchPendingAnnouncements,
 } from "./services/announcementsApi";
 import { clearSession, getSession } from "./services/sessionStorage";
+import {
+  applyThemePreference,
+  getStoredThemePreference,
+  initializeThemePreference,
+  normalizeThemePreference,
+  resolveThemePreferenceScope,
+  setStoredThemePreference,
+} from "./services/themeStorage";
 import {
   AUTH_ROUTES,
   PUBLIC_ROUTES,
@@ -38,9 +46,14 @@ function App() {
   const isPrivatePath = PRIVATE_ROUTES.includes(currentPath) || Boolean(workspacePath);
   const session = getSession();
   const isLoggedIn = Boolean(session?.token && session?.user);
+  const themeScope = useMemo(() => resolveThemePreferenceScope(session?.user || null), [
+    session?.user?.id,
+    session?.user?.email,
+  ]);
   const [pendingAnnouncements, setPendingAnnouncements] = useState([]);
   const [isClosingAnnouncement, setIsClosingAnnouncement] = useState(false);
   const [announcementErrorMessage, setAnnouncementErrorMessage] = useState("");
+  const [themePreference, setThemePreference] = useState(() => initializeThemePreference(themeScope));
 
   const handleLogout = useCallback(() => {
     clearSession();
@@ -55,7 +68,6 @@ function App() {
       setAnnouncementErrorMessage("");
       return;
     }
-
     const result = await fetchPendingAnnouncements();
     if (!result.ok) {
       if (result.unauthorized) {
@@ -63,7 +75,6 @@ function App() {
       }
       return;
     }
-
     setPendingAnnouncements(
       Array.isArray(result.data?.announcements) ? result.data.announcements : []
     );
@@ -71,21 +82,34 @@ function App() {
   }, [handleLogout, isLoggedIn]);
 
   useEffect(() => {
+    const normalizedTheme = normalizeThemePreference(themePreference);
+    applyThemePreference(normalizedTheme);
+    setStoredThemePreference(normalizedTheme, themeScope);
+  }, [themePreference, themeScope]);
+
+  useEffect(() => {
+    const scopedThemePreference = getStoredThemePreference(themeScope);
+    setThemePreference(scopedThemePreference);
+    applyThemePreference(scopedThemePreference);
+  }, [themeScope]);
+
+  const handleThemePreferenceChange = useCallback((nextThemePreference) => {
+    setThemePreference(normalizeThemePreference(nextThemePreference));
+  }, []);
+
+  useEffect(() => {
     if (!isLoggedIn) {
       setPendingAnnouncements([]);
       setAnnouncementErrorMessage("");
       return undefined;
     }
-
     void loadPendingAnnouncements();
     if (typeof window === "undefined") {
       return undefined;
     }
-
     const intervalId = window.setInterval(() => {
       void loadPendingAnnouncements();
     }, 45000);
-
     return () => {
       window.clearInterval(intervalId);
     };
@@ -98,11 +122,9 @@ function App() {
     if (!activeAnnouncement) {
       return;
     }
-
     setIsClosingAnnouncement(true);
     const result = await dismissAnnouncement(activeAnnouncement.id);
     setIsClosingAnnouncement(false);
-
     if (!result.ok) {
       if (result.unauthorized) {
         handleLogout();
@@ -111,7 +133,6 @@ function App() {
       setAnnouncementErrorMessage(result.message || "Zatvaranje obavještenja nije uspelo.");
       return;
     }
-
     setAnnouncementErrorMessage("");
     setPendingAnnouncements((previous) =>
       previous.filter((announcement) => announcement.id !== activeAnnouncement.id)
@@ -146,7 +167,14 @@ function App() {
     } else if (currentPath === AUTH_ROUTES.CREATE_CASE) {
       activePage = <CreateCasePage user={session.user} onLogout={handleLogout} />;
     } else if (currentPath === AUTH_ROUTES.PROFILE) {
-      activePage = <ProfilePage user={session.user} onLogout={handleLogout} />;
+      activePage = (
+        <ProfilePage
+          user={session.user}
+          onLogout={handleLogout}
+          themePreference={themePreference}
+          onThemePreferenceChange={handleThemePreferenceChange}
+        />
+      );
     } else if (currentPath === AUTH_ROUTES.SUPPORT) {
       activePage = <SupportPage user={session.user} onLogout={handleLogout} />;
     } else {

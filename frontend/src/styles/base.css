@@ -1,13 +1,154 @@
 :root {
   font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  color-scheme: light;
   --surface-page: #eef3fa;
+  --surface-page-radial-a: rgba(20, 63, 125, 0.14);
+  --surface-page-radial-b: rgba(194, 54, 69, 0.12);
+  --surface-page-gradient-start: #f7faff;
+  --surface-page-gradient-mid: #e8f0fb;
+  --surface-page-gradient-end: #edf3fb;
   --surface-card: #ffffff;
   --line: #c8d5e6;
   --ink-main: #14263f;
+  --ink-heading: #1a3455;
   --ink-muted: #50627a;
   --accent-blue-dark: #143f7d;
   --accent-red: #c23645;
   --shadow: 0 20px 45px rgba(20, 63, 125, 0.15);
+  --surface-sidebar-start: #f8fbff;
+  --surface-sidebar-end: #edf4fc;
+  --sidebar-brand-ink: #18304d;
+  --menu-link-border: #bfd0e6;
+  --menu-link-bg: #f4f8ff;
+  --menu-link-hover-bg: #e5effd;
+  --menu-link-hover-border: #8eb0da;
+  --menu-link-active-border: #3f69a0;
+  --menu-link-active-bg-start: #dceafe;
+  --menu-link-active-bg-end: #edf4ff;
+  --menu-link-active-ink: #123863;
+  --sidebar-note-border: #a7bdd7;
+  --sidebar-note-bg: #edf4ff;
+  --eyebrow-border: rgba(194, 54, 69, 0.38);
+  --eyebrow-bg: #fbe8ea;
+  --eyebrow-ink: #8c1f2a;
+  --btn-primary-start: #113b74;
+  --btn-primary-end: #22579c;
+  --btn-primary-ink: #f7fbff;
+  --btn-primary-shadow: 0 10px 22px rgba(20, 63, 125, 0.28);
+  --btn-secondary-start: #ab2a39;
+  --btn-secondary-end: #ca4351;
+  --btn-secondary-ink: #fff5f6;
+  --btn-secondary-shadow: 0 10px 22px rgba(194, 54, 69, 0.24);
+  --input-border: #bdcee4;
+  --input-bg: #f7faff;
+  --input-ink: #173459;
+  --surface-soft-border: #c4d5e8;
+  --surface-soft-start: #f7fbff;
+  --surface-soft-end: #edf4fc;
+  --success-border: #8fb38b;
+  --success-bg: #edf9ee;
+  --profile-hero-border: #b9cce3;
+  --profile-hero-start: rgba(221, 234, 250, 0.82);
+  --profile-hero-end: rgba(255, 255, 255, 0.95);
+  --profile-hero-heading: #17385d;
+  --profile-hero-text: #4d6481;
+  --profile-activity-border: #cad9e9;
+  --profile-activity-start: #f8fbff;
+  --profile-activity-end: #edf4fc;
+  --profile-activity-heading: #173a5f;
+  --profile-list-border: #d5e0ec;
+  --profile-list-bg: #f9fcff;
+  --profile-list-text: #4a617d;
+  --profile-danger-border: #d9bcc3;
+  --profile-danger-start: #fffafb;
+  --profile-danger-end: #fff1f3;
+  --profile-danger-text: #5f3840;
+  --success-ink: #1a4d2f;
+  --danger-border: #d3a2a8;
+  --danger-bg: #fff2f4;
+  --danger-ink: #822230;
+  --theme-option-border: #b7cade;
+  --theme-option-bg: linear-gradient(160deg, #f8fbff 0%, #edf4fc 100%);
+  --theme-option-hover-border: #7b9bc4;
+  --theme-option-active-border: #1c4f8c;
+  --theme-option-active-bg: linear-gradient(155deg, #dceafe 0%, #e8f2ff 100%);
+  --theme-option-active-ink: #123a66;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-page: #0f1b2b;
+  --surface-page-radial-a: rgba(33, 95, 176, 0.3);
+  --surface-page-radial-b: rgba(194, 54, 69, 0.22);
+  --surface-page-gradient-start: #111d2c;
+  --surface-page-gradient-mid: #0d1a29;
+  --surface-page-gradient-end: #0b1522;
+  --surface-card: #15263b;
+  --line: #2f4a69;
+  --ink-main: #e4edf8;
+  --ink-heading: #f2f7ff;
+  --ink-muted: #9cb2cd;
+  --accent-blue-dark: #8ab7ff;
+  --accent-red: #ff8a98;
+  --shadow: 0 18px 38px rgba(4, 13, 24, 0.45);
+  --surface-sidebar-start: #132338;
+  --surface-sidebar-end: #0f1b2c;
+  --sidebar-brand-ink: #eaf3ff;
+  --menu-link-border: #355273;
+  --menu-link-bg: #172b43;
+  --menu-link-hover-bg: #203855;
+  --menu-link-hover-border: #4c719d;
+  --menu-link-active-border: #7cb1ff;
+  --menu-link-active-bg-start: #1f3e63;
+  --menu-link-active-bg-end: #1a3454;
+  --menu-link-active-ink: #eaf3ff;
+  --sidebar-note-border: #3b5c80;
+  --sidebar-note-bg: #1a314d;
+  --eyebrow-border: rgba(255, 138, 152, 0.6);
+  --eyebrow-bg: rgba(255, 138, 152, 0.16);
+  --eyebrow-ink: #ffd0d7;
+  --btn-primary-start: #2d65b0;
+  --btn-primary-end: #3f79c6;
+  --btn-primary-ink: #f4f9ff;
+  --btn-primary-shadow: 0 10px 24px rgba(23, 66, 122, 0.5);
+  --btn-secondary-start: #b74757;
+  --btn-secondary-end: #cf5f70;
+  --btn-secondary-ink: #fff1f3;
+  --btn-secondary-shadow: 0 10px 24px rgba(96, 31, 44, 0.42);
+  --input-border: #476484;
+  --input-bg: #0f1f33;
+  --input-ink: #e4edf8;
+  --surface-soft-border: #3e5d81;
+  --surface-soft-start: #1a304a;
+  --surface-soft-end: #12263b;
+  --success-border: #3f7351;
+  --success-bg: #183325;
+  --profile-hero-border: #3f5f84;
+  --profile-hero-start: rgba(45, 72, 108, 0.9);
+  --profile-hero-end: rgba(20, 36, 56, 0.94);
+  --profile-hero-heading: #ecf4ff;
+  --profile-hero-text: #b9cae0;
+  --profile-activity-border: #3f5d82;
+  --profile-activity-start: #1a304a;
+  --profile-activity-end: #12263b;
+  --profile-activity-heading: #e5f0ff;
+  --profile-list-border: #456486;
+  --profile-list-bg: #10243a;
+  --profile-list-text: #b5c8e0;
+  --profile-danger-border: #6c4650;
+  --profile-danger-start: #331f27;
+  --profile-danger-end: #271821;
+  --profile-danger-text: #f0c8d0;
+  --success-ink: #88d2a7;
+  --danger-border: #7e4d58;
+  --danger-bg: #3c1f28;
+  --danger-ink: #ffb1bd;
+  --theme-option-border: #3d5f84;
+  --theme-option-bg: linear-gradient(165deg, #172d46 0%, #12253a 100%);
+  --theme-option-hover-border: #6c95c7;
+  --theme-option-active-border: #8ab7ff;
+  --theme-option-active-bg: linear-gradient(160deg, #24466e 0%, #1d3d60 100%);
+  --theme-option-active-ink: #f2f7ff;
 }
 
 *,
@@ -21,9 +162,14 @@ body {
   min-height: 100vh;
   color: var(--ink-main);
   background:
-    radial-gradient(circle at 10% 4%, rgba(20, 63, 125, 0.14), transparent 42%),
-    radial-gradient(circle at 92% 12%, rgba(194, 54, 69, 0.12), transparent 38%),
-    linear-gradient(145deg, #f7faff 0%, #e8f0fb 45%, #edf3fb 100%);
+    radial-gradient(circle at 10% 4%, var(--surface-page-radial-a), transparent 42%),
+    radial-gradient(circle at 92% 12%, var(--surface-page-radial-b), transparent 38%),
+    linear-gradient(
+      145deg,
+      var(--surface-page-gradient-start) 0%,
+      var(--surface-page-gradient-mid) 45%,
+      var(--surface-page-gradient-end) 100%
+    );
 }
 
 a {
@@ -31,6 +177,9 @@ a {
 }
 
 input,
-button {
+button,
+select,
+textarea {
   font: inherit;
+  color: inherit;
 }

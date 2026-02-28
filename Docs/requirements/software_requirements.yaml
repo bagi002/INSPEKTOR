@@ -660,3 +660,22 @@
     naloga kroz endpoint `PATCH /api/admin/settings/password` (trenutna + nova
     lozinka, uz validaciju i proveru trenutne lozinke), kao i odgovarajucu formu
     u tabu `Podesavanja` admin panela.
+
+- id: REQ-SW-066
+  name: Podesavanje teme na profil stranici
+  status: In Review
+  refines: REQ-007
+  description: >
+    Na profil stranici uvesti sekciju `Tema interfejsa` kroz koju ulogovani korisnik
+    bira svijetlu ili tamnu temu aplikacije, uz trenutno primjenjivanje izabrane
+    teme i cuvanje korisnicke preference po korisniku (scope aktivne korisnicke sesije)
+    tako da svaki korisnik moze imati svoju temu na istom uredjaju.
+
+- id: REQ-SW-067
+  name: Globalna podrska za svijetlu i tamnu temu
+  status: In Review
+  refines: REQ-003
+  description: >
+    Implementirati globalni light/dark vizuelni sistem kroz CSS tokene i root
+    `data-theme` atribut tako da osnovne povrsine aplikacije (pozadina, kartice,
+    sidebar, forme, case tabovi, modali i javne sekcije) konzistentno prate aktivnu temu.

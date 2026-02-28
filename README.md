@@ -1,7 +1,7 @@
 # INSPEKTOR
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
-Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, javna Wiki stranica sa vodicem koriscenja, ulogovana pocetna sa stvarnim podacima iz SQLite baze, profil korisnika sa pregledom aktivnosti i upravljanjem nalogom, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
+Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, javna Wiki stranica sa vodicem koriscenja, ulogovana pocetna sa stvarnim podacima iz SQLite baze, profil korisnika sa pregledom aktivnosti, upravljanjem nalogom i izborom svijetle/tamne teme interfejsa, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
 Admin panel sada koristi zasebne administratorske naloge, podrzava promjenu admin lozinke, kreiranje hitnih popup obavjestenja, tabovani dashboard sa odvojenim sekcijama i upravljanje aktivnom verzijom aplikacije koja se automatski koristi u support tiket formi.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
@@ -141,7 +141,8 @@ Tok koriscenja:
 28. U tabu `Podesavanja` admin unosi aktivnu verziju aplikacije koja se automatski
     preuzima u korisnickoj support formi.
 29. U ruti `/profil` mozes pregledati svoje aktivnosti, azurirati osnovne podatke,
-    promeniti lozinku ili trajno obrisati nalog uz potvrdu.
+    promeniti lozinku, izabrati svijetlu/tamnu temu interfejsa ili trajno obrisati
+    nalog uz potvrdu. Izbor teme se pamti po korisnickoj sesiji (po korisniku).
 30. U admin panelu postoji sekcija `Admin obavjestenja` gdje admin unosi naslov i sadrzaj
     hitne poruke, pa objavljuje popup obavjestenje.
 31. U korisnickoj aplikaciji, ulogovani korisnik automatski dobija pending popup
@@ -413,6 +414,8 @@ Napomena:
   - pregled aktivnosti kroz statistiku i liste (kreirani slucajevi, reseni slucajevi, poslednje date ocene)
   - forma za izmenu osnovnih podataka uz azuriranje lokalne sesije
   - forma za promenu lozinke (trenutna + nova)
+  - sekcija `Tema interfejsa` za prelazak izmedju svijetle i tamne teme
+    (izbor se cuva lokalno po korisnickoj sesiji i odmah primenjuje na aplikaciju)
   - bezbednosna akcija trajnog brisanja naloga uz potvrdu i odjavu korisnika
 - Korisnicka podrska (`/podrska`):
   - forma za prijavu bug-a ili predloga poboljsanja (`ticketType`, `title`, `description`, `appLocation`, `appVersion`)

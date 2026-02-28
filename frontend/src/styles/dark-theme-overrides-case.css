@@ -1,0 +1,151 @@
+:root[data-theme="dark"] .case-people-hero-card,
+:root[data-theme="dark"] .case-docs-hero-card,
+:root[data-theme="dark"] .case-interrogations-hero-card,
+:root[data-theme="dark"] .case-timeline-hero-card,
+:root[data-theme="dark"] .case-quiz-hero-card {
+  border-color: var(--profile-activity-border);
+}
+
+:root[data-theme="dark"] .case-people-hero-card.is-create,
+:root[data-theme="dark"] .case-docs-hero-card.is-create,
+:root[data-theme="dark"] .case-interrogations-hero-card.is-create,
+:root[data-theme="dark"] .case-timeline-hero-card.is-create,
+:root[data-theme="dark"] .case-quiz-hero-card.is-create {
+  background: linear-gradient(152deg, #1d3757 0%, #132740 100%);
+}
+
+:root[data-theme="dark"] .case-people-hero-card.is-solve,
+:root[data-theme="dark"] .case-docs-hero-card.is-solve,
+:root[data-theme="dark"] .case-interrogations-hero-card.is-solve,
+:root[data-theme="dark"] .case-timeline-hero-card.is-solve,
+:root[data-theme="dark"] .case-quiz-hero-card.is-solve {
+  background: linear-gradient(152deg, #3b2731 0%, #2a1b24 100%);
+}
+
+:root[data-theme="dark"] .case-people-stat-card,
+:root[data-theme="dark"] .case-docs-stat-card,
+:root[data-theme="dark"] .case-interrogations-stat-card,
+:root[data-theme="dark"] .case-timeline-stat-card,
+:root[data-theme="dark"] .case-quiz-stat-card,
+:root[data-theme="dark"] .case-review-stat-card {
+  border-color: var(--profile-list-border);
+  background: var(--profile-list-bg);
+}
+
+:root[data-theme="dark"] .case-people-stat-card strong,
+:root[data-theme="dark"] .case-docs-stat-card strong,
+:root[data-theme="dark"] .case-interrogations-stat-card strong,
+:root[data-theme="dark"] .case-timeline-stat-card strong,
+:root[data-theme="dark"] .case-quiz-stat-card strong,
+:root[data-theme="dark"] .case-review-stat-card strong {
+  color: var(--ink-heading);
+}
+
+:root[data-theme="dark"] .case-people-stat-card span,
+:root[data-theme="dark"] .case-docs-stat-card span,
+:root[data-theme="dark"] .case-interrogations-stat-card span,
+:root[data-theme="dark"] .case-timeline-stat-card span,
+:root[data-theme="dark"] .case-quiz-stat-card span,
+:root[data-theme="dark"] .case-review-stat-card span,
+:root[data-theme="dark"] .case-people-empty,
+:root[data-theme="dark"] .case-docs-empty,
+:root[data-theme="dark"] .case-interrogations-note,
+:root[data-theme="dark"] .case-interrogation-empty,
+:root[data-theme="dark"] .case-timeline-empty,
+:root[data-theme="dark"] .case-quiz-empty {
+  color: var(--ink-muted);
+}
+
+:root[data-theme="dark"] .case-people-toolbar-card,
+:root[data-theme="dark"] .case-docs-toolbar-card,
+:root[data-theme="dark"] .case-interrogations-toolbar-card,
+:root[data-theme="dark"] .case-timeline-form-card,
+:root[data-theme="dark"] .case-quiz-question-card,
+:root[data-theme="dark"] .case-quiz-solve-question-card,
+:root[data-theme="dark"] .case-review-item,
+:root[data-theme="dark"] .case-solved-user-item {
+  border-color: var(--surface-soft-border);
+  background: linear-gradient(165deg, var(--surface-soft-start), var(--surface-soft-end));
+}
+
+:root[data-theme="dark"] .case-people-directory-card,
+:root[data-theme="dark"] .case-docs-directory-card,
+:root[data-theme="dark"] .case-interrogations-directory-card,
+:root[data-theme="dark"] .case-timeline-roadmap-card,
+:root[data-theme="dark"] .case-reviews-gated-card {
+  border-color: var(--profile-activity-border);
+  background: linear-gradient(172deg, #1a304a 0%, #13263c 100%);
+}
+
+:root[data-theme="dark"] .case-people-directory-row,
+:root[data-theme="dark"] .case-docs-directory-row,
+:root[data-theme="dark"] .case-interrogations-directory-row,
+:root[data-theme="dark"] .case-timeline-roadmap-content {
+  border-color: var(--profile-list-border);
+  background: linear-gradient(167deg, #13263d 0%, #0f2034 100%);
+  color: var(--ink-main);
+}
+
+:root[data-theme="dark"] .case-people-directory-row:hover,
+:root[data-theme="dark"] .case-docs-directory-row:hover,
+:root[data-theme="dark"] .case-interrogations-directory-row:hover {
+  border-color: var(--menu-link-hover-border);
+  background: linear-gradient(170deg, #1d3654 0%, #17314d 100%);
+}
+
+:root[data-theme="dark"] .case-people-directory-main small,
+:root[data-theme="dark"] .case-people-directory-meta small,
+:root[data-theme="dark"] .case-docs-directory-main small,
+:root[data-theme="dark"] .case-docs-directory-meta small,
+:root[data-theme="dark"] .case-interrogations-directory-main small,
+:root[data-theme="dark"] .case-interrogations-directory-meta small,
+:root[data-theme="dark"] .case-people-solve-role-picker small,
+:root[data-theme="dark"] .case-timeline-item-meta,
+:root[data-theme="dark"] .case-quiz-case-meta,
+:root[data-theme="dark"] .case-review-comment {
+  color: var(--ink-muted);
+}
+
+:root[data-theme="dark"] .case-people-directory-action,
+:root[data-theme="dark"] .case-docs-directory-action,
+:root[data-theme="dark"] .case-interrogations-directory-action,
+:root[data-theme="dark"] .case-timeline-item-badge {
+  border-color: var(--input-border);
+  background: #132a43;
+  color: var(--accent-blue-dark);
+}
+
+:root[data-theme="dark"] .case-people-solve-role-picker select,
+:root[data-theme="dark"] .case-interrogation-option-btn,
+:root[data-theme="dark"] .case-quiz-field input,
+:root[data-theme="dark"] .case-quiz-field textarea,
+:root[data-theme="dark"] .case-quiz-field select,
+:root[data-theme="dark"] .case-quiz-option-row input[type="text"] {
+  border-color: var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-ink);
+}
+
+:root[data-theme="dark"] .case-timeline-roadmap-marker,
+:root[data-theme="dark"] .case-interrogation-chat-avatar {
+  border-color: var(--menu-link-hover-border);
+  background: linear-gradient(150deg, #274b74, #1b395b);
+  color: #f3f8ff;
+}
+
+:root[data-theme="dark"] .case-timeline-roadmap-top h4,
+:root[data-theme="dark"] .case-quiz-question-top h4,
+:root[data-theme="dark"] .case-quiz-solve-question-card h4,
+:root[data-theme="dark"] .case-review-item h4,
+:root[data-theme="dark"] .case-solved-user-item h4 {
+  color: var(--ink-heading);
+}
+
+:root[data-theme="dark"] .case-timeline-success,
+:root[data-theme="dark"] .case-people-success,
+:root[data-theme="dark"] .case-quiz-success,
+:root[data-theme="dark"] .success-banner {
+  border-color: var(--success-border);
+  background: var(--success-bg);
+  color: var(--success-ink);
+}
