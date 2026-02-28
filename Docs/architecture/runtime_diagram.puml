@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + svijetla/tamna tema + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
+title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + svijetla/tamna tema + menu sun/moon switch + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
 actor "Operater sistema" as Operator
 actor "Korisnik" as User
@@ -9,6 +9,7 @@ participant "Frontend Router" as Router
 participant "Frontend Host Allowlist (Vite)" as FrontendHostAllow
 participant "DesktopGate" as Gate
 participant "LandingPage (/)" as Landing
+participant "Theme Menu Toggle" as ThemeMenuToggle
 participant "LoginPage" as Login
 participant "App Route Guard" as Guard
 participant "LoggedHomePage" as LoggedHome
@@ -123,6 +124,13 @@ alt Desktop sirina
   Router -> Gate: Provera desktop pravila
   Gate -> Landing: Render marketinske javne pocetne
   User -> Landing: Pregled benefita igre i CTA sekcija
+  User -> Landing: Klik sun/moon switch u lijevom meniju
+  Landing -> ThemeMenuToggle: handleThemeToggle()
+  ThemeMenuToggle -> SessionStore: Citanje korisnika za theme scope
+  ThemeMenuToggle -> ThemeStorage: setStoredThemePreference(theme, scope)
+  ThemeStorage -> ThemeStore: localStorage.setItem(theme_key:{scope}, theme)
+  ThemeMenuToggle -> ThemeStorage: applyThemePreference(theme)
+  ThemeStorage --> ThemeMenuToggle: Potvrda aktivne teme
   Landing -> Router: Navigacija na /registracija ili /prijava
   Router -> Gate: Provera desktop pravila
   Gate -> Login: Render prijavne forme

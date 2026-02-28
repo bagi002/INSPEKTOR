@@ -1,5 +1,6 @@
 import { menuItems } from "../data/publicLandingContent";
 import { PUBLIC_ROUTES, normalizePath } from "../utils/routes";
+import ThemeMenuToggle from "./ThemeMenuToggle";
 
 function PublicSidebar({ activePath = PUBLIC_ROUTES.HOME, noteText = "" }) {
   const normalizedActivePath = normalizePath(activePath);
@@ -28,6 +29,8 @@ function PublicSidebar({ activePath = PUBLIC_ROUTES.HOME, noteText = "" }) {
           })}
         </ul>
       </nav>
+
+      <ThemeMenuToggle />
 
       {resolvedNoteText ? (
         <div className="sidebar-note">

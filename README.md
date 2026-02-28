@@ -423,6 +423,7 @@ Napomena:
 ## Trenutno implementirano
 - Javne stranice za neulogovane korisnike:
   - levi meni (`Pocetna`, `Registracija`, `Prijava`)
+  - minimalisticki `sun/moon` switch u meniju za brzu promjenu svijetle/tamne teme
   - desktop-only pristup (za manje ekrane se prikazuje informativna poruka)
   - hero sekcija sa opisom svrhe aplikacije
   - pregled kljucnih funkcionalnosti

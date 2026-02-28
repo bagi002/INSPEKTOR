@@ -710,3 +710,12 @@
     `server.allowedHosts`, sa podrazumevano dozvoljenim Cloudflare tunnel hostom
     `declared-confirmed-acne-freebsd.trycloudflare.com` i mogucnoscu override-a
     preko promenljive `VITE_ALLOWED_HOSTS`.
+
+- id: REQ-SW-069
+  name: Minimalisticki switch teme u javnom meniju
+  status: In Review
+  refines: REQ-006
+  description: >
+    U javnom lijevom meniju (pocetna, prijava, registracija i javni wiki prikaz)
+    implementirati minimalisticki `sun/moon` switch za promjenu svijetle/tamne teme
+    koji odmah primjenjuje izbor na UI i cuva preferencu kroz postojeci theme storage.

@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + svijetla/tamna tema + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
+title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + svijetla/tamna tema + menu sun/moon switch + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
 class App {
   +themePreference
@@ -58,6 +58,13 @@ class LandingPage {
 class PublicSidebar {
   +activePath
   +noteText
+  +render()
+}
+
+class ThemeMenuToggle {
+  +themeScope
+  +themePreference
+  +handleThemeToggle()
   +render()
 }
 
@@ -1096,6 +1103,7 @@ LandingPage ..> PublicLandingContent
 LandingPage ..> RouteUtils
 PublicSidebar ..> PublicLandingContent
 PublicSidebar ..> RouteUtils
+PublicSidebar *-- ThemeMenuToggle
 App --> ProfilePage
 App --> SupportPage
 WikiPage --> RouteUtils
@@ -1163,6 +1171,8 @@ LoggedCreatedCaseStatsModal *-- CaseReviewsPanel
 LoggedCreatedCaseStatsModal ..> CaseReviewsApiClient
 CreateCasePage ..> CasesApiClient
 App ..> ThemeStorageService
+ThemeMenuToggle ..> ThemeStorageService
+ThemeMenuToggle ..> SessionStorageService
 ProfilePage ..> UseProfilePageState
 ProfilePage *-- ProfileActivityPanel
 ProfilePage *-- ProfileBasicForm

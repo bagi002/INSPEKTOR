@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + svijetla/tamna tema + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
+title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + svijetla/tamna tema + menu sun/moon switch + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
 package "Root Scripts" {
   [start.sh Launcher]
@@ -17,6 +17,7 @@ package "Frontend" {
   [Route Utils]
   [Public Landing Page]
   [Public Sidebar]
+  [Theme Menu Toggle]
   [Public Landing Content]
   [UI Text Standard (sr-Latn)]
   [Public Auth Pages]
@@ -248,6 +249,9 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Public Landing Page] --> [Route Utils]
 [Public Sidebar] --> [Public Landing Content]
 [Public Sidebar] --> [Route Utils]
+[Public Sidebar] --> [Theme Menu Toggle]
+[Theme Menu Toggle] --> [Theme Storage Service]
+[Theme Menu Toggle] --> [Session Storage]
 [Public Landing Content] --> [UI Text Standard (sr-Latn)]
 [Public Auth Pages] --> [UI Text Standard (sr-Latn)]
 [Wiki Usage Guide View] --> [UI Text Standard (sr-Latn)]
