@@ -14,7 +14,7 @@ Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekran
 
 ## Struktura projekta
 - `frontend/` - React aplikacija za korisnike (`landing`, auth, slucajevi, podrska)
-- `admin-frontend/` - zaseban React admin panel (port `5174`)
+- `admin-frontend/` - zaseban React admin panel (port zavisi od moda: `5174` production, `5176` debug)
 - `backend/` - Express backend (`/api/auth`, `/api/profile`, `/api/cases`, `/api/support`, `/api/announcements`, `/api/admin`, `/api/health`) i SQLite pristup
 - `Instances/` - runtime podaci (npr. SQLite fajl baze)
 - `Docs/requirements/` - high-level i softverski requirements
@@ -24,14 +24,22 @@ Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekran
 
 ## Pokretanje projekta (frontend + backend + admin panel)
 1. `./setup.sh`
-2. `./start.sh`
-3. Korisnicki frontend: `http://localhost:5173`
-4. Admin panel: `http://localhost:5174`
-5. Backend health: `http://localhost:3001/api/health`
+2. Production mod: `./start.sh production` (ili `./start.sh`)
+3. Debug mod: `./start.sh debug`
+4. Production portovi:
+   - Korisnicki frontend: `http://localhost:5173`
+   - Admin panel: `http://localhost:5174`
+   - Backend health: `http://localhost:3001/api/health`
+5. Debug portovi:
+   - Korisnicki frontend: `http://localhost:5175`
+   - Admin panel: `http://localhost:5176`
+   - Backend health: `http://localhost:3002/api/health`
 
 ## Pokretanje preko skripti (root)
 1. `./setup.sh` - priprema okruzenje, instalira backend + frontend + admin frontend zavisnosti, kreira `backend/.env` (ako ne postoji) i inicijalizuje bazu
-2. `./start.sh` - pokrece backend (`3001`), korisnicki frontend (`5173`) i admin frontend (`5174`)
+2. `./start.sh [production|debug]` - pokrece iste procese u dva moda gdje je jedina razlika u portovima:
+   - `production` (podrazumijevano): backend `3001`, frontend `5173`, admin `5174`
+   - `debug`: backend `3002`, frontend `5175`, admin `5176`
 
 ## Pokretanje pojedinacno
 Backend:
@@ -48,10 +56,10 @@ Frontend:
 Admin frontend:
 1. `cd admin-frontend`
 2. `npm install`
-3. `npm run dev -- --port 5174`
+3. `npm run dev -- --port <admin-port>`
 
 Backend `.env` bitne promenljive za admin:
-- `FRONTEND_ORIGINS=http://localhost:5173,http://localhost:5174`
+- `FRONTEND_ORIGINS=http://localhost:5173,http://localhost:5174` (production default; `start.sh` u runtime-u postavlja odgovarajuce origins i za debug mod)
 - `ADMIN_BOOTSTRAP_EMAIL=<bootstrap-admin-email>`
 - `ADMIN_BOOTSTRAP_PASSWORD=<bootstrap-admin-lozinka>`
 - `ADMIN_BOOTSTRAP_FIRST_NAME=<bootstrap-admin-ime>`
@@ -63,6 +71,8 @@ Backend `.env` bitne promenljive za admin:
 3. `npm run preview`
 
 ## Koriscenje auth stranica
+Napomena: URL primeri ispod koriste production mod (`5173`/`5174`). U debug modu koristi iste putanje na portovima `5175` (korisnicki frontend) i `5176` (admin panel).
+
 - Pocetna: `http://localhost:5173/`
 - Wiki igre: `http://localhost:5173/wiki`
 - Registracija: `http://localhost:5173/registracija`
@@ -73,7 +83,7 @@ Backend `.env` bitne promenljive za admin:
 - Kreiranje slucaja (start): `http://localhost:5173/slucaj/novi`
 - Workspace tab (kreiranje): `http://localhost:5173/slucaj/:id/kreiranje/:tab`
 - Workspace tab (resavanje): `http://localhost:5173/slucaj/:id/resavanje/:tab`
-- Admin panel login: `http://localhost:5174`
+- Admin panel login: `http://localhost:5174` (production) / `http://localhost:5176` (debug)
 
 Tok koriscenja:
 1. Otvori `/registracija` i kreiraj nalog.
@@ -131,7 +141,7 @@ Tok koriscenja:
 23. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i
     pratiti statuse svih svojih tiketa; polje verzije aplikacije je auto-popunjeno
     aktivnom verzijom koju definiše admin panel.
-24. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom
+24. Za admin panel koristi `http://localhost:5174` (production) ili `http://localhost:5176` (debug) i prijavi se admin nalogom
     (email + lozinka) iz zasebne admin baze naloga; ako korisnik ima `role=admin`
     u `users`, a nema aktivan zapis u `admin_accounts`, sistem ga automatski
     provision-uje pri prvoj prijavi.
@@ -166,7 +176,8 @@ Napomena:
 - Pri uspesnoj prijavi backend vraca JWT token koji se cuva u `localStorage` na klijentu.
 - Pri prvom pokretanju backend automatski obezbedjuje bootstrap admin nalog na osnovu `.env`
   promenljivih (`ADMIN_BOOTSTRAP_*`).
-- Vite proxy prosledjuje `"/api/*"` zahteve ka backend-u (`http://localhost:3001`) i za
+- Vite proxy prosledjuje `"/api/*"` zahteve ka backend-u prema aktivnom run modu
+  (`http://localhost:3001` production ili `http://localhost:3002` debug), i za
   korisnicki i za admin frontend.
 - Sadrzaj Wiki vodica je dostupan i kao projektni dokument u `Docs/wiki/game_wiki.md`.
 
@@ -427,7 +438,8 @@ Napomena:
     `Otvori statistiku` koja otvara zaseban popup panel sa statistikama slucaja
   - prikaz loading, greske i praznih stanja
   - meni za ulogovane (`Pocetna`, `Kreiranje slucaja`, `Podrska`, `Profil`, `Odjava`)
-  - za admin korisnika dodatni link ka izdvojenom admin panelu (`http://localhost:5174`)
+  - za admin korisnika dodatni link ka izdvojenom admin panelu
+    (`http://localhost:5174` production / `http://localhost:5176` debug)
   - globalni popup admin obavjestenja za pending poruke korisnika
     (integracija preko `GET /api/announcements/pending` i
     `POST /api/announcements/:announcementId/dismiss`)
@@ -444,7 +456,7 @@ Napomena:
   - automatska popuna polja `appVersion` na osnovu aktivne verzije iz admin podesavanja
   - ucitavanje i prikaz svih tiketa trenutnog korisnika sa statusima
   - backend integracija preko `GET /api/support/ticket-defaults`, `GET /api/support/tickets/me` i `POST /api/support/tickets`
-- Admin panel (`http://localhost:5174`):
+- Admin panel (`http://localhost:5174` production / `http://localhost:5176` debug):
   - zaseban frontend i odvojena sesija (`admin_panel` JWT scope)
   - login zahteva email + lozinku; autentifikacija koristi `admin_accounts`, uz
     fallback auto-provision za postojeci `users.role=admin` nalog bez aktivnog

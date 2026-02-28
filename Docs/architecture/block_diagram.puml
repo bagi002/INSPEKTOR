@@ -1,6 +1,14 @@
 @startuml Block Diagram
 title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + svijetla/tamna tema + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
+package "Root Scripts" {
+  [start.sh Launcher]
+  [Run Mode Resolver]
+  [Production Port Profile (3001/5173/5174)]
+  [Debug Port Profile (3002/5175/5176)]
+  [Runtime Env Injection]
+}
+
 package "Frontend" {
   [App Shell]
   [Desktop Policy Gate]
@@ -100,7 +108,7 @@ package "Frontend" {
   [Admin Announcement Popup]
 }
 
-package "Admin Frontend (port 5174)" {
+package "Admin Frontend (port iz run moda)" {
   [Admin App Shell]
   [Admin Login View]
   [Admin Dashboard]
@@ -200,6 +208,17 @@ database "support_tickets" as SupportDb
 database "app_settings(active_app_version)" as AppSettingsDb
 database "admin_accounts" as AdminAccountsDb
 database "admin_announcements + admin_announcement_dismissals" as AnnouncementsDb
+
+[start.sh Launcher] --> [Run Mode Resolver]
+[Run Mode Resolver] --> [Production Port Profile (3001/5173/5174)]
+[Run Mode Resolver] --> [Debug Port Profile (3002/5175/5176)]
+[start.sh Launcher] --> [Runtime Env Injection]
+[Runtime Env Injection] --> [Express App]
+[Runtime Env Injection] --> [App Shell]
+[Runtime Env Injection] --> [Admin App Shell]
+[start.sh Launcher] --> [Express App]
+[start.sh Launcher] --> [App Shell]
+[start.sh Launcher] --> [Admin App Shell]
 
 [App Shell] --> [Desktop Policy Gate]
 [App Shell] --> [Theme Scope Resolver]

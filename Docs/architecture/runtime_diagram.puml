@@ -1,7 +1,10 @@
 @startuml Runtime Diagram
 title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + svijetla/tamna tema + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
+actor "Operater sistema" as Operator
 actor "Korisnik" as User
+participant "start.sh Launcher" as StartScript
+participant "Run Mode Port Profile" as PortProfile
 participant "Frontend Router" as Router
 participant "DesktopGate" as Gate
 participant "LandingPage (/)" as Landing
@@ -93,6 +96,16 @@ database "LocalStorage (session)" as SessionStore
 database "LocalStorage (theme preference)" as ThemeStore
 database "LocalStorage (admin session)" as AdminSessionStore
 participant "Desktop Notice View" as Notice
+
+Operator -> StartScript: Pokrece ./start.sh [production|debug]
+StartScript -> PortProfile: Resolve run moda i portova
+PortProfile --> StartScript: production (3001/5173/5174)\ndebug (3002/5175/5176)
+StartScript -> AuthApi: Start backend server na izabranom backend portu
+StartScript -> Router: Start korisnicki frontend na izabranom frontend portu
+StartScript -> AdminLoginView: Start admin frontend na izabranom admin portu
+StartScript -> AuthApi: FRONTEND_ORIGINS = user/admin URL iz aktivnog moda
+StartScript -> Router: VITE_API_PROXY_TARGET = backend URL iz aktivnog moda
+StartScript -> AdminLoginView: VITE_API_PROXY_TARGET = backend URL iz aktivnog moda
 
 alt Desktop sirina
   User -> Router: Otvara /

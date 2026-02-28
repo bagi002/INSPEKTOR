@@ -3,7 +3,7 @@
 
 - id: REQ-001
   name: Tehnologije u aplikaciji
-  status: In Progress
+  status: In Review
   description: >
     Web aplikacija ce koristiti sledeće tehnologije:
     - Frontend: React.js

@@ -14,6 +14,23 @@ class App {
   +render()
 }
 
+class StartScriptLauncher {
+  +resolveMode(arg): string
+  +resolvePortProfile(mode): RunModePortProfile
+  +startBackend(modeProfile): void
+  +startFrontend(modeProfile): void
+  +startAdminFrontend(modeProfile): void
+}
+
+class RunModePortProfile {
+  +mode
+  +backendPort
+  +frontendPort
+  +adminFrontendPort
+  +frontendOrigins
+  +apiProxyTarget
+}
+
 class RouteUtils {
   +normalizePath(pathname)
   +buildCaseWorkspaceRoute(caseId, mode, tab)
@@ -1050,6 +1067,10 @@ App --> RouteUtils
 App --> DesktopGate
 App --> LandingPage
 App --> WikiPage
+StartScriptLauncher --> RunModePortProfile
+StartScriptLauncher ..> ExpressApp
+StartScriptLauncher ..> App
+StartScriptLauncher ..> AdminApp
 App *-- AdminAnnouncementPopup
 App ..> AnnouncementsApiClient
 DesktopGate --> LandingPage
