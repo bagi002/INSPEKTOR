@@ -106,6 +106,8 @@ package "Frontend" {
   [Logout Action]
   [Desktop Warning View]
   [Admin Announcement Popup]
+  [Frontend Vite Config]
+  [Frontend Allowed Hosts Guard]
 }
 
 package "Admin Frontend (port iz run moda)" {
@@ -132,6 +134,8 @@ package "Admin Frontend (port iz run moda)" {
   [Admin Password Form]
   [Admin API Client]
   [Admin Session Storage]
+  [Admin Vite Config]
+  [Admin Allowed Hosts Guard]
 }
 
 package "Backend (Node.js + Express)" {
@@ -216,9 +220,16 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Runtime Env Injection] --> [Express App]
 [Runtime Env Injection] --> [App Shell]
 [Runtime Env Injection] --> [Admin App Shell]
+[Runtime Env Injection] --> [Frontend Vite Config]
+[Runtime Env Injection] --> [Admin Vite Config]
 [start.sh Launcher] --> [Express App]
 [start.sh Launcher] --> [App Shell]
 [start.sh Launcher] --> [Admin App Shell]
+
+[Frontend Vite Config] --> [Frontend Allowed Hosts Guard]
+[Frontend Allowed Hosts Guard] --> [App Shell]
+[Admin Vite Config] --> [Admin Allowed Hosts Guard]
+[Admin Allowed Hosts Guard] --> [Admin App Shell]
 
 [App Shell] --> [Desktop Policy Gate]
 [App Shell] --> [Theme Scope Resolver]

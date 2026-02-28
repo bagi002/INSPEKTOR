@@ -705,4 +705,8 @@
     i `debug`, pri cemu je jedina razlika izmedju modova set portova za backend,
     korisnicki frontend i admin frontend. Skripta mora da postavi odgovarajuce
     portove, `FRONTEND_ORIGINS` i API proxy target za oba frontenda tako da svaki
-    mod radi samostalno bez dodatnih rucnih izmena konfiguracije.
+    mod radi samostalno bez dodatnih rucnih izmena konfiguracije. Vite
+    konfiguracije za oba frontenda moraju da podrze host-header allowlist kroz
+    `server.allowedHosts`, sa podrazumevano dozvoljenim Cloudflare tunnel hostom
+    `declared-confirmed-acne-freebsd.trycloudflare.com` i mogucnoscu override-a
+    preko promenljive `VITE_ALLOWED_HOSTS`.

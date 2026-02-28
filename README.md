@@ -65,6 +65,10 @@ Backend `.env` bitne promenljive za admin:
 - `ADMIN_BOOTSTRAP_FIRST_NAME=<bootstrap-admin-ime>`
 - `ADMIN_BOOTSTRAP_LAST_NAME=<bootstrap-admin-prezime>`
 
+Frontend/Admin frontend Vite promenljive:
+- `VITE_API_PROXY_TARGET=http://localhost:<backend-port>` (`start.sh` postavlja automatski)
+- `VITE_ALLOWED_HOSTS=declared-confirmed-acne-freebsd.trycloudflare.com` (opciono; comma-separated lista hostova za `server.allowedHosts`)
+
 ## Build i preview (frontend)
 1. `cd frontend`
 2. `npm run build`
@@ -179,6 +183,9 @@ Napomena:
 - Vite proxy prosledjuje `"/api/*"` zahteve ka backend-u prema aktivnom run modu
   (`http://localhost:3001` production ili `http://localhost:3002` debug), i za
   korisnicki i za admin frontend.
+- Vite `server.allowedHosts` u oba frontenda podrazumevano dozvoljava
+  `declared-confirmed-acne-freebsd.trycloudflare.com`, a moze se promeniti preko
+  `VITE_ALLOWED_HOSTS`.
 - Sadrzaj Wiki vodica je dostupan i kao projektni dokument u `Docs/wiki/game_wiki.md`.
 
 ## Backend API

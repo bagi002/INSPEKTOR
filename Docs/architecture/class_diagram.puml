@@ -31,6 +31,13 @@ class RunModePortProfile {
   +apiProxyTarget
 }
 
+class ViteDevServerConfig {
+  +apiProxyTarget
+  +allowedHosts
+  +resolveAllowedHosts(envValue)
+  +buildServerOptions()
+}
+
 class RouteUtils {
   +normalizePath(pathname)
   +buildCaseWorkspaceRoute(caseId, mode, tab)
@@ -1071,6 +1078,10 @@ StartScriptLauncher --> RunModePortProfile
 StartScriptLauncher ..> ExpressApp
 StartScriptLauncher ..> App
 StartScriptLauncher ..> AdminApp
+StartScriptLauncher ..> ViteDevServerConfig
+RunModePortProfile --> ViteDevServerConfig
+ViteDevServerConfig ..> App
+ViteDevServerConfig ..> AdminApp
 App *-- AdminAnnouncementPopup
 App ..> AnnouncementsApiClient
 DesktopGate --> LandingPage
