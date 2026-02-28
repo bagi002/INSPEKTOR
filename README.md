@@ -2,7 +2,7 @@
 
 INSPEKTOR je web aplikacija za interaktivno resavanje detektivskih/policijskih slucajeva.
 Trenutno su implementirani javna pocetna stranica, registracija i prijava za neulogovane korisnike, javna Wiki stranica sa vodicem koriscenja, ulogovana pocetna sa stvarnim podacima iz SQLite baze, profil korisnika sa pregledom aktivnosti i upravljanjem nalogom, zavrsni kviz kojim se potvrduje rjesenje slucaja i prelazak u `resolved`, kao i jednokratno ocjenjivanje tudjeg rijesenog slucaja sa opcionalnim komentarom.
-Admin panel sada podrzava i kreiranje hitnih popup obavjestenja, tabovani dashboard sa odvojenim sekcijama i upravljanje aktivnom verzijom aplikacije koja se automatski koristi u support tiket formi.
+Admin panel sada koristi zasebne administratorske naloge, podrzava promjenu admin lozinke, kreiranje hitnih popup obavjestenja, tabovani dashboard sa odvojenim sekcijama i upravljanje aktivnom verzijom aplikacije koja se automatski koristi u support tiket formi.
 Aktuelna verzija javnog interfejsa je desktop-only i predvidjena za sirinu ekrana od najmanje 1120px.
 
 ## Tehnologije
@@ -52,9 +52,10 @@ Admin frontend:
 
 Backend `.env` bitne promenljive za admin:
 - `FRONTEND_ORIGINS=http://localhost:5173,http://localhost:5174`
-- `ADMIN_PANEL_PASSWORD=<lozinka-admin-panela>`
 - `ADMIN_BOOTSTRAP_EMAIL=<bootstrap-admin-email>`
 - `ADMIN_BOOTSTRAP_PASSWORD=<bootstrap-admin-lozinka>`
+- `ADMIN_BOOTSTRAP_FIRST_NAME=<bootstrap-admin-ime>`
+- `ADMIN_BOOTSTRAP_LAST_NAME=<bootstrap-admin-prezime>`
 
 ## Build i preview (frontend)
 1. `cd frontend`
@@ -125,21 +126,25 @@ Tok koriscenja:
 23. U ruti `/podrska` mozes otvoriti novi tiket (bug/predlog), navesti lokaciju i
     pratiti statuse svih svojih tiketa; polje verzije aplikacije je auto-popunjeno
     aktivnom verzijom koju definiše admin panel.
-24. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom:
-    email+lozinka naloga + lozinka admin panela (`ADMIN_PANEL_PASSWORD`).
+24. Za admin panel koristi `http://localhost:5174` i prijavi se admin nalogom
+    (email + lozinka) iz zasebne admin baze naloga; ako korisnik ima `role=admin`
+    u `users`, a nema aktivan zapis u `admin_accounts`, sistem ga automatski
+    provision-uje pri prvoj prijavi.
 25. Nakon admin prijave dashboard je razdvojen na tabove (`Pregled`, `Ticketi`,
     `Obavjestenja`, `Korisnici`, `Slucajevi`, `Podesavanja`) sa odvojenim radnim sekcijama.
-26. U tabu `Ticketi` tiketi su grupisani po statusu i sortirani po datumu prijave
+26. U tabu `Podesavanja` admin moze i da promjeni sopstvenu lozinku kroz formu
+    (trenutna + nova + potvrda).
+27. U tabu `Ticketi` tiketi su grupisani po statusu i sortirani po datumu prijave
     (najnoviji prvo) unutar svake grupe.
-27. U tabu `Podesavanja` admin unosi aktivnu verziju aplikacije koja se automatski
+28. U tabu `Podesavanja` admin unosi aktivnu verziju aplikacije koja se automatski
     preuzima u korisnickoj support formi.
-28. U ruti `/profil` mozes pregledati svoje aktivnosti, azurirati osnovne podatke,
+29. U ruti `/profil` mozes pregledati svoje aktivnosti, azurirati osnovne podatke,
     promeniti lozinku ili trajno obrisati nalog uz potvrdu.
-29. U admin panelu postoji sekcija `Admin obavjestenja` gdje admin unosi naslov i sadrzaj
+30. U admin panelu postoji sekcija `Admin obavjestenja` gdje admin unosi naslov i sadrzaj
     hitne poruke, pa objavljuje popup obavjestenje.
-30. U korisnickoj aplikaciji, ulogovani korisnik automatski dobija pending popup
+31. U korisnickoj aplikaciji, ulogovani korisnik automatski dobija pending popup
     obavjestenja i moze ih zatvoriti akcijom `Zatvori obavjestenje`.
-31. Korisnici koji su bili registrovani u trenutku objave obavjestenja dobijaju
+32. Korisnici koji su bili registrovani u trenutku objave obavjestenja dobijaju
     isto obavjestenje i pri sledecoj prijavi ako ga ranije nisu zatvorili.
 
 Napomena:
@@ -147,6 +152,7 @@ Napomena:
 - Slucajevi i povezani podaci (osobe, dokumenti, timeline, korisnicki napredak, zavrsni kviz i recenzije) cuvaju se u SQLite `case_*` tabelama.
 - Ticketi podrske se cuvaju u tabeli `support_tickets`.
 - Aktivna verzija aplikacije cuva se u tabeli `app_settings` (`active_app_version`).
+- Admin panel nalozi cuvaju se odvojeno u tabeli `admin_accounts`.
 - Admin popup obavjestenja i dismiss zapisi cuvaju se u tabelama
   `admin_announcements` i `admin_announcement_dismissals`.
 - Pri uspesnoj prijavi backend vraca JWT token koji se cuva u `localStorage` na klijentu.
@@ -323,8 +329,9 @@ Napomena:
 - `POST /api/announcements/:announcementId/dismiss` (autorizacija: `Bearer <JWT>`)
   - oznacava konkretno obavjestenje kao zatvoreno za trenutno ulogovanog korisnika
 - `POST /api/admin/login`
-  - body: `{ "email": "...", "password": "...", "panelPassword": "..." }`
-  - pristup odobrava samo za korisnike sa `role=admin` i validnom lozinkom admin panela
+  - body: `{ "email": "...", "password": "..." }`
+  - koristi zasebni adminsko-panel nalog (`admin_accounts`); ako zapis jos ne postoji,
+    postoji fallback auto-provision za korisnika sa `users.role=admin` i validnom lozinkom
   - vraca admin JWT token sa `scope=admin_panel`
 - `GET /api/admin/overview` (autorizacija: `Bearer <ADMIN_JWT>`)
   - vraca agregirane metrike korisnika, slucajeva i tiketa
@@ -338,6 +345,9 @@ Napomena:
 - `PATCH /api/admin/settings/active-app-version` (autorizacija: `Bearer <ADMIN_JWT>`)
   - menja aktivnu verziju aplikacije koja se koristi u support tiket workflow-u
   - body: `{ "activeAppVersion": "..." }`
+- `PATCH /api/admin/settings/password` (autorizacija: `Bearer <ADMIN_JWT>`)
+  - menja lozinku trenutno ulogovanog admin naloga
+  - body: `{ "currentPassword": "...", "newPassword": "..." }`
 - `GET /api/admin/announcements` (autorizacija: `Bearer <ADMIN_JWT>`)
   - vraca listu svih admin obavjestenja sa podacima admina koji je objavio poruku
 - `POST /api/admin/announcements` (autorizacija: `Bearer <ADMIN_JWT>`)
@@ -347,9 +357,13 @@ Napomena:
   - vraca sve korisnike bez `password_hash` polja
 - `PATCH /api/admin/users/:userId` (autorizacija: `Bearer <ADMIN_JWT>`)
   - menja korisnicke podatke (`firstName`, `lastName`, `email`, `role`)
+  - pri promeni `role`/email automatski sinhronizuje `admin_accounts` zapis
+    (aktivacija/deaktivacija po pravilima admin panela)
 - `DELETE /api/admin/users/:userId` (autorizacija: `Bearer <ADMIN_JWT>`)
   - brise korisnicki nalog i povezane podatke (cascade)
-  - nije dozvoljeno brisanje trenutno ulogovanog admin naloga niti poslednjeg admin naloga
+  - nije dozvoljeno brisanje korisnickog naloga koji deli email sa trenutno
+    ulogovanim admin nalogom; zadrzana je i zastita brisanja poslednjeg `role=admin`
+    korisnika u `users` tabeli
 - `GET /api/admin/cases` (autorizacija: `Bearer <ADMIN_JWT>`)
   - vraca sve slucajeve sa podacima autora
 - `PATCH /api/admin/cases/:caseId` (autorizacija: `Bearer <ADMIN_JWT>`)
@@ -405,14 +419,18 @@ Napomena:
   - backend integracija preko `GET /api/support/ticket-defaults`, `GET /api/support/tickets/me` i `POST /api/support/tickets`
 - Admin panel (`http://localhost:5174`):
   - zaseban frontend i odvojena sesija (`admin_panel` JWT scope)
-  - login zahteva admin nalog i lozinku admin panela
+  - login zahteva email + lozinku; autentifikacija koristi `admin_accounts`, uz
+    fallback auto-provision za postojeci `users.role=admin` nalog bez aktivnog
+    adminsko-panel zapisa
   - tabovani dashboard sa sekcijama `Pregled`, `Ticketi`, `Obavjestenja`, `Korisnici`, `Slucajevi`, `Podesavanja`
   - dashboard prikazuje aggregate metrike (`/api/admin/overview`) i aktivnu verziju (`/api/admin/settings`)
+  - u tabu `Podesavanja` postoji forma za promjenu admin lozinke (`PATCH /api/admin/settings/password`)
   - upravljanje ticketima (statusne grupe + sortiranje po datumu + promena statusa i admin napomene)
   - upravljanje aktivnom verzijom aplikacije kroz endpoint `PATCH /api/admin/settings/active-app-version`
   - sekcija za kreiranje i pregled popup admin obavjestenja
     (`GET /api/admin/announcements`, `POST /api/admin/announcements`)
-  - upravljanje korisnicima (pregled, izmena osnovnih podataka i role, kao i brisanje naloga; bez lozinki)
+  - upravljanje korisnicima (pregled, izmena osnovnih podataka i role, kao i brisanje naloga; bez lozinki),
+    uz automatsku sinhronizaciju `admin_accounts` kada se menja `role=admin` ili email
   - upravljanje slucajevima (pregled i izmena osnovnih polja)
 - Kreiranje slucaja (`/slucaj/novi`):
   - forma za unos naziva i opisa slucaja kao pocetni korak

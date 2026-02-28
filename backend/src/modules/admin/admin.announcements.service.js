@@ -18,14 +18,14 @@ export async function listAdminAnnouncements() {
   };
 }
 
-export async function createAdminAnnouncementMessage(payload, adminUserId) {
+export async function createAdminAnnouncementMessage(payload, adminAccountId) {
   const { errors, sanitized } = validateCreateAdminAnnouncementPayload(payload);
   throwValidationIfNeeded(errors, "Podaci za admin obavještenje nisu validni.");
 
   const announcement = await createAdminAnnouncement({
     title: sanitized.title,
     content: sanitized.content,
-    createdByAdminUserId: adminUserId,
+    createdByAdminAccountId: adminAccountId,
   });
 
   return {

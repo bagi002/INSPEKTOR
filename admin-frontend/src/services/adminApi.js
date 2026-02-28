@@ -143,6 +143,13 @@ export function updateAdminActiveAppVersion(payload) {
   });
 }
 
+export function updateAdminPassword(payload) {
+  return requestAdmin("/settings/password", {
+    method: "PATCH",
+    body: payload,
+  });
+}
+
 export function fetchAdminAnnouncements() {
   return requestAdmin("/announcements");
 }

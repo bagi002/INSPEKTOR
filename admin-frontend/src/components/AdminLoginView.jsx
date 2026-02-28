@@ -4,7 +4,6 @@ import { loginAdmin } from "../services/adminApi";
 const initialFormData = {
   email: "",
   password: "",
-  panelPassword: "",
 };
 
 function AdminLoginView({ onLoginSuccess }) {
@@ -45,7 +44,7 @@ function AdminLoginView({ onLoginSuccess }) {
         <p className="admin-eyebrow">INSPEKTOR ADMIN PANEL</p>
         <h1>Admin prijava</h1>
         <p>
-          Koristi admin nalog i lozinku za panel da bi pristupio pregledima i izmenama podataka.
+          Koristi administratorski nalog (email + lozinka) da bi pristupio pregledima i izmenama podataka.
         </p>
 
         <form className="admin-form" onSubmit={handleSubmit} noValidate>
@@ -64,7 +63,7 @@ function AdminLoginView({ onLoginSuccess }) {
           </label>
 
           <label htmlFor="adminPassword">
-            Lozinka naloga
+            Lozinka
             <input
               id="adminPassword"
               name="password"
@@ -75,19 +74,6 @@ function AdminLoginView({ onLoginSuccess }) {
               placeholder="Unesi lozinku naloga"
             />
             {errors.password ? <span className="admin-error">{errors.password}</span> : null}
-          </label>
-
-          <label htmlFor="adminPanelPassword">
-            Lozinka admin panela
-            <input
-              id="adminPanelPassword"
-              name="panelPassword"
-              type="password"
-              value={formData.panelPassword}
-              onChange={handleChange}
-              placeholder="Unesi lozinku panela"
-            />
-            {errors.panelPassword ? <span className="admin-error">{errors.panelPassword}</span> : null}
           </label>
 
           {message ? <p className="admin-feedback">{message}</p> : null}

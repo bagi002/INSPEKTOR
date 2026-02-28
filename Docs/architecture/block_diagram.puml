@@ -1,5 +1,5 @@
 @startuml Block Diagram
-title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel (tabovi + aktivna verzija) + admin popup obavjestenja
+title Block Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
 package "Frontend" {
   [App Shell]
@@ -106,6 +106,7 @@ package "Admin Frontend (port 5174)" {
   [Admin Cases Section]
   [Admin Settings Section]
   [Admin Active Version Form]
+  [Admin Password Form]
   [Admin API Client]
   [Admin Session Storage]
 }
@@ -181,6 +182,7 @@ database "case_interrogations + case_interrogation_nodes" as InterrogationsDb
 database "case_quiz_*" as QuizDb
 database "support_tickets" as SupportDb
 database "app_settings(active_app_version)" as AppSettingsDb
+database "admin_accounts" as AdminAccountsDb
 database "admin_announcements + admin_announcement_dismissals" as AnnouncementsDb
 
 [App Shell] --> [Desktop Policy Gate]
@@ -355,7 +357,9 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Admin Dashboard] --> [Admin Cases Section]
 [Admin Dashboard] --> [Admin Settings Section]
 [Admin Settings Section] --> [Admin Active Version Form]
+[Admin Settings Section] --> [Admin Password Form]
 [Admin Active Version Form] --> [Admin API Client]
+[Admin Password Form] --> [Admin API Client]
 [Admin Dashboard] --> [Admin API Client]
 [Admin Dashboard State Hook] --> [Admin API Client]
 [Admin Announcements Section] --> [Admin API Client]
@@ -416,9 +420,10 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Support Service] --> [App Settings Repository]
 [Admin Service] --> [Admin Validation]
 [Admin Service] --> [Admin Repository]
-[Admin Service] --> [Support Repository]
 [Admin Service] --> [User Repository]
+[Admin Service] --> [Support Repository]
 [Admin Settings Service] --> [Admin Validation]
+[Admin Settings Service] --> [Admin Repository]
 [Admin Settings Service] --> [App Settings Repository]
 [Admin Announcements Service] --> [Admin Announcements Validation]
 [Admin Announcements Service] --> [Admin Announcements Repository]
@@ -483,7 +488,7 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [Admin Repository] --> [SQLite Module]
 [Admin Announcements Repository] --> [SQLite Module]
 [App Settings Repository] --> [SQLite Module]
-[Admin Bootstrap] --> [User Repository]
+[Admin Bootstrap] --> [Admin Repository]
 
 [SQLite Module] --> Db
 [SQLite Module] --> CasesDb
@@ -493,6 +498,7 @@ database "admin_announcements + admin_announcement_dismissals" as AnnouncementsD
 [SQLite Module] --> QuizDb
 [SQLite Module] --> SupportDb
 [SQLite Module] --> AppSettingsDb
+[SQLite Module] --> AdminAccountsDb
 [SQLite Module] --> AnnouncementsDb
 [Migration Runner] --> Db
 [Health Route] --> [SQLite Module]

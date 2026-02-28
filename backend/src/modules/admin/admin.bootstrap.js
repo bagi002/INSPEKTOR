@@ -1,11 +1,10 @@
 import bcrypt from "bcryptjs";
 import { env } from "../../config/env.js";
 import {
-  createUser,
-  findUserByEmail,
-  hasAdminUsers,
-  updateUserRoleById,
-} from "../auth/auth.repository.js";
+  createAdminAccount,
+  findAdminAccountByEmail,
+  hasAdminAccounts,
+} from "./admin.repository.js";
 
 const SALT_ROUNDS = 10;
 
@@ -14,8 +13,8 @@ function normalizeText(value, fallback) {
   return normalized || fallback;
 }
 
-export async function ensureAdminBootstrapUser() {
-  const alreadyExists = await hasAdminUsers();
+export async function ensureAdminBootstrapAccount() {
+  const alreadyExists = await hasAdminAccounts();
   if (alreadyExists) {
     return { created: false };
   }
@@ -28,36 +27,30 @@ export async function ensureAdminBootstrapUser() {
   }
 
   const normalizedEmail = normalizeText(env.adminBootstrapEmail, "admin@inspektor.local").toLowerCase();
-  const existingUser = await findUserByEmail(normalizedEmail);
-  if (existingUser) {
-    const wasPromoted = existingUser.role !== "admin";
-    if (wasPromoted) {
-      await updateUserRoleById(existingUser.id, "admin");
-    }
-
+  const existingAccount = await findAdminAccountByEmail(normalizedEmail);
+  if (existingAccount) {
     return {
-      created: wasPromoted,
+      created: false,
       user: {
-        id: existingUser.id,
-        email: existingUser.email,
+        id: existingAccount.id,
+        email: existingAccount.email,
       },
     };
   }
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  const createdUser = await createUser({
+  const createdAccount = await createAdminAccount({
     firstName: normalizeText(env.adminBootstrapFirstName, "System"),
     lastName: normalizeText(env.adminBootstrapLastName, "Admin"),
     email: normalizedEmail,
     passwordHash,
-    role: "admin",
   });
 
   return {
     created: true,
     user: {
-      id: createdUser.id,
-      email: createdUser.email,
+      id: createdAccount.id,
+      email: createdAccount.email,
     },
   };
 }

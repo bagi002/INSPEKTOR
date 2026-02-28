@@ -46,7 +46,6 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET || "inspektor-dev-jwt-secret",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "8h",
   dbPath: resolvedDbPath,
-  adminPanelPassword: process.env.ADMIN_PANEL_PASSWORD || "inspektor-admin-panel",
   adminBootstrapEmail: process.env.ADMIN_BOOTSTRAP_EMAIL || "admin@inspektor.local",
   adminBootstrapPassword: process.env.ADMIN_BOOTSTRAP_PASSWORD || "Admin12345!",
   adminBootstrapFirstName: process.env.ADMIN_BOOTSTRAP_FIRST_NAME || "System",

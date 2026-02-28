@@ -47,7 +47,7 @@ async function getAnnouncementById(announcementId) {
         creator.last_name AS creator_last_name,
         creator.email AS creator_email
       FROM admin_announcements aa
-      LEFT JOIN users creator ON creator.id = aa.created_by_admin_user_id
+      LEFT JOIN admin_accounts creator ON creator.id = aa.created_by_admin_account_id
       WHERE aa.id = ?
       LIMIT 1
     `,
@@ -60,16 +60,16 @@ async function getAnnouncementById(announcementId) {
 export async function createAdminAnnouncement({
   title,
   content,
-  createdByAdminUserId,
+  createdByAdminAccountId,
 }) {
   const database = getDatabase();
   const result = await runQuery(
     database,
     `
-      INSERT INTO admin_announcements (title, content, created_by_admin_user_id)
+      INSERT INTO admin_announcements (title, content, created_by_admin_account_id)
       VALUES (?, ?, ?)
     `,
-    [title, content, createdByAdminUserId]
+    [title, content, createdByAdminAccountId]
   );
 
   return getAnnouncementById(result.lastID);
@@ -91,7 +91,7 @@ export async function getAdminAnnouncements(limit = 50) {
         creator.last_name AS creator_last_name,
         creator.email AS creator_email
       FROM admin_announcements aa
-      LEFT JOIN users creator ON creator.id = aa.created_by_admin_user_id
+      LEFT JOIN admin_accounts creator ON creator.id = aa.created_by_admin_account_id
       ORDER BY aa.created_at DESC, aa.id DESC
       LIMIT ?
     `,
@@ -121,7 +121,7 @@ export async function getPendingAdminAnnouncementsForUser(userId) {
       LEFT JOIN admin_announcement_dismissals dismissals
         ON dismissals.announcement_id = aa.id
         AND dismissals.user_id = target_user.id
-      LEFT JOIN users creator ON creator.id = aa.created_by_admin_user_id
+      LEFT JOIN admin_accounts creator ON creator.id = aa.created_by_admin_account_id
       WHERE dismissals.id IS NULL
         AND target_user.created_at <= aa.created_at
       ORDER BY aa.created_at ASC, aa.id ASC
@@ -155,7 +155,7 @@ export async function findPendingAdminAnnouncementForUserById(
       LEFT JOIN admin_announcement_dismissals dismissals
         ON dismissals.announcement_id = aa.id
         AND dismissals.user_id = target_user.id
-      LEFT JOIN users creator ON creator.id = aa.created_by_admin_user_id
+      LEFT JOIN admin_accounts creator ON creator.id = aa.created_by_admin_account_id
       WHERE aa.id = ?
         AND dismissals.id IS NULL
         AND target_user.created_at <= aa.created_at

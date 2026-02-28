@@ -23,19 +23,22 @@ export function requireAdminPanelAuth(req, res, next) {
 
   try {
     const payload = verifyAccessToken(token);
-    const userId = Number.parseInt(payload?.sub, 10);
+    const adminAccountId = Number.parseInt(payload?.sub, 10);
     const scope = typeof payload?.scope === "string" ? payload.scope : "";
-    const role = typeof payload?.role === "string" ? payload.role : "";
+    const accountType = typeof payload?.accountType === "string" ? payload.accountType : "";
 
-    if (!Number.isInteger(userId) || userId <= 0) {
+    if (!Number.isInteger(adminAccountId) || adminAccountId <= 0) {
       throw new HttpError(401, "Token nije validan.");
     }
-    if (scope !== "admin_panel" || role !== "admin") {
+    if (scope !== "admin_panel") {
+      throw new HttpError(403, "Pristup admin panelu nije dozvoljen.");
+    }
+    if (accountType && accountType !== "admin_account") {
       throw new HttpError(403, "Pristup admin panelu nije dozvoljen.");
     }
 
     req.adminAuth = {
-      userId,
+      adminAccountId,
       email: typeof payload?.email === "string" ? payload.email : null,
     };
     next();

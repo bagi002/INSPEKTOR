@@ -6,13 +6,28 @@ function mapAdminUserRow(row) {
   if (!row) {
     return null;
   }
-
   return {
     id: row.id,
     firstName: row.first_name,
     lastName: row.last_name,
     email: row.email,
     role: row.role,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapAdminUserAuthRow(row) {
+  if (!row) {
+    return null;
+  }
+  return {
+    id: row.id,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    email: row.email,
+    role: row.role,
+    passwordHash: row.password_hash,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -40,7 +55,29 @@ export async function findAdminUserById(userId) {
 
   return mapAdminUserRow(row);
 }
+export async function findAdminUserByIdWithPassword(userId) {
+  const database = getDatabase();
+  const row = await getOne(
+    database,
+    `
+      SELECT
+        id,
+        first_name,
+        last_name,
+        email,
+        role,
+        password_hash,
+        created_at,
+        updated_at
+      FROM users
+      WHERE id = ?
+      LIMIT 1
+    `,
+    [userId]
+  );
 
+  return mapAdminUserAuthRow(row);
+}
 export async function countAdminUsers() {
   const database = getDatabase();
   const row = await getOne(
@@ -55,7 +92,6 @@ export async function countAdminUsers() {
 
   return Number(row?.admin_count || 0);
 }
-
 export async function getAdminOverviewCounts() {
   const database = getDatabase();
   const row = await getOne(
@@ -63,7 +99,7 @@ export async function getAdminOverviewCounts() {
     `
       SELECT
         (SELECT COUNT(*) FROM users) AS users_count,
-        (SELECT COUNT(*) FROM users WHERE role = 'admin') AS admins_count,
+        (SELECT COUNT(*) FROM admin_accounts WHERE is_active = 1) AS admins_count,
         (SELECT COUNT(*) FROM cases) AS cases_count,
         (SELECT COUNT(*) FROM support_tickets) AS tickets_count,
         (SELECT COUNT(*) FROM support_tickets WHERE status = 'open') AS open_tickets_count,
@@ -80,7 +116,6 @@ export async function getAdminOverviewCounts() {
     inProgressTicketsCount: row?.in_progress_tickets_count || 0,
   };
 }
-
 export async function getAdminUsers() {
   const database = getDatabase();
   const rows = await getMany(
@@ -101,7 +136,6 @@ export async function getAdminUsers() {
 
   return rows.map(mapAdminUserRow);
 }
-
 export async function updateAdminUser(userId, updates) {
   const database = getDatabase();
   const updateStatement = buildUpdateStatement(
@@ -151,7 +185,6 @@ export async function updateAdminUser(userId, updates) {
 
   return mapAdminUserRow(row);
 }
-
 export async function deleteAdminUserById(userId) {
   const database = getDatabase();
   const result = await runQuery(

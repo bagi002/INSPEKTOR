@@ -5,6 +5,7 @@ import {
 import {
   getAdminSettings,
   patchAdminActiveAppVersion,
+  patchAdminOwnPassword,
 } from "./admin.settings.service.js";
 import {
   deleteAdminUser,
@@ -71,7 +72,7 @@ export async function adminAnnouncementsController(req, res) {
 export async function adminCreateAnnouncementController(req, res) {
   const result = await createAdminAnnouncementMessage(
     req.body || {},
-    req.adminAuth.userId
+    req.adminAuth.adminAccountId
   );
 
   res.status(201).json({
@@ -101,6 +102,16 @@ export async function adminUpdateActiveAppVersionController(req, res) {
   });
 }
 
+export async function adminUpdatePasswordController(req, res) {
+  const result = await patchAdminOwnPassword(req.adminAuth.adminAccountId, req.body || {});
+
+  res.status(200).json({
+    ok: true,
+    message: "Admin lozinka je uspešno izmenjena.",
+    data: result,
+  });
+}
+
 export async function adminUsersController(req, res) {
   const result = await listAdminUsers();
 
@@ -122,7 +133,7 @@ export async function adminUpdateUserController(req, res) {
 }
 
 export async function adminDeleteUserController(req, res) {
-  const result = await deleteAdminUser(req.params.userId, req.adminAuth.userId);
+  const result = await deleteAdminUser(req.params.userId, req.adminAuth.adminAccountId);
 
   res.status(200).json({
     ok: true,

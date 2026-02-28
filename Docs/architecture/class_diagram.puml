@@ -1,5 +1,5 @@
 @startuml Class Diagram
-title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel (tabovi + aktivna verzija) + admin popup obavjestenja
+title Class Diagram - Wiki guide + case workspace + zavrsni kviz + recenzije + profil korisnika + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
 class App {
   +resolveRoute(pathname): ReactNode
@@ -638,6 +638,7 @@ class AdminController {
   +adminCreateAnnouncementController(req, res)
   +adminUpdateTicketStatusController(req, res)
   +adminUpdateActiveAppVersionController(req, res)
+  +adminUpdatePasswordController(req, res)
   +adminUsersController(req, res)
   +adminUpdateUserController(req, res)
   +adminDeleteUserController(req, res)
@@ -720,7 +721,7 @@ class AdminService {
   +patchAdminTicketStatus(ticketId, payload)
   +listAdminUsers()
   +patchAdminUser(userId, payload)
-  +deleteAdminUser(userId, requesterAdminUserId)
+  +deleteAdminUser(userId, requesterAdminAccountId)
   +listAdminCases()
   +patchAdminCase(caseId, payload)
 }
@@ -728,11 +729,12 @@ class AdminService {
 class AdminSettingsService {
   +getAdminSettings()
   +patchAdminActiveAppVersion(payload)
+  +patchAdminOwnPassword(adminAccountId, payload)
 }
 
 class AdminAnnouncementsService {
   +listAdminAnnouncements()
-  +createAdminAnnouncementMessage(payload, adminUserId)
+  +createAdminAnnouncementMessage(payload, adminAccountId)
 }
 
 class CaseSolveVisibilityService {
@@ -782,6 +784,7 @@ class ProfileValidation {
 
 class AdminValidation {
   +validateAdminLoginPayload(payload)
+  +validateAdminPasswordPatchPayload(payload)
   +validateAdminTicketStatusPayload(payload)
   +validateAdminUserPatchPayload(payload)
   +validateAdminCasePatchPayload(payload)
@@ -799,6 +802,13 @@ class CaseDocumentsTypeSpecificValidation {
 class CaseDocumentsValidationShared {
   +sanitizeImageEvidence(value)
   +sanitizeDocumentType(value, allowedTypes, fallbackType)
+}
+
+class UserRepository {
+  +findUserByEmail(email)
+  +createUser(payload)
+  +hasAdminUsers()
+  +updateUserRoleById(userId, role)
 }
 
 class CasesRepository {
@@ -882,8 +892,15 @@ class ProfileRepository {
 }
 
 class AdminRepository {
+  +findAdminAccountByEmail(email)
+  +findAdminAccountById(adminAccountId)
+  +upsertAdminAccountFromUserProfile(profile)
+  +deactivateAdminAccountByEmail(email)
+  +updateAdminAccountPasswordById(adminAccountId, passwordHash)
+  +countAdminAccounts()
   +getAdminOverviewCounts()
   +findAdminUserById(userId)
+  +findAdminUserByIdWithPassword(userId)
   +countAdminUsers()
   +getAdminUsers()
   +updateAdminUser(userId, updates)
@@ -918,7 +935,7 @@ class AdminPanelAuthGuard {
 }
 
 class AdminBootstrap {
-  +ensureAdminBootstrapUser()
+  +ensureAdminBootstrapAccount()
 }
 
 class DatabaseModule {
@@ -929,6 +946,7 @@ class DatabaseModule {
 
 class SQLiteDatabase {
   +users(role)
+  +admin_accounts
   +cases
   +case_people
   +case_person_dossiers
@@ -1163,8 +1181,10 @@ SupportService --> AppSettingsRepository
 AnnouncementsService --> AdminAnnouncementsRepository
 AdminService --> AdminValidation
 AdminService --> AdminRepository
+AdminService --> UserRepository
 AdminService --> SupportRepository
 AdminSettingsService --> AdminValidation
+AdminSettingsService --> AdminRepository
 AdminSettingsService --> AppSettingsRepository
 AdminAnnouncementsService --> AdminAnnouncementsValidation
 AdminAnnouncementsService --> AdminAnnouncementsRepository
@@ -1188,6 +1208,7 @@ SupportRepository --> DatabaseModule
 AdminRepository --> DatabaseModule
 AdminAnnouncementsRepository --> DatabaseModule
 AppSettingsRepository --> DatabaseModule
+AdminBootstrap --> AdminRepository
 AdminBootstrap --> DatabaseModule
 DatabaseModule --> SQLiteDatabase
 @enduml

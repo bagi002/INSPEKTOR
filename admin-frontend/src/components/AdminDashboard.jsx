@@ -26,6 +26,7 @@ function AdminDashboard({ adminUser, onLogout }) {
     handleUpdateCase,
     handleDeleteUser,
     handleUpdateActiveAppVersion,
+    handleUpdateAdminPassword,
   } = useAdminDashboardData(onLogout);
 
   function renderTabSection() {
@@ -54,6 +55,7 @@ function AdminDashboard({ adminUser, onLogout }) {
           <AdminSettingsSection
             settings={settings}
             onUpdateActiveAppVersion={handleUpdateActiveAppVersion}
+            onUpdatePassword={handleUpdateAdminPassword}
           />
         );
       case "overview":

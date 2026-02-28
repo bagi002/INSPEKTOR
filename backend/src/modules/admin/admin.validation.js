@@ -1,3 +1,5 @@
+import { AUTH_PASSWORD_MIN_LENGTH } from "../auth/auth.validation.js";
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const USER_ROLES = new Set(["user", "admin"]);
 const CASE_PUBLICATION_STATUSES = new Set(["draft", "published"]);
@@ -36,19 +38,15 @@ export function validateAdminLoginPayload(payload) {
   const errors = {};
   const email = toText(payload?.email).toLowerCase();
   const password = typeof payload?.password === "string" ? payload.password : "";
-  const panelPassword = typeof payload?.panelPassword === "string" ? payload.panelPassword : "";
 
   if (!EMAIL_PATTERN.test(email)) {
     errors.email = "Unesi ispravnu email adresu.";
   }
-  if (password.length < 8) {
-    errors.password = "Lozinka mora imati najmanje 8 karaktera.";
-  }
-  if (panelPassword.length < 4) {
-    errors.panelPassword = "Unesi lozinku za admin panel.";
+  if (password.length < AUTH_PASSWORD_MIN_LENGTH) {
+    errors.password = `Lozinka mora imati najmanje ${AUTH_PASSWORD_MIN_LENGTH} karaktera.`;
   }
 
-  return { errors, sanitized: { email, password, panelPassword } };
+  return { errors, sanitized: { email, password } };
 }
 
 export function validateAdminTicketStatusPayload(payload) {
@@ -196,3 +194,5 @@ export function validateAdminActiveAppVersionPayload(payload) {
     },
   };
 }
+
+export { validateAdminPasswordPatchPayload } from "./admin.validation.password.js";

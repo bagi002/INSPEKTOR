@@ -11,6 +11,7 @@ import {
   adminSettingsController,
   adminTicketsController,
   adminUpdateActiveAppVersionController,
+  adminUpdatePasswordController,
   adminUpdateCaseController,
   adminUpdateTicketStatusController,
   adminUpdateUserController,
@@ -30,6 +31,7 @@ adminRoutes.patch(
   "/settings/active-app-version",
   asyncHandler(adminUpdateActiveAppVersionController)
 );
+adminRoutes.patch("/settings/password", asyncHandler(adminUpdatePasswordController));
 adminRoutes.get("/announcements", asyncHandler(adminAnnouncementsController));
 adminRoutes.post("/announcements", asyncHandler(adminCreateAnnouncementController));
 adminRoutes.get("/users", asyncHandler(adminUsersController));

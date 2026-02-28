@@ -9,6 +9,7 @@ import {
   fetchAdminTickets,
   fetchAdminUsers,
   updateAdminActiveAppVersion,
+  updateAdminPassword,
   updateAdminCase,
   updateAdminTicketStatus,
   updateAdminUser,
@@ -22,10 +23,7 @@ const EMPTY_OVERVIEW = {
   openTicketsCount: 0,
   inProgressTicketsCount: 0,
 };
-
-const EMPTY_SETTINGS = {
-  activeAppVersion: "",
-};
+const EMPTY_SETTINGS = { activeAppVersion: "" };
 
 function shouldLogout(allResults, onLogout) {
   const hasUnauthorized = allResults.some((result) => !result.ok && result.unauthorized);
@@ -45,7 +43,6 @@ export function useAdminDashboardData(onLogout) {
   const [cases, setCases] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-
   const dashboardTabs = useMemo(
     () => [
       { key: "overview", label: "Pregled" },
@@ -115,7 +112,6 @@ export function useAdminDashboardData(onLogout) {
   useEffect(() => {
     void loadDashboardData();
   }, [loadDashboardData]);
-
   const handleUpdateTicket = useCallback(async (ticketId, payload) => {
     const result = await updateAdminTicketStatus(ticketId, payload);
     if (result.ok) {
@@ -125,7 +121,6 @@ export function useAdminDashboardData(onLogout) {
     }
     return result;
   }, [loadDashboardData, onLogout]);
-
   const handleUpdateUser = useCallback(async (userId, payload) => {
     const result = await updateAdminUser(userId, payload);
     if (result.ok) {
@@ -135,7 +130,6 @@ export function useAdminDashboardData(onLogout) {
     }
     return result;
   }, [loadDashboardData, onLogout]);
-
   const handleCreateAnnouncement = useCallback(async (payload) => {
     const result = await createAdminAnnouncement(payload);
     if (result.ok) {
@@ -145,7 +139,6 @@ export function useAdminDashboardData(onLogout) {
     }
     return result;
   }, [loadDashboardData, onLogout]);
-
   const handleUpdateCase = useCallback(async (caseId, payload) => {
     const result = await updateAdminCase(caseId, payload);
     if (result.ok) {
@@ -155,7 +148,6 @@ export function useAdminDashboardData(onLogout) {
     }
     return result;
   }, [loadDashboardData, onLogout]);
-
   const handleDeleteUser = useCallback(async (userId) => {
     const result = await deleteAdminUser(userId);
     if (result.ok) {
@@ -165,7 +157,6 @@ export function useAdminDashboardData(onLogout) {
     }
     return result;
   }, [loadDashboardData, onLogout]);
-
   const handleUpdateActiveAppVersion = useCallback(async (payload) => {
     const result = await updateAdminActiveAppVersion(payload);
     if (result.ok) {
@@ -175,7 +166,13 @@ export function useAdminDashboardData(onLogout) {
     }
     return result;
   }, [loadDashboardData, onLogout]);
-
+  const handleUpdateAdminPassword = useCallback(async (payload) => {
+    const result = await updateAdminPassword(payload);
+    if (result.unauthorized) {
+      onLogout();
+    }
+    return result;
+  }, [onLogout]);
   return {
     overview,
     settings,
@@ -193,5 +190,6 @@ export function useAdminDashboardData(onLogout) {
     handleUpdateCase,
     handleDeleteUser,
     handleUpdateActiveAppVersion,
+    handleUpdateAdminPassword,
   };
 }

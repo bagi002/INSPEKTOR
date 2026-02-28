@@ -1,5 +1,5 @@
 @startuml Runtime Diagram
-title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + korisnicka podrska + admin panel (tabovi + aktivna verzija) + admin popup obavjestenja
+title Runtime Diagram - Wiki guide + kreiranje, zavrsni kviz, recenzije i resavanje slucaja + profil korisnika + korisnicka podrska + admin panel (zaseban admin nalog, tabovi, aktivna verzija i promjena lozinke) + admin popup obavjestenja
 
 actor "Korisnik" as User
 participant "Frontend Router" as Router
@@ -70,6 +70,7 @@ participant "Case Publish Repository" as PublishRepo
 participant "Profile Repository" as ProfileRepo
 participant "Support Repository" as SupportRepo
 participant "Admin Repository" as AdminRepo
+participant "User Repository" as UserRepo
 participant "Admin Announcements Repository" as AdminAnnouncementsRepo
 participant "App Settings Repository" as AppSettingsRepo
 actor "Administrator" as Admin
@@ -77,6 +78,7 @@ participant "Admin Login View" as AdminLoginView
 participant "Admin Dashboard" as AdminDashboard
 participant "Admin API Client" as AdminClient
 database "SQLite users" as UsersStore
+database "SQLite admin_accounts" as AdminAccountsStore
 database "SQLite cases/timeline/progress" as CasesStore
 database "SQLite people + dossiers + role assignments" as PeopleStore
 database "SQLite case_documents(metadata_json)" as DocumentsStore
@@ -798,10 +800,29 @@ alt Desktop sirina
   Admin -> AdminLoginView: Otvara http://localhost:5174 i unosi kredencijale
   AdminLoginView -> AdminClient: POST /api/admin/login
   AdminClient -> AdminApi: HTTP zahtev
-  AdminApi -> AdminService: loginToAdminPanel(email, password, panelPassword)
-  AdminService -> UsersStore: SELECT user po email + role
-  UsersStore --> AdminService: admin user row
-  AdminService --> AdminApi: admin JWT token + admin user
+  AdminApi -> AdminService: loginToAdminPanel(email, password)
+  AdminService -> AdminRepo: findAdminAccountByEmail(email)
+  AdminRepo -> AdminAccountsStore: SELECT admin_account po email
+  alt admin nalog postoji
+    AdminAccountsStore --> AdminRepo: admin account row
+    AdminRepo --> AdminService: admin account
+  else admin nalog ne postoji
+    AdminAccountsStore --> AdminRepo: null
+    AdminRepo --> AdminService: null
+    AdminService -> UserRepo: findUserByEmail(email)
+    UserRepo -> UsersStore: SELECT user(role + password_hash) po email
+    UsersStore --> UserRepo: users row
+    UserRepo --> AdminService: users row
+    AdminService -> AdminRepo: upsertAdminAccountFromUserProfile(...)
+    AdminRepo -> AdminAccountsStore: UPSERT admin_accounts(is_active=1)
+    AdminAccountsStore --> AdminRepo: potvrda upsert-a
+    AdminRepo --> AdminService: admin nalog aktiviran
+    AdminService -> AdminRepo: findAdminAccountByEmail(email)
+    AdminRepo -> AdminAccountsStore: SELECT admin_account po email
+    AdminAccountsStore --> AdminRepo: admin account row
+    AdminRepo --> AdminService: admin account
+  end
+  AdminService --> AdminApi: admin JWT token + admin account
   AdminApi --> AdminClient: JSON uspeh
   AdminClient -> AdminSessionStore: Upis admin tokena
   AdminLoginView -> AdminDashboard: Render tabovanog dashboard prikaza
@@ -849,9 +870,9 @@ alt Desktop sirina
   AdminGuard -> AdminAnnouncementsService: listAdminAnnouncements()
   AdminAnnouncementsService -> AdminAnnouncementsRepo: getAdminAnnouncements()
   AdminAnnouncementsRepo -> AdminAnnouncementsStore: SELECT sva admin obavjestenja
-  AdminAnnouncementsRepo -> UsersStore: JOIN admin kreatora obavjestenja
+  AdminAnnouncementsRepo -> AdminAccountsStore: JOIN admin naloga kreatora obavjestenja
   AdminAnnouncementsStore --> AdminAnnouncementsRepo: lista obavjestenja
-  UsersStore --> AdminAnnouncementsRepo: podaci admin kreatora
+  AdminAccountsStore --> AdminAnnouncementsRepo: podaci admin kreatora
   AdminAnnouncementsRepo --> AdminAnnouncementsService: mapirana lista
   AdminAnnouncementsService --> AdminApi: response payload
   AdminApi --> AdminClient: JSON uspeh
@@ -861,7 +882,7 @@ alt Desktop sirina
   AdminDashboard -> AdminClient: POST /api/admin/announcements
   AdminClient -> AdminApi: HTTP zahtev
   AdminApi -> AdminGuard: Verifikacija admin tokena
-  AdminGuard -> AdminAnnouncementsService: createAdminAnnouncementMessage(payload, adminUserId)
+  AdminGuard -> AdminAnnouncementsService: createAdminAnnouncementMessage(payload, adminAccountId)
   AdminAnnouncementsService -> AdminAnnouncementsRepo: createAdminAnnouncement(payload)
   AdminAnnouncementsRepo -> AdminAnnouncementsStore: INSERT novo obavjestenje
   AdminAnnouncementsStore --> AdminAnnouncementsRepo: announcementId
@@ -896,6 +917,22 @@ alt Desktop sirina
   AdminApi --> AdminClient: JSON uspeh
   AdminClient --> AdminDashboard: Osvjezen prikaz aktivne verzije
 
+  Admin -> AdminDashboard: Menja sopstvenu admin lozinku
+  AdminDashboard -> AdminClient: PATCH /api/admin/settings/password
+  AdminClient -> AdminApi: HTTP zahtev
+  AdminApi -> AdminGuard: Verifikacija admin tokena
+  AdminGuard -> AdminSettingsService: patchAdminOwnPassword(adminAccountId, payload)
+  AdminSettingsService -> AdminRepo: findAdminAccountById(adminAccountId)
+  AdminRepo -> AdminAccountsStore: SELECT admin_account + password_hash
+  AdminAccountsStore --> AdminRepo: admin account row
+  AdminRepo --> AdminSettingsService: admin account
+  AdminSettingsService -> AdminRepo: updateAdminAccountPasswordById(adminAccountId, newHash)
+  AdminRepo -> AdminAccountsStore: UPDATE admin_accounts(password_hash)
+  AdminAccountsStore --> AdminRepo: potvrda izmene
+  AdminSettingsService --> AdminApi: 200 response
+  AdminApi --> AdminClient: JSON uspeh
+  AdminClient --> AdminDashboard: Potvrda uspešne promjene lozinke
+
   AdminDashboard -> AdminClient: GET /api/admin/users + /api/admin/cases
   AdminClient -> AdminApi: HTTP zahtevi
   AdminApi -> AdminGuard: Verifikacija admin tokena
@@ -912,9 +949,10 @@ alt Desktop sirina
   AdminDashboard -> AdminClient: DELETE /api/admin/users/{userId}
   AdminClient -> AdminApi: HTTP zahtev
   AdminApi -> AdminGuard: Verifikacija admin tokena
-  AdminGuard -> AdminService: deleteAdminUser(userId, adminUserId)
-  AdminService -> AdminRepo: findAdminUserById(userId) + countAdminUsers()
+  AdminGuard -> AdminService: deleteAdminUser(userId, adminAccountId)
+  AdminService -> AdminRepo: findAdminUserById(userId) + findAdminAccountById(adminAccountId) + countAdminUsers()
   AdminRepo -> UsersStore: SELECT korisnik + broj admin naloga
+  AdminRepo -> AdminAccountsStore: SELECT trenutni admin_account
   AdminService -> AdminRepo: deleteAdminUserById(userId)
   AdminRepo -> UsersStore: DELETE users (cascade povezani podaci)
   UsersStore --> AdminRepo: potvrda brisanja

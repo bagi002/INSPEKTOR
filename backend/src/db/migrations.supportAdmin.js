@@ -1,3 +1,5 @@
+import { applySupportAdminLegacyMigrations } from "./migrations.supportAdmin.legacy.js";
+
 export const SUPPORT_ADMIN_MIGRATIONS = [
   `
     CREATE TABLE IF NOT EXISTS support_tickets (
@@ -43,14 +45,35 @@ export const SUPPORT_ADMIN_MIGRATIONS = [
     ON CONFLICT(setting_key) DO NOTHING;
   `,
   `
+    CREATE TABLE IF NOT EXISTS admin_accounts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      first_name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      is_active INTEGER NOT NULL DEFAULT 1
+        CHECK (is_active IN (0, 1)),
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+  `,
+  `
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_admin_accounts_email
+    ON admin_accounts(email);
+  `,
+  `
+    CREATE INDEX IF NOT EXISTS idx_admin_accounts_is_active
+    ON admin_accounts(is_active);
+  `,
+  `
     CREATE TABLE IF NOT EXISTS admin_announcements (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       content TEXT NOT NULL,
-      created_by_admin_user_id INTEGER NOT NULL,
+      created_by_admin_account_id INTEGER,
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (created_by_admin_user_id) REFERENCES users(id) ON DELETE CASCADE
+      FOREIGN KEY (created_by_admin_account_id) REFERENCES admin_accounts(id) ON DELETE SET NULL
     );
   `,
   `
@@ -59,7 +82,7 @@ export const SUPPORT_ADMIN_MIGRATIONS = [
   `,
   `
     CREATE INDEX IF NOT EXISTS idx_admin_announcements_created_by
-    ON admin_announcements(created_by_admin_user_id);
+    ON admin_announcements(created_by_admin_account_id);
   `,
   `
     CREATE TABLE IF NOT EXISTS admin_announcement_dismissals (
@@ -83,10 +106,5 @@ export const SUPPORT_ADMIN_MIGRATIONS = [
 ];
 
 export async function applySupportAdminColumnMigrations(database, ensureColumnExists) {
-  await ensureColumnExists(
-    database,
-    "users",
-    "role",
-    "TEXT NOT NULL DEFAULT 'user'"
-  );
+  await applySupportAdminLegacyMigrations(database, ensureColumnExists);
 }

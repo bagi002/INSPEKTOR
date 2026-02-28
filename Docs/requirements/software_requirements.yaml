@@ -399,9 +399,13 @@
   refines: REQ-032
   description: >
     Implementirati admin autentifikaciju preko endpointa `POST /api/admin/login`
-    (email + lozinka naloga + lozinka admin panela), admin JWT scope zastitu i
-    administratorske endpointe za pregled i izmenu korisnika, slucajeva i support tiketa
-    bez pristupa hashiranim lozinkama.
+    (email + lozinka), uz zaseban model administratorskih naloga (`admin_accounts`)
+    koji je odvojen od korisnickih naloga (`users`), admin JWT scope zastitu i
+    administratorske endpointe za pregled i izmenu korisnika, slucajeva i support
+    tiketa bez pristupa hashiranim lozinkama, uz automatsku sinhronizaciju
+    `admin_accounts` zapisa kada se korisniku postavi/ukloni `role=admin` i
+    fallback auto-provision tok pri admin prijavi za postojeci `users.role=admin`
+    nalog koji jos nema aktivan `admin_accounts` zapis.
 
 - id: REQ-SW-042
   name: Odvojen admin panel na zasebnom portu
@@ -642,3 +646,13 @@
     u admin panelu, tako da korisnicka forma za kreiranje support tiketa automatski
     preuzima ovu vrednost i unapred popunjava polje `Verzija aplikacije`, uz backend
     fallback da se aktivna verzija koristi i kada klijent ne posalje verziju.
+
+- id: REQ-SW-065
+  name: Promjena lozinke administratorskog naloga
+  status: In Review
+  refines: REQ-032
+  description: >
+    Implementirati bezbednosni tok za promjenu lozinke trenutno ulogovanog admin
+    naloga kroz endpoint `PATCH /api/admin/settings/password` (trenutna + nova
+    lozinka, uz validaciju i proveru trenutne lozinke), kao i odgovarajucu formu
+    u tabu `Podesavanja` admin panela.
