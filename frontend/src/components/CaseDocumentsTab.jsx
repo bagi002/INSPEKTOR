@@ -19,6 +19,7 @@ function CaseDocumentsTab({ caseId, mode, category, onUnauthorized }) {
     isSubmitting,
     submitError,
     submitSuccessMessage,
+    isEditMode,
     formData,
     formErrors,
     loadDocuments,
@@ -27,8 +28,9 @@ function CaseDocumentsTab({ caseId, mode, category, onUnauthorized }) {
     handleRelatedPersonToggle,
     handleDocumentImageUpload,
     handleDocumentImageRemove,
-    handleCreateDocument,
+    handleSaveDocument,
     openCreateModal,
+    openEditModal,
     closeCreateModal,
     openPreviewModal,
     closePreviewModal,
@@ -77,7 +79,8 @@ function CaseDocumentsTab({ caseId, mode, category, onUnauthorized }) {
               onRelatedPersonToggle={handleRelatedPersonToggle}
               onImageUpload={handleDocumentImageUpload}
               onImageRemove={handleDocumentImageRemove}
-              onSubmit={handleCreateDocument}
+              isEditMode={isEditMode}
+              onSubmit={handleSaveDocument}
               onCancel={closeCreateModal}
             />
           </section>
@@ -90,6 +93,8 @@ function CaseDocumentsTab({ caseId, mode, category, onUnauthorized }) {
           mode={mode}
           document={activeDocument}
           tabConfig={tabConfig}
+          isCreateMode={isCreateMode}
+          onEditDocument={() => openEditModal(activeDocument?.id)}
           onClose={closePreviewModal}
         />
       ) : null}

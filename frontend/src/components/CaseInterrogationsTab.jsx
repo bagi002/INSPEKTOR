@@ -20,12 +20,14 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
     isSubmitting,
     submitError,
     submitSuccessMessage,
+    isEditMode,
     formData,
     formErrors,
     nodeDraft,
     nodeDraftError,
     loadInterrogations,
     openCreateModal,
+    openEditModal,
     closeCreateModal,
     openChatModal,
     closeChatModal,
@@ -130,24 +132,35 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
               <ul className="case-interrogations-directory-list">
                 {interrogations.map((interrogation) => (
                   <li key={interrogation.id}>
-                    <button
-                      type="button"
-                      className="case-interrogations-directory-row"
-                      onClick={() => openChatModal(interrogation.id)}
-                    >
-                      <span className="case-interrogations-directory-main">
-                        <strong>{interrogation.title || "Saslušanje bez naslova"}</strong>
-                        <small>
-                          Osoba: {interrogation.person?.fullName || "Nepoznata osoba"} |{" "}
-                          {toRoleLabel(interrogation.person?.apparentRole || "unknown")}
-                        </small>
-                      </span>
-                      <span className="case-interrogations-directory-meta">
-                        <small>Čvorova pitanja: {interrogation.nodes?.length || 0}</small>
-                        <small>Ažurirano: {interrogation.updatedAt || "N/A"}</small>
-                      </span>
-                      <span className="case-interrogations-directory-action">Otvori chat</span>
-                    </button>
+                    <div className="case-interrogations-directory-row-wrap">
+                      <button
+                        type="button"
+                        className="case-interrogations-directory-row"
+                        onClick={() => openChatModal(interrogation.id)}
+                      >
+                        <span className="case-interrogations-directory-main">
+                          <strong>{interrogation.title || "Saslušanje bez naslova"}</strong>
+                          <small>
+                            Osoba: {interrogation.person?.fullName || "Nepoznata osoba"} |{" "}
+                            {toRoleLabel(interrogation.person?.apparentRole || "unknown")}
+                          </small>
+                        </span>
+                        <span className="case-interrogations-directory-meta">
+                          <small>Čvorova pitanja: {interrogation.nodes?.length || 0}</small>
+                          <small>Ažurirano: {interrogation.updatedAt || "N/A"}</small>
+                        </span>
+                        <span className="case-interrogations-directory-action">Otvori chat</span>
+                      </button>
+                      {isCreateMode ? (
+                        <button
+                          type="button"
+                          className="btn btn-secondary case-interrogations-edit-btn"
+                          onClick={() => openEditModal(interrogation.id)}
+                        >
+                          Izmeni
+                        </button>
+                      ) : null}
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -168,6 +181,7 @@ function CaseInterrogationsTab({ caseId, mode, onUnauthorized }) {
               isSubmitting={isSubmitting}
               submitError={submitError}
               submitSuccessMessage={submitSuccessMessage}
+              isEditMode={isEditMode}
               onFieldChange={handleFieldChange}
               onNodeDraftChange={handleNodeDraftChange}
               onAddNode={handleAddNode}

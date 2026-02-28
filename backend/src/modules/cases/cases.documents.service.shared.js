@@ -2,8 +2,10 @@ import { HttpError } from "../../utils/httpError.js";
 import { findCaseByIdForAuthor } from "./cases.repository.js";
 import {
   createCaseDocumentForCase,
+  findCaseDocumentByIdAndCaseId,
   getCaseDocumentsByCaseIdAndTypes,
   getCasePeopleDirectoryByCaseId,
+  updateCaseDocumentForCase,
 } from "./cases.repository.documents.js";
 
 export function parseCaseId(caseIdInput) {
@@ -20,6 +22,24 @@ export function parseCaseId(caseIdInput) {
   }
 
   return caseId;
+}
+
+export function parseDocumentId(documentIdInput) {
+  const normalizedValue =
+    typeof documentIdInput === "string"
+      ? documentIdInput.trim()
+      : String(documentIdInput ?? "");
+
+  if (!/^\d+$/.test(normalizedValue)) {
+    throw new HttpError(400, "Prosleđeni dokument nije validan.");
+  }
+
+  const documentId = Number.parseInt(normalizedValue, 10);
+  if (!Number.isInteger(documentId) || documentId <= 0) {
+    throw new HttpError(400, "Prosleđeni dokument nije validan.");
+  }
+
+  return documentId;
 }
 
 export async function assertAuthorAccess(caseId, authorUserId) {
@@ -101,5 +121,41 @@ export async function createDocumentForCase({
 
   return {
     document: enrichDocumentWithPeople(createdDocument, peopleMap),
+  };
+}
+
+export async function updateDocumentForCase({
+  caseId,
+  documentId,
+  payload,
+  validatePayload,
+  validationMessage,
+  requiresGiverPerson,
+  allowedDocumentTypes,
+  typeErrorMessage,
+}) {
+  const existingDocument = await findCaseDocumentByIdAndCaseId(documentId, caseId);
+  if (!existingDocument) {
+    throw new HttpError(404, "Dokument nije pronađen u ovom slučaju.");
+  }
+
+  if (Array.isArray(allowedDocumentTypes) && !allowedDocumentTypes.includes(existingDocument.documentType)) {
+    throw new HttpError(400, typeErrorMessage || "Dokument nije validan za izabranu sekciju.");
+  }
+
+  const { errors, sanitized } = validatePayload(payload);
+  const peopleDirectory = await getCasePeopleDirectoryByCaseId(caseId);
+  const peopleMap = buildPeopleMap(peopleDirectory);
+
+  validateReferencedPeople(sanitized.metadata, peopleMap, errors, requiresGiverPerson);
+  throwValidationIfNeeded(errors, validationMessage);
+
+  const updatedDocument = await updateCaseDocumentForCase(caseId, documentId, sanitized);
+  if (!updatedDocument) {
+    throw new HttpError(500, "Dokument je ažuriran, ali odgovor nije moguće učitati.");
+  }
+
+  return {
+    document: enrichDocumentWithPeople(updatedDocument, peopleMap),
   };
 }

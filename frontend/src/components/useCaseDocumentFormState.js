@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   buildCreateCaseDocumentPayload,
+  buildCaseDocumentFormDataFromDocument,
   buildInitialCaseDocumentFormData,
   normalizeCaseDocumentFieldValue,
   normalizeTypeSpecificFieldValue,
@@ -19,8 +20,9 @@ export function useCaseDocumentFormState({
   category,
   onUnauthorized,
   createDocumentApi,
+  updateDocumentApi,
   refreshDocuments,
-  onDocumentCreated,
+  onDocumentSaved,
 }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,12 +30,14 @@ export function useCaseDocumentFormState({
   const [submitSuccessMessage, setSubmitSuccessMessage] = useState("");
   const [formData, setFormData] = useState(() => buildInitialCaseDocumentFormData(category));
   const [formErrors, setFormErrors] = useState({});
+  const [editingDocumentId, setEditingDocumentId] = useState(null);
 
   useEffect(() => {
     setFormData(buildInitialCaseDocumentFormData(category));
     setFormErrors({});
     setSubmitError("");
     setSubmitSuccessMessage("");
+    setEditingDocumentId(null);
     setIsCreateModalOpen(false);
   }, [category, caseId]);
 
@@ -119,7 +123,7 @@ export function useCaseDocumentFormState({
     setFormErrors,
   });
 
-  async function handleCreateDocument(event) {
+  async function handleSaveDocument(event) {
     event.preventDefault();
     setSubmitError("");
     setSubmitSuccessMessage("");
@@ -132,7 +136,10 @@ export function useCaseDocumentFormState({
 
     setIsSubmitting(true);
     const payload = buildCreateCaseDocumentPayload(formData, category);
-    const result = await createDocumentApi(caseId, payload);
+    const result =
+      editingDocumentId && typeof updateDocumentApi === "function"
+        ? await updateDocumentApi(caseId, editingDocumentId, payload)
+        : await createDocumentApi(caseId, payload);
 
     if (!result.ok) {
       if (result.unauthorized) {
@@ -152,12 +159,18 @@ export function useCaseDocumentFormState({
     }
 
     setFormData(buildInitialCaseDocumentFormData(category));
+    setEditingDocumentId(null);
     setFormErrors({});
-    setSubmitSuccessMessage(result.message || "Dokument je uspešno sačuvan.");
+    setSubmitSuccessMessage(
+      result.message ||
+        (editingDocumentId
+          ? "Dokument je uspešno ažuriran."
+          : "Dokument je uspešno sačuvan.")
+    );
     await refreshDocuments();
     setIsCreateModalOpen(false);
-    if (typeof onDocumentCreated === "function") {
-      onDocumentCreated(result.data?.document?.id || null);
+    if (typeof onDocumentSaved === "function") {
+      onDocumentSaved(result.data?.document?.id || null);
     }
     setIsSubmitting(false);
   }
@@ -167,6 +180,16 @@ export function useCaseDocumentFormState({
     setFormErrors({});
     setSubmitError("");
     setSubmitSuccessMessage("");
+    setEditingDocumentId(null);
+    setIsCreateModalOpen(true);
+  }
+
+  function openEditModal(document) {
+    setFormData(buildCaseDocumentFormDataFromDocument(document, category));
+    setFormErrors({});
+    setSubmitError("");
+    setSubmitSuccessMessage("");
+    setEditingDocumentId(Number(document?.id) || null);
     setIsCreateModalOpen(true);
   }
 
@@ -181,6 +204,7 @@ export function useCaseDocumentFormState({
     isSubmitting,
     submitError,
     submitSuccessMessage,
+    isEditMode: Boolean(editingDocumentId),
     formData,
     formErrors,
     handleFieldChange,
@@ -188,8 +212,9 @@ export function useCaseDocumentFormState({
     handleRelatedPersonToggle,
     handleDocumentImageUpload,
     handleDocumentImageRemove,
-    handleCreateDocument,
+    handleSaveDocument,
     openCreateModal,
+    openEditModal,
     closeCreateModal,
   };
 }

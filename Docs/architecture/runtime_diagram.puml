@@ -51,6 +51,7 @@ participant "Case Quiz Service" as QuizService
 participant "Case Reviews Service" as ReviewsService
 participant "Case Progress Service" as ProgressService
 participant "Case Publish Service" as PublishService
+participant "Case Timeline Validation" as TimelineValidation
 participant "Profile Service" as ProfileService
 participant "Support Service" as SupportService
 participant "Admin Service" as AdminService
@@ -219,14 +220,15 @@ alt Desktop sirina
     CasesClient --> WorkspaceSidebar: Status poruka "Slucaj je vec objavljen."
   else Slucaj jos nije objavljen
     PublishService -> PublishRepo: getCasePublishReadinessSnapshot(caseId)
-    PublishRepo -> PeopleStore: SELECT osobe + timeline pokrivenost osoba
-    PublishRepo -> DocumentsStore: SELECT obavezni tipovi + timeline pokrivenost dokumenata
+    PublishRepo -> PeopleStore: SELECT broj osoba + broj zrtava + broj osumnjicenih + timeline pokrivenost osoba
+    PublishRepo -> DocumentsStore: SELECT broj dokumenata + timeline pokrivenost dokumenata
+    PublishRepo -> QuizStore: SELECT broj kviz pitanja
     PublishRepo -> CasesStore: SELECT broj timeline stavki
 
     alt Publish uslovi nisu ispunjeni
       PublishService --> CasesApi: 400 response sa blockerima
       CasesApi --> CasesClient: JSON greska
-      CasesClient --> WorkspaceSidebar: Prikaz poruke o neuslovima za objavu
+      CasesClient --> WorkspaceSidebar: Prikaz poruke o neuslovima za objavu (zrtva/osumnjiceni/dokument/kviz/timeline)
     else Publish uslovi su ispunjeni
       PublishService -> PublishRepo: updateCasePublicationStatus(caseId, "published")
       PublishRepo -> CasesStore: UPDATE cases(publication_status='published')
@@ -273,12 +275,15 @@ alt Desktop sirina
   TimelineService --> CasesApi: response payload
   CasesApi --> TimelineClient: JSON uspeh
   TimelineClient --> TimelineTab: Prikaz roadmap-a i dostupnih izvora
+  TimelineTab -> TimelineTab: Liste za dodavanje filtriraju vec dodate osobe i dokumente
 
   User -> TimelineTab: Dodaje stavke i menja redosled otkljucavanja
   TimelineTab -> TimelineClient: PUT /api/cases/{caseId}/timeline
   TimelineClient -> CasesApi: HTTP zahtev
   CasesApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> TimelineService: replaceCreatorCaseTimeline(caseId, payload, userId)
+  TimelineService -> TimelineValidation: validateReplaceCaseTimelinePayload(payload, availableSources)
+  TimelineValidation --> TimelineService: Validacija (ista osoba i isti dokument ne mogu biti dodati vise od jednom)
   TimelineService -> TimelineRepo: DELETE postojecih + INSERT novih timeline stavki
   TimelineRepo -> CasesStore: WRITE case_timeline_items
   CasesStore --> TimelineRepo: potvrda upisa
@@ -322,6 +327,7 @@ alt Desktop sirina
   PeopleClient -> CasesApi: HTTP zahtev
   CasesApi -> JwtGuard: Verifikacija tokena
   JwtGuard -> PeopleService: createCreatorCasePerson(caseId, payload, userId)
+  PeopleService -> PeopleService: Validacija (obavezna uloga + obavezna polja dosijea)
   PeopleService -> PeopleRepo: INSERT osoba + dosije + profil
   PeopleRepo -> PeopleStore: INSERT case_people + dossier tabele
   PeopleStore --> PeopleRepo: personId/dossierId
@@ -329,6 +335,20 @@ alt Desktop sirina
   PeopleService --> CasesApi: 201 response
   CasesApi --> PeopleClient: JSON uspeh
   PeopleClient --> PeopleTab: Osvjezenje liste + pregled dosijea
+
+  User -> PeopleTab: U formalnom dosijeu klik "Izmeni dosije"
+  PeopleTab -> PeopleClient: PUT /api/cases/{caseId}/people/{personId}
+  PeopleClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> PeopleService: updateCreatorCasePerson(caseId, personId, payload, userId)
+  PeopleService -> PeopleService: Validacija (obavezna uloga + obavezna polja dosijea)
+  PeopleService -> PeopleRepo: UPDATE case_people + dossiers + dossier_profiles(revision++)
+  PeopleRepo -> PeopleStore: UPDATE osoba i dosije podataka
+  PeopleStore --> PeopleRepo: potvrda azuriranja
+  PeopleRepo --> PeopleService: azurirana osoba
+  PeopleService --> CasesApi: 200 response
+  CasesApi --> PeopleClient: JSON uspeh
+  PeopleClient --> PeopleTab: Osvjezenje liste + azuriran formalni dosije
 
   User -> PeopleTab: U dosijeu klik na povezanu izjavu/dokument
   PeopleTab -> Router: /slucaj/{caseId}/kreiranje/(izjave|dokumenti)?documentId={id}
@@ -401,6 +421,19 @@ alt Desktop sirina
   CasesApi --> DocumentsClient: JSON uspeh
   DocumentsClient --> StatementsTab: Osvjezenje liste + formalni preview izjave
 
+  User -> StatementsTab: U formalnom prikazu klik "Izmeni dokument"
+  StatementsTab -> DocumentsClient: PUT /api/cases/{caseId}/statements/{documentId}
+  DocumentsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> DocumentsService: updateCreatorCaseStatement(caseId, documentId, payload, userId)
+  DocumentsService -> DocumentsRepo: UPDATE case_documents (statement metadata_json)
+  DocumentsRepo -> DocumentsStore: UPDATE izjava
+  DocumentsStore --> DocumentsRepo: potvrda azuriranja
+  DocumentsRepo --> DocumentsService: azurirana izjava
+  DocumentsService --> CasesApi: 200 response
+  CasesApi --> DocumentsClient: JSON uspeh
+  DocumentsClient --> StatementsTab: Osvjezenje liste + azuriran formalni preview
+
   User -> WorkspaceSidebar: Klik tab "Dokumenti"
   WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/dokumenti
   Router -> Guard: Provera sesije
@@ -430,6 +463,19 @@ alt Desktop sirina
   DocumentsService --> CasesApi: 201 response
   CasesApi --> DocumentsClient: JSON uspeh
   DocumentsClient --> DocsTab: Osvjezenje liste + formalni preview dokumenta
+
+  User -> DocsTab: U formalnom prikazu klik "Izmeni dokument"
+  DocsTab -> DocumentsClient: PUT /api/cases/{caseId}/police-documents/{documentId}
+  DocumentsClient -> CasesApi: HTTP zahtev
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> DocumentsService: updateCreatorCasePoliceDocument(caseId, documentId, payload, userId)
+  DocumentsService -> DocumentsRepo: UPDATE case_documents (police metadata_json)
+  DocumentsRepo -> DocumentsStore: UPDATE policijskog dokumenta
+  DocumentsStore --> DocumentsRepo: potvrda azuriranja
+  DocumentsRepo --> DocumentsService: azuriran dokument
+  DocumentsService --> CasesApi: 200 response
+  CasesApi --> DocumentsClient: JSON uspeh
+  DocumentsClient --> DocsTab: Osvjezenje liste + azuriran formalni preview
 
   User -> WorkspaceSidebar: Klik tab "Saslusanja"
   WorkspaceSidebar -> Router: /slucaj/{caseId}/kreiranje/saslusanja
@@ -461,6 +507,18 @@ alt Desktop sirina
   InterrogationsService --> CasesApi: 201 response
   CasesApi --> InterrogationsClient: JSON uspeh
   InterrogationsClient --> InterrogationsTab: Osvjezenje + otvaranje chat modala
+  User -> InterrogationsTab: Klik "Izmeni" na postojecem saslusanju
+  InterrogationsTab -> InterrogationsClient: POST /api/cases/{caseId}/interrogations (upsert)
+  InterrogationsClient -> CasesApi: HTTP zahtev sa izmenjenim stablom pitanja/odgovora
+  CasesApi -> JwtGuard: Verifikacija tokena
+  JwtGuard -> InterrogationsService: createCreatorCaseInterrogation(caseId, payload, userId)
+  InterrogationsService -> InterrogationsRepo: upsertCaseInterrogationForPerson(...)
+  InterrogationsRepo -> InterrogationsStore: UPDATE zaglavlja + replace cvorova
+  InterrogationsStore --> InterrogationsRepo: potvrda azuriranja
+  InterrogationsRepo --> InterrogationsService: azurirano saslusanje
+  InterrogationsService --> CasesApi: 201 response
+  CasesApi --> InterrogationsClient: JSON uspeh
+  InterrogationsClient --> InterrogationsTab: Osvjezenje liste + azuriran chat tok
   User -> InterrogationsTab: Dolazi do kraja grane i bira "Zakljuci saslusanje"
   InterrogationsTab --> User: Chat oznacava razgovor kao zakljucen
 

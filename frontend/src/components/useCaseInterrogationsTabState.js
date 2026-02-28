@@ -136,6 +136,16 @@ export function useCaseInterrogationsTabState({ caseId, mode, onUnauthorized }) 
     openChatModal(interrogation.id);
   }
 
+  function openEditModal(interrogationId) {
+    const interrogation =
+      interrogations.find((item) => item.id === Number(interrogationId)) || null;
+    if (!interrogation) {
+      return;
+    }
+    setActionMessage("");
+    createState.openEditModal(interrogation);
+  }
+
   return {
     interrogations,
     peopleDirectory,
@@ -148,10 +158,11 @@ export function useCaseInterrogationsTabState({ caseId, mode, onUnauthorized }) 
     errorMessage,
     actionMessage,
     loadInterrogations,
+    ...createState,
     openChatModal,
+    openEditModal,
     closeChatModal,
     handleSelectedPersonChange,
     startInterrogationForSelectedPerson,
-    ...createState,
   };
 }

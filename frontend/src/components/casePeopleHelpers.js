@@ -135,6 +135,19 @@ export function validatePersonForm(formData) {
     errors.fullName = "Ime osobe mora imati najmanje 2 karaktera.";
   }
 
+  const apparentRole = (formData.apparentRole || "").trim();
+  if (!apparentRole || apparentRole === "unknown") {
+    errors.apparentRole = "Uloga u slučaju je obavezno polje dosijea.";
+  }
+
+  if ((formData.phoneNumber || "").trim().length === 0) {
+    errors.phoneNumber = "Telefon je obavezno polje dosijea.";
+  }
+
+  if ((formData.address || "").trim().length === 0) {
+    errors.address = "Adresa je obavezno polje dosijea.";
+  }
+
   const hasHeight = String(formData.heightCm || "").trim().length > 0;
   if (hasHeight) {
     const parsedHeight = Number.parseInt(formData.heightCm, 10);
@@ -152,8 +165,33 @@ export function validatePersonForm(formData) {
   }
 
   const birthDate = String(formData.birthDate || "").trim();
-  if (birthDate.length > 0 && !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+  if (birthDate.length === 0) {
+    errors.birthDate = "Datum rođenja je obavezno polje dosijea.";
+  } else if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
     errors.birthDate = "Datum rodjenja mora biti u formatu YYYY-MM-DD.";
+  }
+
+  if ((formData.birthPlace || "").trim().length === 0) {
+    errors.birthPlace = "Mjesto rođenja je obavezno polje dosijea.";
+  }
+
+  const nationality = (formData.nationality || "").trim();
+  if (!nationality || nationality === "unknown") {
+    errors.nationality = "Nacionalnost je obavezno polje dosijea.";
+  }
+
+  const gender = (formData.gender || "").trim();
+  if (!gender || gender === "unknown") {
+    errors.gender = "Pol je obavezno polje dosijea.";
+  }
+
+  const riskLevel = (formData.riskLevel || "").trim();
+  if (!riskLevel || riskLevel === "unknown") {
+    errors.riskLevel = "Nivo rizika je obavezno polje dosijea.";
+  }
+
+  if ((formData.lastKnownLocation || "").trim().length === 0) {
+    errors.lastKnownLocation = "Posljednja poznata lokacija je obavezno polje dosijea.";
   }
 
   const photoDataUrl = String(formData.photoDataUrl || "").trim();

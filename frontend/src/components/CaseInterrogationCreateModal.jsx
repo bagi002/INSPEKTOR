@@ -9,6 +9,7 @@ function CaseInterrogationCreateModal({
   isSubmitting,
   submitError,
   submitSuccessMessage,
+  isEditMode,
   onFieldChange,
   onNodeDraftChange,
   onAddNode,
@@ -22,7 +23,7 @@ function CaseInterrogationCreateModal({
   return (
     <form className="case-interrogation-form" onSubmit={onSubmit}>
       <header className="case-interrogation-create-header">
-        <h3>Kreiranje saslušanja</h3>
+        <h3>{isEditMode ? "Izmena saslušanja" : "Kreiranje saslušanja"}</h3>
         <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={isSubmitting}>
           Zatvori
         </button>
@@ -39,7 +40,7 @@ function CaseInterrogationCreateModal({
             name="personId"
             value={formData.personId}
             onChange={onFieldChange}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isEditMode}
           >
             <option value="">Izaberi osobu</option>
             {availablePeople.map((person) => (
@@ -96,7 +97,7 @@ function CaseInterrogationCreateModal({
 
       <div className="cta-row">
         <button type="submit" className="btn btn-primary" disabled={isSubmitting || availablePeople.length === 0}>
-          {isSubmitting ? "Čuvam..." : "Sačuvaj saslušanje"}
+          {isSubmitting ? "Čuvam..." : isEditMode ? "Sačuvaj izmene" : "Sačuvaj saslušanje"}
         </button>
         <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={isSubmitting}>
           Odustani

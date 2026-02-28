@@ -7,6 +7,7 @@ function CasePeopleCreateForm({
   isSubmitting,
   submitError,
   submitSuccessMessage,
+  isEditMode,
   onFieldChange,
   onPhotoUpload,
   onPhotoRemove,
@@ -16,7 +17,7 @@ function CasePeopleCreateForm({
   return (
     <form className="case-people-form" onSubmit={onSubmit} noValidate>
       <div className="case-people-modal-header">
-        <h3>Kreiranje novog dosijea osobe</h3>
+        <h3>{isEditMode ? "Izmena dosijea osobe" : "Kreiranje novog dosijea osobe"}</h3>
         <button type="button" className="btn btn-secondary case-people-modal-close" onClick={onCancel}>
           Zatvori
         </button>
@@ -43,7 +44,11 @@ function CasePeopleCreateForm({
 
       <div className="cta-row">
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? "Čuvanje u toku..." : "Sačuvaj osobu i dosije"}
+          {isSubmitting
+            ? "Čuvanje u toku..."
+            : isEditMode
+              ? "Sačuvaj izmene"
+              : "Sačuvaj osobu i dosije"}
         </button>
       </div>
     </form>

@@ -45,6 +45,13 @@ export function buildInitialCaseDocumentFormData(category) {
   };
 }
 
+function toSafeString(value, fallback = "") {
+  if (value === undefined || value === null) {
+    return fallback;
+  }
+  return String(value);
+}
+
 export function normalizeCaseDocumentFieldValue({ type, checked, value }) {
   if (type === "checkbox") {
     return checked;
@@ -122,4 +129,42 @@ export function buildCreateCaseDocumentPayload(formData, category) {
   }
 
   return payload;
+}
+
+export function buildCaseDocumentFormDataFromDocument(document, category) {
+  const base = buildInitialCaseDocumentFormData(category);
+  if (!document) {
+    return base;
+  }
+
+  const metadata = document.metadata || {};
+  const documentType = toSafeString(document.documentType, base.documentType);
+  const typeSpecificDefaults = buildTypeSpecificDefaults(documentType);
+  const typeSpecific = { ...typeSpecificDefaults, ...(metadata.typeSpecific || {}) };
+
+  return {
+    ...base,
+    documentType,
+    title: toSafeString(document.title),
+    content: toSafeString(document.content),
+    sequenceOrder: toSafeString(document.sequenceOrder, "1"),
+    isUnlockedByDefault: Boolean(document.isUnlockedByDefault),
+    classificationLevel: toSafeString(metadata.classificationLevel, "interno"),
+    recordedAt: toSafeString(metadata.recordedAt),
+    location: toSafeString(metadata.location),
+    officerName: toSafeString(metadata.officerName),
+    badgeNumber: toSafeString(metadata.badgeNumber),
+    department: toSafeString(metadata.department),
+    evidenceReference: toSafeString(metadata.evidenceReference),
+    legalReference: toSafeString(metadata.legalReference),
+    notes: toSafeString(metadata.notes),
+    giverPersonId: metadata.giverPersonId ? String(metadata.giverPersonId) : "",
+    relatedPersonIds: Array.isArray(metadata.relatedPersonIds)
+      ? metadata.relatedPersonIds
+          .map((personId) => Number.parseInt(personId, 10))
+          .filter((personId) => Number.isInteger(personId) && personId > 0)
+      : [],
+    typeSpecific,
+    imageEvidence: Array.isArray(metadata.imageEvidence) ? [...metadata.imageEvidence] : [],
+  };
 }

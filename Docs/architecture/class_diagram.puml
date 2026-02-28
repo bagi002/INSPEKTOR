@@ -157,6 +157,7 @@ class CaseTimelineTab {
 class UseCaseTimelineTabState {
   +state
   +loadTimeline()
+  +getSourceOptionsWithoutUsedItems()
   +handleAddTimelineItem(event)
   +handleAdvanceTimeline()
   +handleMoveTimelineItem(localKey, direction)
@@ -191,6 +192,7 @@ class CaseTimelineHelpers {
 class CasePeopleTab {
   +loadPeople()
   +openCreateModal()
+  +openEditModal(personId)
   +openDossierModal(personId)
   +render()
 }
@@ -198,6 +200,7 @@ class CasePeopleTab {
 class CasePersonDossierModal {
   +person
   +linkedDocuments
+  +onEditPerson()
   +onClose()
   +render()
 }
@@ -211,6 +214,7 @@ class CasePoliceDocumentsTab {
 }
 
 class CaseInterrogationsTab {
+  +openEditModal(interrogationId)
   +render()
 }
 
@@ -242,6 +246,7 @@ class CaseDocumentsTab {
   +category
   +loadDocuments()
   +openCreateModal()
+  +openEditModal(documentId)
   +openPreviewModal(documentId)
   +render()
 }
@@ -249,15 +254,17 @@ class CaseDocumentsTab {
 class UseCaseDocumentsTabState {
   +state
   +loadDocuments()
-  +handleCreateDocument()
+  +handleSaveDocument()
   +handleRelatedPersonToggle()
   +openCreateModal()
+  +openEditModal(documentId)
   +openPreviewModal(documentId)
 }
 
 class UseCaseInterrogationsTabState {
   +state
   +loadInterrogations()
+  +openEditModal(interrogationId)
   +openChatModal(interrogationId)
 }
 
@@ -276,6 +283,7 @@ class UseCaseReviewState {
 class UseCaseInterrogationCreateState {
   +formData
   +handleAddNode()
+  +openEditModal(interrogation)
   +handleCreateInterrogation(event)
 }
 
@@ -290,7 +298,8 @@ class UseCaseDocumentFormState {
   +formErrors
   +handleFieldChange(event)
   +handleTypeSpecificFieldChange(fieldName, event)
-  +handleCreateDocument(event)
+  +openEditModal(document)
+  +handleSaveDocument(event)
 }
 
 class UseCaseDocumentImageState {
@@ -335,6 +344,7 @@ class CaseDocumentCreateForm {
 
 class CaseDocumentModal {
   +document
+  +onEditDocument()
   +onClose()
   +render()
 }
@@ -371,14 +381,17 @@ class CaseInterrogationsHelpers {
 class CasePeopleApiClient {
   +fetchCasePeople(caseId, scope)
   +createCasePerson(caseId, payload)
+  +updateCasePerson(caseId, personId, payload)
   +updateCasePersonRole(caseId, personId, payload)
 }
 
 class CaseDocumentsApiClient {
   +fetchCaseStatements(caseId, scope)
   +createCaseStatement(caseId, payload)
+  +updateCaseStatement(caseId, documentId, payload)
   +fetchCasePoliceDocuments(caseId, scope)
   +createCasePoliceDocument(caseId, payload)
+  +updateCasePoliceDocument(caseId, documentId, payload)
 }
 
 class CaseInterrogationsApiClient {
@@ -574,10 +587,13 @@ class CasesRoutes {
   +GET /:caseId/people
   +PUT /:caseId/people/:personId/role
   +POST /:caseId/people
+  +PUT /:caseId/people/:personId
   +GET /:caseId/statements
   +POST /:caseId/statements
+  +PUT /:caseId/statements/:documentId
   +GET /:caseId/police-documents
   +POST /:caseId/police-documents
+  +PUT /:caseId/police-documents/:documentId
   +GET /:caseId/interrogations
   +POST /:caseId/interrogations
   +GET /:caseId/quiz
@@ -631,10 +647,13 @@ class CasesController {
   +replaceCreatorCaseTimelineController(req, res)
   +getCreatorCasePeopleController(req, res)
   +createCreatorCasePersonController(req, res)
+  +updateCreatorCasePersonController(req, res)
   +getCreatorCaseStatementsController(req, res)
   +createCreatorCaseStatementController(req, res)
+  +updateCreatorCaseStatementController(req, res)
   +getCreatorCasePoliceDocumentsController(req, res)
   +createCreatorCasePoliceDocumentController(req, res)
+  +updateCreatorCasePoliceDocumentController(req, res)
   +getCreatorCaseInterrogationsController(req, res)
   +createCreatorCaseInterrogationController(req, res)
 }
@@ -704,6 +723,7 @@ class CasesService {
 class CasePeopleService {
   +getCreatorCasePeople(caseId, userId, scope)
   +createCreatorCasePerson(caseId, payload, userId)
+  +updateCreatorCasePerson(caseId, personId, payload, userId)
   +updateSolveCasePersonRole(caseId, personId, payload, userId)
 }
 
@@ -716,8 +736,10 @@ class CaseTimelineService {
 class CaseDocumentsService {
   +getCreatorCaseStatements(caseId, userId, scope)
   +createCreatorCaseStatement(caseId, payload, userId)
+  +updateCreatorCaseStatement(caseId, documentId, payload, userId)
   +getCreatorCasePoliceDocuments(caseId, userId, scope)
   +createCreatorCasePoliceDocument(caseId, payload, userId)
+  +updateCreatorCasePoliceDocument(caseId, documentId, payload, userId)
 }
 
 class CaseInterrogationsService {
@@ -742,6 +764,13 @@ class CaseProgressService {
 
 class CasePublishService {
   +publishCreatorCase(caseId, userId)
+}
+
+class CasePublishShared {
+  +MIN_PUBLISH_VICTIMS
+  +MIN_PUBLISH_SUSPECTS
+  +MIN_PUBLISH_DOCUMENTS
+  +MIN_PUBLISH_QUIZ_QUESTIONS
 }
 
 class SupportService {
@@ -869,6 +898,7 @@ class CasesRepository {
 class CasePeopleRepository {
   +getCasePeopleByCaseId(caseId)
   +createCasePersonForCase(caseId, payload, userId)
+  +updateCasePersonForCase(caseId, personId, payload, userId)
 }
 
 class CasePeopleRolesRepository {
@@ -893,6 +923,8 @@ class CaseProgressRepository {
 class CaseDocumentsRepository {
   +getCaseDocumentsByCaseIdAndTypes(caseId, types)
   +createCaseDocumentForCase(caseId, payload)
+  +findCaseDocumentByIdAndCaseId(documentId, caseId)
+  +updateCaseDocumentForCase(caseId, documentId, payload)
   +getCasePeopleDirectoryByCaseId(caseId)
 }
 
@@ -1228,6 +1260,7 @@ CaseProgressService --> CasesRepository
 CaseProgressService --> CaseProgressRepository
 CasePublishService --> CasesRepository
 CasePublishService --> CasePublishRepository
+CasePublishService --> CasePublishShared
 ProfileService --> ProfileValidation
 ProfileService --> ProfileRepository
 SupportService --> SupportValidation

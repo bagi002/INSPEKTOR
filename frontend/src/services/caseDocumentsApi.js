@@ -98,6 +98,16 @@ export function createCaseStatement(caseId, payload) {
   );
 }
 
+export function updateCaseStatement(caseId, documentId, payload) {
+  return requestCaseDocuments(
+    caseId,
+    `statements/${documentId}`,
+    "PUT",
+    payload,
+    "Ažuriranje izjave nije uspelo."
+  );
+}
+
 export function fetchCasePoliceDocuments(caseId, scope = "create") {
   return requestCaseDocuments(
     caseId,
@@ -115,5 +125,15 @@ export function createCasePoliceDocument(caseId, payload) {
     "POST",
     payload,
     "Čuvanje policijskog dokumenta nije uspelo."
+  );
+}
+
+export function updateCasePoliceDocument(caseId, documentId, payload) {
+  return requestCaseDocuments(
+    caseId,
+    `police-documents/${documentId}`,
+    "PUT",
+    payload,
+    "Ažuriranje policijskog dokumenta nije uspelo."
   );
 }

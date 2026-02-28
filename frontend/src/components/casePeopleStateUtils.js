@@ -50,3 +50,48 @@ export function buildCreatePersonPayload(formData) {
     notes: (formData.notes || "").trim(),
   };
 }
+
+function toStringValue(value, fallback = "") {
+  if (value === undefined || value === null) {
+    return fallback;
+  }
+  return String(value);
+}
+
+export function buildPersonFormDataFromPerson(person) {
+  const dossier = person?.dossier || {};
+
+  return {
+    fullName: toStringValue(person?.fullName),
+    apparentRole: toStringValue(person?.apparentRole, "unknown") || "unknown",
+    biography: toStringValue(person?.biography),
+    phoneNumber: toStringValue(dossier.phoneNumber),
+    address: toStringValue(dossier.address),
+    birthDate: toStringValue(dossier.birthDate),
+    birthPlace: toStringValue(dossier.birthPlace),
+    nationality: toStringValue(dossier.nationality, "unknown") || "unknown",
+    gender: toStringValue(dossier.gender, "unknown") || "unknown",
+    maritalStatus: toStringValue(dossier.maritalStatus, "unknown") || "unknown",
+    occupation: toStringValue(dossier.occupation),
+    employer: toStringValue(dossier.employer),
+    educationLevel: toStringValue(dossier.educationLevel, "unknown") || "unknown",
+    eyeColor: toStringValue(dossier.eyeColor, "unknown") || "unknown",
+    hairColor: toStringValue(dossier.hairColor, "unknown") || "unknown",
+    heightCm:
+      dossier.heightCm === undefined || dossier.heightCm === null
+        ? ""
+        : String(dossier.heightCm),
+    weightKg:
+      dossier.weightKg === undefined || dossier.weightKg === null
+        ? ""
+        : String(dossier.weightKg),
+    isAlive: dossier.isAlive !== false,
+    identifyingMarks: toStringValue(dossier.identifyingMarks),
+    knownAssociates: toStringValue(dossier.knownAssociates),
+    riskLevel: toStringValue(dossier.riskLevel, "unknown") || "unknown",
+    lastKnownLocation: toStringValue(dossier.lastKnownLocation),
+    photoDataUrl: toStringValue(dossier.photoDataUrl),
+    priorOffenses: toStringValue(dossier.priorOffenses),
+    notes: toStringValue(dossier.notes),
+  };
+}

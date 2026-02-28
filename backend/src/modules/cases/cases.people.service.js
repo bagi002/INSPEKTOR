@@ -1,6 +1,11 @@
 import { HttpError } from "../../utils/httpError.js";
 import { findCaseByIdForAuthor } from "./cases.repository.js";
-import { createCasePersonForCase, getCasePeopleByCaseId } from "./cases.repository.people.js";
+import {
+  createCasePersonForCase,
+  findCasePersonById,
+  getCasePeopleByCaseId,
+  updateCasePersonForCase,
+} from "./cases.repository.people.js";
 import { validateCreateCasePersonPayload } from "./cases.people.validation.js";
 import {
   CASE_READ_SCOPES,
@@ -113,6 +118,30 @@ export async function createCreatorCasePerson(caseIdInput, payload, authorUserId
   return {
     caseId,
     person: createdPerson,
+  };
+}
+
+export async function updateCreatorCasePerson(caseIdInput, personIdInput, payload, authorUserId) {
+  const caseId = parseCaseId(caseIdInput);
+  const personId = parsePersonId(personIdInput);
+  await assertAuthorAccess(caseId, authorUserId);
+
+  const existingPerson = await findCasePersonById(personId);
+  if (!existingPerson || existingPerson.caseId !== caseId) {
+    throw new HttpError(404, "Osoba nije pronađena u ovom slučaju.");
+  }
+
+  const { errors, sanitized } = validateCreateCasePersonPayload(payload);
+  throwValidationIfNeeded(errors);
+
+  const updatedPerson = await updateCasePersonForCase(caseId, personId, sanitized, authorUserId);
+  if (!updatedPerson) {
+    throw new HttpError(500, "Osoba je ažurirana, ali odgovor nije moguće učitati.");
+  }
+
+  return {
+    caseId,
+    person: updatedPerson,
   };
 }
 

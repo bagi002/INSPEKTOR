@@ -73,7 +73,10 @@ export function validateReplaceCaseTimelinePayload(payload, availableSources) {
 
       const sourceReference = `${itemType}:${sourceId}`;
       if (usedSourceReferences.has(sourceReference)) {
-        errors[`items.${index}.sourceId`] = "Ista stavka ne može biti vise puta u timeline-u.";
+        errors[`items.${index}.sourceId`] =
+          itemType === "document"
+            ? "Isti dokument ne može biti dodat više od jednom u vremensku liniju."
+            : "Ista osoba ne može biti dodata više od jednom u vremensku liniju.";
       }
       usedSourceReferences.add(sourceReference);
     }

@@ -119,6 +119,55 @@ export async function createCasePerson(caseId, payload) {
   }
 }
 
+export async function updateCasePerson(caseId, personId, payload) {
+  const authorizationHeader = buildAuthorizationHeader();
+  if (!authorizationHeader) {
+    return {
+      ok: false,
+      unauthorized: true,
+      message: "Sesija nije aktivna. Prijavi se ponovo.",
+      errors: null,
+    };
+  }
+
+  try {
+    const response = await fetch(`${CASES_API_BASE}/${caseId}/people/${personId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authorizationHeader,
+      },
+      body: JSON.stringify(payload || {}),
+    });
+    const responsePayload = await parseResponseBody(response);
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        unauthorized: response.status === 401,
+        message: resolveMessage(responsePayload, "Ažuriranje osobe nije uspelo."),
+        errors:
+          responsePayload?.errors && typeof responsePayload.errors === "object"
+            ? responsePayload.errors
+            : null,
+      };
+    }
+
+    return {
+      ok: true,
+      message: resolveMessage(responsePayload, "Osoba je uspešno ažurirana."),
+      data: responsePayload?.data || null,
+    };
+  } catch {
+    return {
+      ok: false,
+      unauthorized: false,
+      message: "Backend nije dostupan. Pokreni backend server i pokušaj ponovo.",
+      errors: null,
+    };
+  }
+}
+
 export async function updateCasePersonRole(caseId, personId, payload) {
   const authorizationHeader = buildAuthorizationHeader();
   if (!authorizationHeader) {

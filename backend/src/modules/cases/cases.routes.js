@@ -17,6 +17,9 @@ import {
   getLoggedHomeOverviewController,
   publishCreatorCaseController,
   replaceCreatorCaseTimelineController,
+  updateCreatorCasePersonController,
+  updateCreatorCasePoliceDocumentController,
+  updateCreatorCaseStatementController,
 } from "./cases.controller.js";
 import {
   getCaseOverviewController,
@@ -41,8 +44,10 @@ casesRoutes.put("/:caseId/timeline", asyncHandler(replaceCreatorCaseTimelineCont
 casesRoutes.get("/:caseId/people", asyncHandler(getCreatorCasePeopleController));
 casesRoutes.put("/:caseId/people/:personId/role", asyncHandler(updateSolveCasePersonRoleController));
 casesRoutes.post("/:caseId/people", asyncHandler(createCreatorCasePersonController));
+casesRoutes.put("/:caseId/people/:personId", asyncHandler(updateCreatorCasePersonController));
 casesRoutes.get("/:caseId/statements", asyncHandler(getCreatorCaseStatementsController));
 casesRoutes.post("/:caseId/statements", asyncHandler(createCreatorCaseStatementController));
+casesRoutes.put("/:caseId/statements/:documentId", asyncHandler(updateCreatorCaseStatementController));
 casesRoutes.get(
   "/:caseId/police-documents",
   asyncHandler(getCreatorCasePoliceDocumentsController)
@@ -50,6 +55,10 @@ casesRoutes.get(
 casesRoutes.post(
   "/:caseId/police-documents",
   asyncHandler(createCreatorCasePoliceDocumentController)
+);
+casesRoutes.put(
+  "/:caseId/police-documents/:documentId",
+  asyncHandler(updateCreatorCasePoliceDocumentController)
 );
 casesRoutes.get("/:caseId/interrogations", asyncHandler(getCreatorCaseInterrogationsController));
 casesRoutes.post("/:caseId/interrogations", asyncHandler(createCreatorCaseInterrogationController));

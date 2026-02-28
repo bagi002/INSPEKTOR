@@ -22,14 +22,16 @@ function CasePeopleTab({ caseId, mode, onUnauthorized, onSolveRolesUpdated }) {
     isSubmitting,
     submitError,
     submitSuccessMessage,
+    isEditMode,
     formData,
     formErrors,
     loadPeople,
     handleFieldChange,
     handlePhotoUpload,
     handlePhotoRemove,
-    handleCreatePerson,
+    handleSavePerson,
     openCreateModal,
+    openEditModal,
     closeCreateModal,
     openDossierModal,
     closeDossierModal,
@@ -124,7 +126,8 @@ function CasePeopleTab({ caseId, mode, onUnauthorized, onSolveRolesUpdated }) {
               onFieldChange={handleFieldChange}
               onPhotoUpload={handlePhotoUpload}
               onPhotoRemove={handlePhotoRemove}
-              onSubmit={handleCreatePerson}
+              isEditMode={isEditMode}
+              onSubmit={handleSavePerson}
               onCancel={closeCreateModal}
             />
           </section>
@@ -138,6 +141,8 @@ function CasePeopleTab({ caseId, mode, onUnauthorized, onSolveRolesUpdated }) {
           person={activePerson}
           linkedDocuments={activePersonLinkedDocuments}
           linkedDocumentsError={linkedDocumentsError}
+          isCreateMode={isCreateMode}
+          onEditPerson={() => openEditModal(activePerson?.id)}
           onClose={closeDossierModal}
         />
       ) : null}

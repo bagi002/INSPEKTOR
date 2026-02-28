@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { createCaseInterrogation } from "../services/caseInterrogationsApi";
-import { EMPTY_INTERROGATION_NODE_FORM } from "./caseInterrogationsHelpers";
+import {
+  EMPTY_INTERROGATION_NODE_FORM,
+  sortInterrogationNodes,
+} from "./caseInterrogationsHelpers";
 import {
   INITIAL_INTERROGATION_FORM,
   normalizeNodeErrors,
@@ -27,6 +30,7 @@ export function useCaseInterrogationCreateState({
   const [formErrors, setFormErrors] = useState({});
   const [nodeDraft, setNodeDraft] = useState(EMPTY_INTERROGATION_NODE_FORM);
   const [nodeDraftError, setNodeDraftError] = useState("");
+  const [editingInterrogationId, setEditingInterrogationId] = useState(null);
   function resetCreateState() {
     setFormErrors({});
     setSubmitError("");
@@ -46,6 +50,28 @@ export function useCaseInterrogationCreateState({
       openingPrompt: "",
       nodes: [],
     });
+    setEditingInterrogationId(null);
+    resetCreateState();
+    setIsCreateModalOpen(true);
+  }
+  function openEditModal(interrogation) {
+    const personId = Number.parseInt(interrogation?.personId, 10);
+    const safeNodes = sortInterrogationNodes(interrogation?.nodes).map((node) => ({
+      nodeKey: String(node?.nodeKey || ""),
+      parentKey: String(node?.parentKey || ""),
+      questionReferenceKey: String(node?.questionReferenceKey || node?.nodeKey || ""),
+      question: String(node?.question || ""),
+      answer: String(node?.answer || ""),
+      sequenceOrder: Number(node?.sequenceOrder) || 1,
+    }));
+
+    setFormData({
+      personId: Number.isInteger(personId) && personId > 0 ? String(personId) : "",
+      title: String(interrogation?.title || ""),
+      openingPrompt: String(interrogation?.openingPrompt || ""),
+      nodes: safeNodes,
+    });
+    setEditingInterrogationId(Number(interrogation?.id) || null);
     resetCreateState();
     setIsCreateModalOpen(true);
   }
@@ -155,10 +181,16 @@ export function useCaseInterrogationCreateState({
       return;
     }
     const savedInterrogationId = Number(result.data?.interrogation?.id) || null;
-    setSubmitSuccessMessage(result.message || "Saslušanje je uspešno sačuvano.");
+    setSubmitSuccessMessage(
+      result.message ||
+        (editingInterrogationId
+          ? "Saslušanje je uspešno ažurirano."
+          : "Saslušanje je uspešno sačuvano.")
+    );
     await refreshInterrogations();
     setIsSubmitting(false);
     setIsCreateModalOpen(false);
+    setEditingInterrogationId(null);
     if (savedInterrogationId) {
       onSaved(savedInterrogationId);
     }
@@ -168,11 +200,13 @@ export function useCaseInterrogationCreateState({
     isSubmitting,
     submitError,
     submitSuccessMessage,
+    isEditMode: Boolean(editingInterrogationId),
     formData,
     formErrors,
     nodeDraft,
     nodeDraftError,
     openCreateModal,
+    openEditModal,
     closeCreateModal,
     handleFieldChange,
     handleNodeDraftChange,

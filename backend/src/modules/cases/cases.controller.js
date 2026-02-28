@@ -6,11 +6,17 @@ import {
 import { publishCreatorCase } from "./cases.publish.service.js";
 import {
   createCreatorCasePoliceDocument,
+  updateCreatorCasePoliceDocument,
   createCreatorCaseStatement,
+  updateCreatorCaseStatement,
   getCreatorCasePoliceDocuments,
   getCreatorCaseStatements,
 } from "./cases.documents.service.js";
-import { createCreatorCasePerson, getCreatorCasePeople } from "./cases.people.service.js";
+import {
+  createCreatorCasePerson,
+  getCreatorCasePeople,
+  updateCreatorCasePerson,
+} from "./cases.people.service.js";
 import {
   createCreatorCaseInterrogation,
   getCreatorCaseInterrogations,
@@ -91,6 +97,21 @@ export async function createCreatorCasePersonController(req, res) {
   });
 }
 
+export async function updateCreatorCasePersonController(req, res) {
+  const result = await updateCreatorCasePerson(
+    req.params.caseId,
+    req.params.personId,
+    req.body || {},
+    req.auth.userId
+  );
+
+  res.status(200).json({
+    ok: true,
+    message: "Osoba i dosije su uspešno ažurirani.",
+    data: result,
+  });
+}
+
 export async function getCreatorCaseStatementsController(req, res) {
   const result = await getCreatorCaseStatements(
     req.params.caseId,
@@ -115,6 +136,21 @@ export async function createCreatorCaseStatementController(req, res) {
   });
 }
 
+export async function updateCreatorCaseStatementController(req, res) {
+  const result = await updateCreatorCaseStatement(
+    req.params.caseId,
+    req.params.documentId,
+    req.body || {},
+    req.auth.userId
+  );
+
+  res.status(200).json({
+    ok: true,
+    message: "Izjava je uspešno ažurirana.",
+    data: result,
+  });
+}
+
 export async function getCreatorCasePoliceDocumentsController(req, res) {
   const result = await getCreatorCasePoliceDocuments(
     req.params.caseId,
@@ -135,6 +171,21 @@ export async function createCreatorCasePoliceDocumentController(req, res) {
   res.status(201).json({
     ok: true,
     message: "Policijski dokument je uspešno sačuvan.",
+    data: result,
+  });
+}
+
+export async function updateCreatorCasePoliceDocumentController(req, res) {
+  const result = await updateCreatorCasePoliceDocument(
+    req.params.caseId,
+    req.params.documentId,
+    req.body || {},
+    req.auth.userId
+  );
+
+  res.status(200).json({
+    ok: true,
+    message: "Policijski dokument je uspešno ažuriran.",
     data: result,
   });
 }

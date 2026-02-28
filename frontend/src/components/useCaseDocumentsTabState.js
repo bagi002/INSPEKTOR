@@ -83,8 +83,9 @@ export function useCaseDocumentsTabState({ caseId, mode, category, onUnauthorize
     category,
     onUnauthorized,
     createDocumentApi: api.createDocument,
+    updateDocumentApi: api.updateDocument,
     refreshDocuments: loadDocuments,
-    onDocumentCreated: (documentId) => {
+    onDocumentSaved: (documentId) => {
       setActiveDocumentId(documentId);
       setIsPreviewModalOpen(true);
     },
@@ -111,5 +112,13 @@ export function useCaseDocumentsTabState({ caseId, mode, category, onUnauthorize
     openPreviewModal,
     closePreviewModal,
     ...formState,
+    openEditModal: (documentId) => {
+      const document = documents.find((item) => item.id === documentId) || null;
+      if (!document) {
+        return;
+      }
+      setIsPreviewModalOpen(false);
+      formState.openEditModal(document);
+    },
   };
 }

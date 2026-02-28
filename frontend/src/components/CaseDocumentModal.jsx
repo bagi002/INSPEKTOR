@@ -15,7 +15,15 @@ function renderField(label, value) {
   );
 }
 
-function CaseDocumentModal({ caseId, mode, document, tabConfig, onClose }) {
+function CaseDocumentModal({
+  caseId,
+  mode,
+  document,
+  tabConfig,
+  isCreateMode = false,
+  onEditDocument = null,
+  onClose,
+}) {
   if (!document) {
     return null;
   }
@@ -29,9 +37,16 @@ function CaseDocumentModal({ caseId, mode, document, tabConfig, onClose }) {
       <section className="case-doc-modal">
         <div className="case-people-modal-header">
           <h3>Formalni prikaz dokumenta</h3>
-          <button type="button" className="btn btn-secondary case-people-modal-close" onClick={onClose}>
-            Zatvori
-          </button>
+          <div className="case-doc-modal-actions">
+            {isCreateMode && typeof onEditDocument === "function" ? (
+              <button type="button" className="btn btn-primary" onClick={onEditDocument}>
+                Izmeni dokument
+              </button>
+            ) : null}
+            <button type="button" className="btn btn-secondary case-people-modal-close" onClick={onClose}>
+              Zatvori
+            </button>
+          </div>
         </div>
 
         <article className="case-doc-file">

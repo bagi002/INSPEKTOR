@@ -12,6 +12,7 @@ function CaseDocumentCreateForm({
   isSubmitting,
   submitError,
   submitSuccessMessage,
+  isEditMode,
   onFieldChange,
   onTypeSpecificFieldChange,
   onRelatedPersonToggle,
@@ -23,7 +24,7 @@ function CaseDocumentCreateForm({
   return (
     <form className="case-doc-form" onSubmit={onSubmit} noValidate>
       <div className="case-people-modal-header">
-        <h3>{tabConfig.createModalTitle}</h3>
+        <h3>{isEditMode ? "Izmena dokumenta" : tabConfig.createModalTitle}</h3>
         <button type="button" className="btn btn-secondary case-people-modal-close" onClick={onCancel}>
           Zatvori
         </button>
@@ -95,7 +96,11 @@ function CaseDocumentCreateForm({
 
       <div className="cta-row">
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? "Čuvanje u toku..." : "Sačuvaj dokument"}
+          {isSubmitting
+            ? "Čuvanje u toku..."
+            : isEditMode
+              ? "Sačuvaj izmene"
+              : "Sačuvaj dokument"}
         </button>
       </div>
     </form>

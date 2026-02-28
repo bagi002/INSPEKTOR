@@ -214,19 +214,25 @@
 
 - id: REQ-SW-025
   name: Backend model i API za osobe i dosijee u slucaju
-  status: Finished
+  status: In Review
   refines: REQ-015
   description: >
     Implementirati prosiren SQLite model dosijea osobe (ukljucujuci administrativne
     auto-generisane podatke kao broj dosijea, klasifikaciju i reviziju), podrsku za cuvanje
     fotografije osobe, kao i JWT-zasticene
-    endpointe `GET /api/cases/:caseId/people` i `POST /api/cases/:caseId/people`, pri cemu
+    endpointe `GET /api/cases/:caseId/people`, `POST /api/cases/:caseId/people` i
+    `PUT /api/cases/:caseId/people/:personId`, pri cemu
     GET podrzava `scope=solve` za timeline-otkljucan prikaz osoba po korisniku, a POST ostaje
-    za autora slucaja, uz validaciju ulaza i vracanje strukturisanih podataka osobe i formalnog dosijea.
+    za autora slucaja, dok PUT omogucava autoru azuriranje vec kreirane osobe i dosijea,
+    uz validaciju ulaza i vracanje strukturisanih podataka osobe i formalnog dosijea.
+    Pri cuvanju dosijea obavezna su polja: `fullName`, `apparentRole`
+    (razlicito od `unknown`), `phoneNumber`, `address`, `birthDate`, `birthPlace`,
+    `nationality` (razlicito od `unknown`), `gender` (razlicito od `unknown`),
+    `riskLevel` (razlicito od `unknown`) i `lastKnownLocation`.
 
 - id: REQ-SW-026
   name: Tab osobe i dosijei - kreiranje i pregled
-  status: Finished
+  status: In Review
   refines: REQ-014
   description: >
     Implementirati funkcionalan tab `osobe-i-dosijei` u case workspace-u koji na glavnom
@@ -236,53 +242,58 @@
     creatorski i rezim resavanja, pri cemu u rezimu resavanja prikazuje samo osobe koje su
     otkljucane na vremenskoj liniji, kao i sekciju povezanih dokumenata/izjava sa direktnim
     linkovima ka konkretnim stavkama, uz akciju `Saslusaj osobu` koja iz dosijea otvara
-    tab saslusanja u rezimu pregleda za konkretnu osobu.
+    tab saslusanja u rezimu pregleda za konkretnu osobu, kao i creatorsku akciju
+    `Izmeni dosije` iz formalnog prikaza vec kreirane osobe.
 
 - id: REQ-SW-027
   name: Backend API za izjave u slucaju
-  status: Finished
+  status: In Review
   refines: REQ-017
   description: >
-    Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/statements` i
-    `POST /api/cases/:caseId/statements`, pri cemu GET podrzava `scope=solve` i vraca samo
+    Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/statements`,
+    `POST /api/cases/:caseId/statements` i
+    `PUT /api/cases/:caseId/statements/:documentId`, pri cemu GET podrzava `scope=solve` i vraca samo
     timeline-otkljucane izjave (uz filtriranje prikaza povezanih osoba na otkljucane), dok je
-    POST za autora slucaja, sa validacijom formalnih
+    POST/PUT za autora slucaja, sa validacijom formalnih
     polja izjave (tip, naslov, sadrzaj, klasifikacija, datum, lokacija, sluzbenik,
     davalac izjave i povezane osobe), kao i tip-specificnih polja po vrsti izjave
     (`witness_statement`, `suspect_statement`, `victim_statement`) uz cuvanje u metapodacima.
 
 - id: REQ-SW-028
   name: Backend API za policijska dokumenta u slucaju
-  status: Finished
+  status: In Review
   refines: REQ-018
   description: >
-    Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/police-documents` i
-    `POST /api/cases/:caseId/police-documents`, pri cemu GET podrzava `scope=solve` i vraca
+    Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/police-documents`,
+    `POST /api/cases/:caseId/police-documents` i
+    `PUT /api/cases/:caseId/police-documents/:documentId`, pri cemu GET podrzava `scope=solve` i vraca
     samo timeline-otkljucane dokumente (uz filtriranje prikaza povezanih osoba na otkljucane),
-    dok je POST za autora slucaja, uz validaciju i cuvanje
+    dok je POST/PUT za autora slucaja, uz validaciju i cuvanje
     policijskih izvjestaja i forenzickih nalaza sa formalnim metapodacima, tip-specificnim
     poljima po tipu dokumenta i fotodokumentacijom (`imageEvidence`) za `police_report`
     i `forensic_report`, zajedno sa vezama na osobe.
 
 - id: REQ-SW-029
   name: Tab izjave - kreiranje i formalni pregled
-  status: Finished
+  status: In Review
   refines: REQ-017
   description: >
     Implementirati funkcionalan tab `izjave` u case workspace-u koji prikazuje listu i filtere,
     modal za kreiranje novih izjava i modal za formalni pregled svake izjave u ozbiljnom
     policijskom stilu, uz dinamicna tip-specificna polja u formi po izabranom tipu izjave,
+    i creatorsku akciju `Izmeni dokument` iz formalnog prikaza vec kreirane izjave,
     sa read-only rezimom u modu resavanja slucaja koji prikazuje samo timeline-otkljucane
     izjave i linkovima ka dosijeima povezanih osoba.
 
 - id: REQ-SW-030
   name: Tab dokumenti - kreiranje i formalni pregled
-  status: Finished
+  status: In Review
   refines: REQ-018
   description: >
     Implementirati funkcionalan tab `dokumenti` u case workspace-u za policijske izvjestaje
     i forenzicke nalaze, sa listom/filterima, modalnim kreiranjem i formalnim prikazom
     dokumenta, uz dinamicna tip-specificna polja i upload slika za oba tipa dokumenta,
+    kao i creatorsku akciju `Izmeni dokument` iz formalnog prikaza vec kreiranog zapisa,
     kao i read-only ogranicenje u rezimu resavanja koje prikazuje samo timeline-otkljucane
     dokumente i linkove ka dosijeima povezanih osoba.
 
@@ -320,13 +331,14 @@
 
 - id: REQ-SW-034
   name: Creatorski editor saslusanja po osobi
-  status: Finished
+  status: In Review
   refines: REQ-020
   description: >
     Implementirati creatorski workflow u tabu `saslusanja` koji omogucava izbor osobe,
     kreiranje/azuriranje saslusanja kroz unos stabla pitanja i odgovora i cuvanje
     saslusanja vezanog za konkretnu osobu, uz vizuelni prikaz stabla tokom kreiranja i
-    opciju da se pitanje ponovi na vise mesta u razlicitim granama toka.
+    opciju da se pitanje ponovi na vise mesta u razlicitim granama toka, uz eksplicitnu
+    akciju `Izmeni` za vec kreirana saslusanja.
 
 - id: REQ-SW-035
   name: Pokretanje saslusanja kroz chat modal
@@ -350,13 +362,14 @@
 
 - id: REQ-SW-037
   name: Backend API za vremensku liniju slucaja
-  status: Finished
+  status: In Review
   refines: REQ-022
   description: >
     Implementirati JWT-zasticene endpointe `GET /api/cases/:caseId/timeline`,
     `PUT /api/cases/:caseId/timeline` i `POST /api/cases/:caseId/timeline/advance`,
     sa validacijom timeline stavki (tip, referenca, jedinstvenost, napomena,
-    datum/vreme otkljucavanja), atomskim cuvanjem redosleda, korisnickim
+    datum/vreme otkljucavanja), ukljucujuci pravilo da ista osoba i isti dokument
+    ne mogu biti dodati vise od jednom, atomskim cuvanjem redosleda, korisnickim
     otkljucavanjem sledece stavke i odrzavanjem `case_user_progress` procenta
     istrage na osnovu broja otkljucanih timeline stavki.
 
@@ -368,6 +381,9 @@
     Implementirati funkcionalan tab `vremenska-linija` u case workspace-u koji u
     creatorskom modu omogucava dodavanje osoba/dokumenata u redosled otkljucavanja,
     pomeranje stavki gore-dole, uklanjanje, unos napomene i opcionalnog datuma/vremena,
+    uz pravilo da ista osoba i isti dokument ne mogu biti dodati vise od jednom na
+    vremensku liniju, pri cemu lista za dodavanje prikazuje samo stavke koje jos
+    nisu dodate,
     kao i cuvanje cele sekvence kroz backend API, dok u rezimu resavanja omogucava
     postepeno otkljucavanje kroz dugme `Dalje`, prikaz trenutnog datuma kao datuma
     poslednje otkljucane stavke, obrnuti redosled prikaza (najnovije prvo) i prikaz
@@ -465,14 +481,14 @@
 
 - id: REQ-SW-047
   name: Mehanizam objavljivanja slucaja sa proverom spremnosti
-  status: Finished
+  status: In Review
   refines: REQ-027
   description: >
     Implementirati end-to-end objavu slucaja iz creatorskog menija kroz endpoint
     `POST /api/cases/:caseId/publish` dostupan samo autoru, sa backend proverama da
-    slucaj ima najmanje jednu osobu i sve obavezne tipove dokumenata
-    (`police_report`, `forensic_report`, `witness_statement`, `suspect_statement`,
-    `victim_statement`), kao i da su sve osobe i dokumenti ubaceni u vremensku liniju.
+    slucaj ima najmanje jednu zrtvu, najmanje jednog osumnjicenog, najmanje jedan
+    dokument i zavrsni kviz sa minimum 4 pitanja, kao i da su sve osobe i dokumenti
+    ubaceni u vremensku liniju.
     Frontend treba da prikaze jasnu status poruku za uspesnu objavu, vec objavljen
     slucaj i neuspesnu objavu sa konkretnim blockerima iz backend odgovora.
 

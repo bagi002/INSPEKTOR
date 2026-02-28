@@ -86,6 +86,13 @@
   gap: 0.58rem;
 }
 
+.case-interrogations-directory-row-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: stretch;
+}
+
 .case-interrogations-directory-row {
   width: 100%;
   border: 1px solid #b8cade;
@@ -129,6 +136,10 @@
   white-space: nowrap;
 }
 
+.case-interrogations-edit-btn {
+  min-width: 120px;
+}
+
 .case-interrogation-empty {
   margin: 0;
   color: #56708e;
@@ -138,6 +149,10 @@
 @media (max-width: 980px) {
   .case-interrogations-toolbar,
   .case-interrogations-directory-row {
+    grid-template-columns: 1fr;
+  }
+
+  .case-interrogations-directory-row-wrap {
     grid-template-columns: 1fr;
   }
 }

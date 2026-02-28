@@ -55,6 +55,8 @@ export function validateCreateCasePersonPayload(payload) {
   }
   if (!apparentRole) {
     errors.apparentRole = "Uloga osobe nije podržana.";
+  } else if (apparentRole === "unknown") {
+    errors.apparentRole = "Uloga u slučaju je obavezno polje dosijea.";
   }
   if (biography.length > 4000) {
     errors.biography = "Biografija osobe može imati najviše 4000 karaktera.";
@@ -62,20 +64,31 @@ export function validateCreateCasePersonPayload(payload) {
   if (phoneNumber.length > 40) {
     errors.phoneNumber = "Telefon osobe može imati najviše 40 karaktera.";
   }
+  if (phoneNumber.length === 0) {
+    errors.phoneNumber = "Telefon je obavezno polje dosijea.";
+  }
   if (address.length > 220) {
     errors.address = "Adresa osobe može imati najviše 220 karaktera.";
   }
-  if (birthDate === null) {
+  if (address.length === 0) {
+    errors.address = "Adresa je obavezno polje dosijea.";
+  }
+  if (birthDate === "") {
+    errors.birthDate = "Datum rođenja je obavezno polje dosijea.";
+  } else if (birthDate === null) {
     errors.birthDate = "Datum rođenja mora biti u formatu YYYY-MM-DD.";
   }
   if (birthPlace.length > 120) {
     errors.birthPlace = "Mjesto rođenja može imati najviše 120 karaktera.";
   }
-  if (!nationality) {
-    errors.nationality = "Nacionalnost nije podržana.";
+  if (birthPlace.length === 0) {
+    errors.birthPlace = "Mjesto rođenja je obavezno polje dosijea.";
   }
-  if (!gender) {
-    errors.gender = "Pol nije podržan.";
+  if (!nationality || nationality === "unknown") {
+    errors.nationality = "Nacionalnost je obavezno polje dosijea.";
+  }
+  if (!gender || gender === "unknown") {
+    errors.gender = "Pol je obavezno polje dosijea.";
   }
   if (!maritalStatus) {
     errors.maritalStatus = "Bracni status nije podržan.";
@@ -116,8 +129,11 @@ export function validateCreateCasePersonPayload(payload) {
   if (priorOffenses.length > 4000) {
     errors.priorOffenses = "Istorija dela može imati najviše 4000 karaktera.";
   }
-  if (!riskLevel) {
-    errors.riskLevel = "Nivo rizika nije podržan.";
+  if (!riskLevel || riskLevel === "unknown") {
+    errors.riskLevel = "Nivo rizika je obavezno polje dosijea.";
+  }
+  if (lastKnownLocation.length === 0) {
+    errors.lastKnownLocation = "Posljednja poznata lokacija je obavezno polje dosijea.";
   }
   if (heightCm !== null && (heightCm < 50 || heightCm > 260)) {
     errors.heightCm = "Visina osobe mora biti broj između 50 i 260 cm.";

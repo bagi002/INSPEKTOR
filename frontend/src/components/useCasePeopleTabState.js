@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createCasePerson, fetchCasePeople } from "../services/casePeopleApi";
+import { createCasePerson, fetchCasePeople, updateCasePerson } from "../services/casePeopleApi";
 import { CASE_WORKSPACE_MODES } from "../utils/routes";
 import {
   INITIAL_PERSON_FORM_DATA,
@@ -7,6 +7,7 @@ import {
   validatePersonForm,
 } from "./casePeopleHelpers";
 import {
+  buildPersonFormDataFromPerson,
   buildCreatePersonPayload,
   MAX_PHOTO_FILE_SIZE_BYTES,
   normalizeFieldValue,
@@ -24,6 +25,7 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
   const [submitSuccessMessage, setSubmitSuccessMessage] = useState("");
   const [formData, setFormData] = useState(INITIAL_PERSON_FORM_DATA);
   const [formErrors, setFormErrors] = useState({});
+  const [editingPersonId, setEditingPersonId] = useState(null);
   const isCreateMode = mode === CASE_WORKSPACE_MODES.CREATE;
   const activePerson = useMemo(
     () => people.find((person) => person.id === activePersonId) || null,
@@ -111,7 +113,7 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
     });
   }
 
-  async function handleCreatePerson(event) {
+  async function handleSavePerson(event) {
     event.preventDefault();
     setSubmitError("");
     setSubmitSuccessMessage("");
@@ -122,7 +124,9 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
     }
     setIsSubmitting(true);
     const payload = buildCreatePersonPayload(formData);
-    const result = await createCasePerson(caseId, payload);
+    const result = editingPersonId
+      ? await updateCasePerson(caseId, editingPersonId, payload)
+      : await createCasePerson(caseId, payload);
     if (!result.ok) {
       if (result.unauthorized) {
         setIsSubmitting(false);
@@ -139,8 +143,14 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
     }
 
     setFormData(INITIAL_PERSON_FORM_DATA);
+    setEditingPersonId(null);
     setFormErrors({});
-    setSubmitSuccessMessage(result.message || "Osoba i dosije su uspešno sačuvani.");
+    setSubmitSuccessMessage(
+      result.message ||
+        (editingPersonId
+          ? "Osoba i dosije su uspešno ažurirani."
+          : "Osoba i dosije su uspešno sačuvani.")
+    );
     await loadPeople();
     setIsCreateModalOpen(false);
     setActivePersonId(result.data?.person?.id || null);
@@ -152,6 +162,20 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
     setSubmitSuccessMessage("");
     setFormErrors({});
     setFormData(INITIAL_PERSON_FORM_DATA);
+    setEditingPersonId(null);
+    setIsCreateModalOpen(true);
+  }
+  function openEditModal(personId) {
+    const person = people.find((candidate) => candidate.id === personId) || null;
+    if (!person) {
+      return;
+    }
+    setSubmitError("");
+    setSubmitSuccessMessage("");
+    setFormErrors({});
+    setFormData(buildPersonFormDataFromPerson(person));
+    setEditingPersonId(personId);
+    setIsDossierModalOpen(false);
     setIsCreateModalOpen(true);
   }
   function closeCreateModal() {
@@ -177,14 +201,16 @@ export function useCasePeopleTabState({ caseId, mode, onUnauthorized }) {
     isSubmitting,
     submitError,
     submitSuccessMessage,
+    isEditMode: Boolean(editingPersonId),
     formData,
     formErrors,
     loadPeople,
     handleFieldChange,
     handlePhotoUpload,
     handlePhotoRemove,
-    handleCreatePerson,
+    handleSavePerson,
     openCreateModal,
+    openEditModal,
     closeCreateModal,
     openDossierModal,
     closeDossierModal,

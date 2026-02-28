@@ -26,6 +26,8 @@ function CasePersonDossierModal({
   person,
   linkedDocuments,
   linkedDocumentsError,
+  isCreateMode = false,
+  onEditPerson = null,
   onClose,
 }) {
   if (!person) {
@@ -40,9 +42,16 @@ function CasePersonDossierModal({
       <section className="case-people-modal case-people-modal-dossier">
         <div className="case-people-modal-header">
           <h3>Formalni dosije osobe</h3>
-          <button type="button" className="btn btn-secondary case-people-modal-close" onClick={onClose}>
-            Zatvori
-          </button>
+          <div className="case-people-modal-actions">
+            {isCreateMode && typeof onEditPerson === "function" ? (
+              <button type="button" className="btn btn-primary" onClick={onEditPerson}>
+                Izmeni dosije
+              </button>
+            ) : null}
+            <button type="button" className="btn btn-secondary case-people-modal-close" onClick={onClose}>
+              Zatvori
+            </button>
+          </div>
         </div>
 
         <article className="dossier-document">

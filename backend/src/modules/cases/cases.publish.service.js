@@ -5,48 +5,52 @@ import {
   updateCasePublicationStatus,
 } from "./cases.repository.publish.js";
 import {
-  REQUIRED_PUBLISH_DOCUMENT_TYPE_LABELS,
-  REQUIRED_PUBLISH_DOCUMENT_TYPES,
+  MIN_PUBLISH_DOCUMENTS,
+  MIN_PUBLISH_QUIZ_QUESTIONS,
+  MIN_PUBLISH_SUSPECTS,
+  MIN_PUBLISH_VICTIMS,
 } from "./cases.publish.shared.js";
 import { parseCaseId } from "./cases.timeline.service.shared.js";
 
-function buildRequiredDocumentTypeSummaries(documentCountByType) {
-  return REQUIRED_PUBLISH_DOCUMENT_TYPES.map((documentType) => {
-    const total = Number.isInteger(documentCountByType?.[documentType])
-      ? documentCountByType[documentType]
-      : 0;
-
-    return {
-      documentType,
-      label: REQUIRED_PUBLISH_DOCUMENT_TYPE_LABELS[documentType] || documentType,
-      total,
-      isPresent: total > 0,
-    };
-  });
-}
-
 function buildPublishReadiness(snapshot) {
-  const requiredDocumentTypes = buildRequiredDocumentTypeSummaries(snapshot.documentCountByType);
-  const missingRequiredDocumentTypes = requiredDocumentTypes.filter((item) => !item.isPresent);
   const expectedTimelineItems = snapshot.peopleCount + snapshot.documentsCount;
+  const hasMinimumVictims = snapshot.victimCount >= MIN_PUBLISH_VICTIMS;
+  const hasMinimumSuspects = snapshot.suspectCount >= MIN_PUBLISH_SUSPECTS;
+  const hasMinimumDocuments = snapshot.documentsCount >= MIN_PUBLISH_DOCUMENTS;
+  const hasMinimumQuizQuestions = snapshot.quizQuestionsCount >= MIN_PUBLISH_QUIZ_QUESTIONS;
 
   return {
     isReady:
-      snapshot.peopleCount > 0 &&
-      missingRequiredDocumentTypes.length === 0 &&
+      hasMinimumVictims &&
+      hasMinimumSuspects &&
+      hasMinimumDocuments &&
+      hasMinimumQuizQuestions &&
       expectedTimelineItems > 0 &&
       snapshot.timelineItemsCount > 0 &&
       snapshot.missingTimelinePeople.length === 0 &&
       snapshot.missingTimelineDocuments.length === 0,
     totals: {
       people: snapshot.peopleCount,
+      victims: snapshot.victimCount,
+      suspects: snapshot.suspectCount,
       documents: snapshot.documentsCount,
+      quizQuestions: snapshot.quizQuestionsCount,
       timelineItems: snapshot.timelineItemsCount,
       expectedTimelineItems,
     },
-    requiredDocumentTypes,
+    minimums: {
+      victims: MIN_PUBLISH_VICTIMS,
+      suspects: MIN_PUBLISH_SUSPECTS,
+      documents: MIN_PUBLISH_DOCUMENTS,
+      quizQuestions: MIN_PUBLISH_QUIZ_QUESTIONS,
+    },
     missing: {
-      requiredDocumentTypes: missingRequiredDocumentTypes,
+      victims: hasMinimumVictims ? 0 : MIN_PUBLISH_VICTIMS - snapshot.victimCount,
+      suspects: hasMinimumSuspects ? 0 : MIN_PUBLISH_SUSPECTS - snapshot.suspectCount,
+      documents: hasMinimumDocuments ? 0 : MIN_PUBLISH_DOCUMENTS - snapshot.documentsCount,
+      quizQuestions: hasMinimumQuizQuestions
+        ? 0
+        : MIN_PUBLISH_QUIZ_QUESTIONS - snapshot.quizQuestionsCount,
       timelinePeople: snapshot.missingTimelinePeople,
       timelineDocuments: snapshot.missingTimelineDocuments,
     },
@@ -56,14 +60,21 @@ function buildPublishReadiness(snapshot) {
 function buildPublishBlockers(readiness) {
   const blockers = [];
 
-  if (readiness.totals.people <= 0) {
-    blockers.push("Dodaj najmanje jednu osobu i dosije prije objave slučaja.");
+  if (readiness.missing.victims > 0) {
+    blockers.push("Dodaj najmanje jednu žrtvu prije objave slučaja.");
   }
 
-  if (readiness.missing.requiredDocumentTypes.length > 0) {
-    const labels = readiness.missing.requiredDocumentTypes.map((item) => item.label);
+  if (readiness.missing.suspects > 0) {
+    blockers.push("Dodaj najmanje jednog osumnjičenog prije objave slučaja.");
+  }
+
+  if (readiness.missing.documents > 0) {
+    blockers.push("Dodaj najmanje jedan dokument prije objave slučaja.");
+  }
+
+  if (readiness.missing.quizQuestions > 0) {
     blockers.push(
-      `Nedostaju obavezni tipovi dokumenata za objavu: ${labels.join(", ")}.`
+      `Završni kviz mora imati najmanje ${readiness.minimums.quizQuestions} pitanja prije objave slučaja.`
     );
   }
 

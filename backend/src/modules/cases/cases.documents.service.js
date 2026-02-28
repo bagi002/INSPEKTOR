@@ -11,6 +11,8 @@ import {
   createDocumentForCase,
   getDocumentsForCase,
   parseCaseId,
+  parseDocumentId,
+  updateDocumentForCase,
 } from "./cases.documents.service.shared.js";
 import {
   filterDocumentsByUnlockedIds,
@@ -112,6 +114,33 @@ export async function createCreatorCaseStatement(caseIdInput, payload, authorUse
   };
 }
 
+export async function updateCreatorCaseStatement(
+  caseIdInput,
+  documentIdInput,
+  payload,
+  authorUserId
+) {
+  const caseId = parseCaseId(caseIdInput);
+  const documentId = parseDocumentId(documentIdInput);
+  await assertAuthorAccess(caseId, authorUserId);
+
+  const { document } = await updateDocumentForCase({
+    caseId,
+    documentId,
+    payload,
+    validatePayload: validateCreateCaseStatementPayload,
+    validationMessage: "Podaci izjave nisu validni.",
+    requiresGiverPerson: true,
+    allowedDocumentTypes: Array.from(STATEMENT_DOCUMENT_TYPES),
+    typeErrorMessage: "Dokument nije izjava i ne može biti ažuriran kroz ovu sekciju.",
+  });
+
+  return {
+    caseId,
+    document,
+  };
+}
+
 export async function getCreatorCasePoliceDocuments(
   caseIdInput,
   requesterUserId,
@@ -152,6 +181,34 @@ export async function createCreatorCasePoliceDocument(caseIdInput, payload, auth
     validatePayload: validateCreateCasePoliceDocumentPayload,
     validationMessage: "Podaci policijskog dokumenta nisu validni.",
     requiresGiverPerson: false,
+  });
+
+  return {
+    caseId,
+    document,
+  };
+}
+
+export async function updateCreatorCasePoliceDocument(
+  caseIdInput,
+  documentIdInput,
+  payload,
+  authorUserId
+) {
+  const caseId = parseCaseId(caseIdInput);
+  const documentId = parseDocumentId(documentIdInput);
+  await assertAuthorAccess(caseId, authorUserId);
+
+  const { document } = await updateDocumentForCase({
+    caseId,
+    documentId,
+    payload,
+    validatePayload: validateCreateCasePoliceDocumentPayload,
+    validationMessage: "Podaci policijskog dokumenta nisu validni.",
+    requiresGiverPerson: false,
+    allowedDocumentTypes: Array.from(POLICE_DOCUMENT_TYPES),
+    typeErrorMessage:
+      "Dokument nije policijski izvještaj/forenzički nalaz i ne može biti ažuriran kroz ovu sekciju.",
   });
 
   return {

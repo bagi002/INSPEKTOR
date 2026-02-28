@@ -1,6 +1,5 @@
 import { getDatabase } from "../../db/database.js";
 import { getMany, getOne, runQuery } from "../../db/sqliteClient.js";
-import { REQUIRED_PUBLISH_DOCUMENT_TYPES } from "./cases.publish.shared.js";
 
 function toInteger(value) {
   const parsed = Number.parseInt(value, 10);
@@ -26,9 +25,11 @@ export async function getCasePublishReadinessSnapshot(caseId) {
   const database = getDatabase();
   const [
     peopleCountRow,
+    victimCountRow,
+    suspectCountRow,
     documentsTotalRow,
+    quizQuestionsCountRow,
     timelineTotalRow,
-    documentTypeRows,
     missingTimelinePeopleRows,
     missingTimelineDocumentRows,
   ] = await Promise.all([
@@ -45,7 +46,36 @@ export async function getCasePublishReadinessSnapshot(caseId) {
       database,
       `
         SELECT COUNT(*) AS total
+        FROM case_people
+        WHERE case_id = ?
+          AND apparent_role = 'victim'
+      `,
+      [caseId]
+    ),
+    getOne(
+      database,
+      `
+        SELECT COUNT(*) AS total
+        FROM case_people
+        WHERE case_id = ?
+          AND apparent_role = 'suspect'
+      `,
+      [caseId]
+    ),
+    getOne(
+      database,
+      `
+        SELECT COUNT(*) AS total
         FROM case_documents
+        WHERE case_id = ?
+      `,
+      [caseId]
+    ),
+    getOne(
+      database,
+      `
+        SELECT COUNT(*) AS total
+        FROM case_quiz_questions
         WHERE case_id = ?
       `,
       [caseId]
@@ -58,19 +88,6 @@ export async function getCasePublishReadinessSnapshot(caseId) {
         WHERE case_id = ?
       `,
       [caseId]
-    ),
-    getMany(
-      database,
-      `
-        SELECT
-          document_type,
-          COUNT(*) AS total
-        FROM case_documents
-        WHERE case_id = ?
-          AND document_type IN (${REQUIRED_PUBLISH_DOCUMENT_TYPES.map(() => "?").join(", ")})
-        GROUP BY document_type
-      `,
-      [caseId, ...REQUIRED_PUBLISH_DOCUMENT_TYPES]
     ),
     getMany(
       database,
@@ -109,20 +126,13 @@ export async function getCasePublishReadinessSnapshot(caseId) {
     ),
   ]);
 
-  const documentCountByType = {};
-  documentTypeRows.forEach((row) => {
-    if (!row?.document_type) {
-      return;
-    }
-
-    documentCountByType[row.document_type] = toInteger(row.total);
-  });
-
   return {
     peopleCount: toInteger(peopleCountRow?.total),
+    victimCount: toInteger(victimCountRow?.total),
+    suspectCount: toInteger(suspectCountRow?.total),
     documentsCount: toInteger(documentsTotalRow?.total),
+    quizQuestionsCount: toInteger(quizQuestionsCountRow?.total),
     timelineItemsCount: toInteger(timelineTotalRow?.total),
-    documentCountByType,
     missingTimelinePeople: missingTimelinePeopleRows.map(mapMissingTimelinePersonRow),
     missingTimelineDocuments: missingTimelineDocumentRows.map(mapMissingTimelineDocumentRow),
   };

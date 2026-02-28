@@ -78,7 +78,10 @@ export function validateTimelineItemForm(formData, existingItems) {
     );
 
     if (duplicate) {
-      errors.sourceId = "Izabrana stavka je već dodata u vremensku liniju.";
+      errors.sourceId =
+        formData.itemType === TIMELINE_ITEM_TYPES.DOCUMENT
+          ? "Izabrani dokument je već dodat u vremensku liniju."
+          : "Izabrana osoba je već dodata u vremensku liniju.";
     }
   }
 

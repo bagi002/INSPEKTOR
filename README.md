@@ -87,19 +87,24 @@ Tok koriscenja:
    sekvencu otkljucavanja, menjati redosled, unositi napomene i opcioni datum/vreme, pa
    snimiti celu roadmap konfiguraciju.
 8. U tabu `/slucaj/:id/kreiranje/osobe-i-dosijei` mozes kreirati osobu i njen dosije,
-   a zatim iz liste pregledati detalje za svaku evidentiranu osobu, ukljucujuci
+   a zatim iz liste pregledati detalje za svaku evidentiranu osobu i iz formalnog dosijea
+   uraditi izmenu postojece osobe/dosijea, ukljucujuci
    linkove ka povezanim izjavama i dokumentima.
 9. U tabu `/slucaj/:id/kreiranje/izjave` mozes kreirati formalne izjave i otvoriti
-   svaku kroz policijski pregled dokumenta, uz dodatna polja koja se menjaju po tipu izjave.
+   svaku kroz policijski pregled dokumenta, uz dodatna polja koja se menjaju po tipu izjave
+   i mogucnost izmene vec kreirane izjave kroz akciju `Izmeni dokument`.
 10. U tabu `/slucaj/:id/kreiranje/dokumenti` mozes kreirati policijske izvjestaje i
-   forenzicke nalaze, sa formalnim pregledom svakog dokumenta i podrskom za dodavanje slika.
+   forenzicke nalaze, sa formalnim pregledom svakog dokumenta, podrskom za dodavanje slika
+   i mogucnoscu izmene vec kreiranog dokumenta kroz akciju `Izmeni dokument`.
 11. U tabu `/slucaj/:id/kreiranje/saslusanja` mozes izabrati osobu, kreirati stablo pitanja
     i odgovora uz vizuelni prikaz toka (tree preview), ponovo koristiti postojece pitanje
-    u drugoj grani i odmah pokrenuti saslusanje kroz chat modal.
+    u drugoj grani, izmeniti vec kreirano saslusanje kroz akciju `Izmeni` i odmah
+    pokrenuti saslusanje kroz chat modal.
 12. U tabu `/slucaj/:id/kreiranje/kviz` kreator definise zavrsna pitanja, ponudjene odgovore
     i objasnjenje za svako pitanje; taj kviz se koristi za potvrdu rjesenja slucaja.
 13. U lijevom meniju creatorskog moda klikni `Objavi slucaj`; backend proverava uslove objave
-    (osobe, obavezne tipove dokumenata i potpunu timeline pokrivenost svih osoba/dokumenata)
+    (najmanje jedna zrtva, najmanje jedan osumnjiceni, najmanje jedan dokument,
+    minimum 4 kviz pitanja i potpunu timeline pokrivenost svih osoba/dokumenata)
     i vraca jasnu poruku o uspehu ili blockerima.
 14. U sekciji `Najocenjeniji javni slucajevi` klikni `Pokreni resavanje` da odmah udjes
     u solve mod objavljenog slucaja (`/slucaj/:id/resavanje/vremenska-linija`).
@@ -202,9 +207,9 @@ Napomena:
   - vraca slucaj za creatorski mod samo ako je ulogovani korisnik autor tog slucaja
 - `POST /api/cases/:caseId/publish` (autorizacija: `Bearer <JWT>`)
   - dostupno samo autoru slucaja; objavljuje slucaj i postavlja `publicationStatus=published`
-  - pre objave proverava da postoji najmanje jedna osoba, svi obavezni tipovi dokumenata
-    (`police_report`, `forensic_report`, `witness_statement`, `suspect_statement`, `victim_statement`)
-    i da su sve osobe/dokumenti ubaceni u vremensku liniju
+  - pre objave proverava da postoji najmanje jedna zrtva, najmanje jedan osumnjiceni,
+    najmanje jedan dokument i najmanje 4 pitanja u zavrsnom kvizu, kao i da su
+    sve osobe/dokumenti ubaceni u vremensku liniju
   - kada uslovi nisu ispunjeni vraca 400 sa listom `publish` blocker poruka
 - `POST /api/cases/:caseId/progress/reset-to-solve` (autorizacija: `Bearer <JWT>`)
   - dostupno samo autoru slucaja; vraca njegov progress status sa `resolved` na
@@ -219,6 +224,7 @@ Napomena:
   - zamenjuje kompletnu vremensku liniju novim redosledom stavki kroz payload:
     `items[]` sa poljima `itemType`, `sourceId`, `unlockNote`, `unlockAt`
   - validira postojanje referenci, jedinstvenost stavki i format datuma/vremena
+  - ista osoba i isti dokument ne mogu biti dodati vise od jednom u vremensku liniju
   - pristup je trenutno ogranicen na autora slucaja
 - `POST /api/cases/:caseId/timeline/advance` (autorizacija: `Bearer <JWT>`)
   - otkljucava sledecu timeline stavku za trenutno ulogovanog korisnika i azurira
@@ -245,8 +251,17 @@ Napomena:
     `lastKnownLocation`, `priorOffenses`, `notes`
   - polja kao `apparentRole`, `riskLevel`, `gender`, `maritalStatus`, `nationality`,
     `educationLevel`, `eyeColor` i `hairColor` se validiraju kao enum vrijednosti
+  - obavezna polja dosijea pri cuvanju: `fullName`, `apparentRole` (ne `unknown`),
+    `phoneNumber`, `address`, `birthDate`, `birthPlace`,
+    `nationality` (ne `unknown`), `gender` (ne `unknown`),
+    `riskLevel` (ne `unknown`) i `lastKnownLocation`
   - `photoDataUrl` prihvata uploadovanu fotografiju osobe kao `data:image/...;base64,...`
   - pristup je trenutno ogranicen na autora slucaja
+- `PUT /api/cases/:caseId/people/:personId` (autorizacija: `Bearer <JWT>`)
+  - azurira vec kreiranu osobu i njen dosije u okviru slucaja
+  - koristi isti set polja kao `POST /api/cases/:caseId/people`
+  - pri cuvanju uvecava reviziju dosijea i postavlja novo vreme poslednje revizije
+  - pristup je ogranicen na autora slucaja
 - `GET /api/cases/:caseId/statements` (autorizacija: `Bearer <JWT>`)
   - vraca sve izjave u slucaju (`witness_statement`, `suspect_statement`, `victim_statement`)
     zajedno sa formalnim metapodacima i povezanim osobama
@@ -262,6 +277,9 @@ Napomena:
     (`witness_statement`, `suspect_statement`, `victim_statement`)
   - validira da referencirane osobe postoje u trazenom slucaju
   - pristup je trenutno ogranicen na autora slucaja
+- `PUT /api/cases/:caseId/statements/:documentId` (autorizacija: `Bearer <JWT>`)
+  - azurira vec kreiranu izjavu u okviru slucaja (sa istim formalnim poljima i validacijama kao POST)
+  - pristup je ogranicen na autora slucaja
 - `GET /api/cases/:caseId/police-documents` (autorizacija: `Bearer <JWT>`)
   - vraca policijske izvjestaje i forenzicke nalaze sa formalnim metapodacima i
     povezanim osobama
@@ -277,6 +295,10 @@ Napomena:
   - `imageEvidence` je niz `data:image/...;base64,...` slika (JPEG/PNG/WEBP),
     podrzan za policijske izvjestaje i forenzicke nalaze
   - pristup je trenutno ogranicen na autora slucaja
+- `PUT /api/cases/:caseId/police-documents/:documentId` (autorizacija: `Bearer <JWT>`)
+  - azurira vec kreirani policijski izvjestaj ili forenzicki nalaz
+  - koristi isti formalni set polja i validacija kao `POST /api/cases/:caseId/police-documents`
+  - pristup je ogranicen na autora slucaja
 - `GET /api/cases/:caseId/interrogations` (autorizacija: `Bearer <JWT>`)
   - vraca sva saslusanja u slucaju zajedno sa stablom pitanja/odgovora i
     direktorijumom osoba
@@ -454,6 +476,8 @@ Napomena:
   - tab `vremenska-linija`:
     - u creatorskom modu omogucava dodavanje osoba i dokumenata u redosled otkljucavanja,
       pomeranje stavki gore/dole, uklanjanje, unos napomena i opcionalnog datuma/vremena
+      uz pravilo da ista osoba i isti dokument ne mogu biti dodati vise od jednom
+      i da liste za dodavanje prikazuju samo stavke koje jos nisu dodate na timeline
     - cuvanje radi kroz `PUT /api/cases/:caseId/timeline`, a inicijalno ucitavanje kroz
       `GET /api/cases/:caseId/timeline`
     - u rezimu resavanja koristi dugme `Dalje` za postepeno otkljucavanje sledece stavke,
@@ -466,10 +490,13 @@ Napomena:
     - u rezimu resavanja prikazuje samo osobe koje su trenutno otkljucane na vremenskoj liniji
       i omogucava korisniku da za svaku postavi procenjenu ulogu (pocetno `unknown`)
     - forma koristi padajuce liste za sva pogodna polja (ukljucujuci pol) i upload fotografije osobe
+      uz backend validaciju obaveznih polja dosijea pri cuvanju
     - dosije prikazuje sve povezane izjave i dokumente kao direktne linkove ka formalnom prikazu
+    - iz formalnog dosijea u creatorskom modu postoji akcija `Izmeni dosije` za azuriranje vec kreirane osobe
   - tab `izjave`:
     - prikazuje listu izjava sa pretragom/filterima i operativnom statistikom
     - u creatorskom modu omogucava modalno kreiranje formalne izjave sa tip-specificnim poljima po vrsti izjave
+      i izmenu postojece izjave kroz akciju `Izmeni dokument` u formalnom prikazu
     - svaka izjava se otvara kroz formalni policijski pregled dokumenta
     - iz formalnog prikaza izjave moguce je otvoriti dosije svake povezane osobe
     - u rezimu resavanja tab radi u read-only nacinu i prikazuje samo timeline-otkljucane izjave
@@ -478,12 +505,14 @@ Napomena:
     - u creatorskom modu omogucava modalno kreiranje dokumenta sa tip-specificnim poljima
       i uploadom slika za forenzicke nalaze i policijske izvjestaje
     - pregled svakog dokumenta radi kroz formalni policijski prikaz sa sekcijom fotodokumentacije
+      i akcijom `Izmeni dokument` u creatorskom modu
     - iz formalnog prikaza dokumenta moguce je otvoriti dosije svake povezane osobe
     - u rezimu resavanja tab radi u read-only nacinu i prikazuje samo timeline-otkljucane dokumente
   - tab `saslusanja`:
     - prikazuje saslusanja po osobi i omogucava direktan izbor osobe za pokretanje saslusanja
     - u creatorskom modu omogucava modalno kreiranje stabla pitanja i odgovora
       za konkretnu osobu, sa vizuelnim prikazom stabla i reuse opcijom pitanja po granama
+      i eksplicitnu izmenu vec kreiranog saslusanja kroz akciju `Izmeni` iz liste
     - pokretanje saslusanja se vrsi kroz zaseban chat modal sa grananjem pitanja i
       opcijom `Zakljuci saslusanje` na kraju grane
     - u rezimu resavanja prikazuje samo saslusanja osoba koje su trenutno otkljucane na vremenskoj liniji
@@ -501,7 +530,8 @@ Napomena:
   - u meniju rezima kreiranja postoji `Objavi slucaj` kao dugme
   - dugme ne vodi na novu rutu/stranicu
   - klik poziva `POST /api/cases/:caseId/publish` i radi backend validaciju spremnosti
-  - backend vraca jasne blockere ako uslovi nisu ispunjeni (osobe, tipovi dokumenata, timeline pokrivenost)
+  - backend vraca jasne blockere ako uslovi nisu ispunjeni
+    (zrtva, osumnjiceni, dokument, kviz sa min. 4 pitanja, timeline pokrivenost)
   - pri uspjehu dugme prelazi u stanje `Slucaj je objavljen`
 - Reset statusa za kreatora:
   - u meniju rezima kreiranja postoji opcija `Vrati slucaj u resavanje`

@@ -42,6 +42,12 @@
   white-space: nowrap;
 }
 
+.case-people-modal-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
 .case-people-form {
   display: grid;
   gap: 0.9rem;

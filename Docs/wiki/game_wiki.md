@@ -81,4 +81,4 @@ U solve modu se prikazuje samo ono sto je otkljucano trenutnim napretkom na vrem
 Najcesce nisu ispunjeni uslovi spremnosti (napredak kroz timeline i role assignment osoba).
 
 ### Zasto objava slucaja ne prolazi?
-Nedostaju obavezni tipovi dokumenata/izjava ili nisu sve osobe/dokumenti pokriveni timeline-om.
+Nedostaje bar jedna zrtva, bar jedan osumnjiceni, bar jedan dokument ili kviz sa minimum 4 pitanja, ili nisu sve osobe/dokumenti pokriveni timeline-om.

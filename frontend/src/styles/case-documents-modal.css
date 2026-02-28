@@ -31,6 +31,12 @@
   gap: 0.8rem;
 }
 
+.case-doc-modal-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
 .case-doc-unlock-toggle {
   align-items: start;
   justify-content: start;

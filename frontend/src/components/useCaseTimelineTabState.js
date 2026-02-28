@@ -38,7 +38,24 @@ export function useCaseTimelineTabState({ caseId, mode, onUnauthorized }) {
   const nextLocalKeyRef = useRef(1);
   const isCreateMode = mode === CASE_WORKSPACE_MODES.CREATE;
 
-  const sourceOptions = useMemo(() => (formData.itemType === TIMELINE_ITEM_TYPES.DOCUMENT ? documentDirectory : peopleDirectory), [documentDirectory, formData.itemType, peopleDirectory]);
+  const sourceOptions = useMemo(() => {
+    const usedPeopleIds = new Set(
+      timelineItems
+        .filter((item) => item.itemType === TIMELINE_ITEM_TYPES.PERSON)
+        .map((item) => item.sourceId)
+    );
+    const usedDocumentIds = new Set(
+      timelineItems
+        .filter((item) => item.itemType === TIMELINE_ITEM_TYPES.DOCUMENT)
+        .map((item) => item.sourceId)
+    );
+
+    if (formData.itemType !== TIMELINE_ITEM_TYPES.DOCUMENT) {
+      return peopleDirectory.filter((person) => !usedPeopleIds.has(person.id));
+    }
+
+    return documentDirectory.filter((document) => !usedDocumentIds.has(document.id));
+  }, [documentDirectory, formData.itemType, peopleDirectory, timelineItems]);
 
   const loadTimeline = useCallback(async () => {
     setIsLoading(true); setErrorMessage(""); setSaveErrorMessage(""); setSaveSuccessMessage(""); setAdvanceErrorMessage(""); setAdvanceSuccessMessage("");

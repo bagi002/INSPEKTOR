@@ -140,7 +140,7 @@
 
 - id: REQ-014
   name: Osobe u slucaju
-  status: Finished
+  status: In Review
   description: >
     Osobe u slucaju treba da budu prikazane u formi liste sa osnovnim informacijama o svakoj osobi, kao sto su ime, prezime i uloga u slucaju (osumnjiceni, zrtva, svjedok)
     Za svaku osobu treba da postoji opcija za pregled dosijea koji sadrzi sve informacije o toj osobi.
@@ -150,7 +150,7 @@
 
 - id: REQ-015
   name: Dosije osobe
-  status: Finished
+  status: In Review
   description: >
     Dosije osobe treba da sadrzi sve informacije o toj osobi.
     Kao sto su ime prezime mjesto stanovanja broj telefona visina 
@@ -172,7 +172,7 @@
 
 - id: REQ-017
   name: Izjave svjedoka, osumnjicenog i zrtve
-  status: Finished
+  status: In Review
   description: >
     Veze se za konkretnu osbu koaj ga je dala
     Treba da ima nslov
@@ -182,7 +182,7 @@
 
 - id: REQ-018
   name: Policijski izvjestaji, forenzicki nalazi
-  status: Finished
+  status: In Review
   description: >
     Treba da sadrze sve neophodne informacije koje su potrebne da se razumije njihov sadrzaj
     Treba da imaju profesionalan izgled kao pravi policiski izvjestaji i forenzicki nalazi
@@ -192,7 +192,7 @@
 
 - id: REQ-019
   name: Kreiranje slucaja
-  status: In Progress
+  status: In Review
   description: >
     Treba da sadrzi formu za kreiranje novog slucajja koji ukljucuje kreiranje osoba 
     kreiranje svih dosijea za te osobe
@@ -202,7 +202,7 @@
 
 - id: REQ-020
   name: Kreiranje sasluanja
-  status: Finished
+  status: In Review
   description:
     Treba da sadrzi formu za kreiranje novog sasluanja sa osobom u slucaju
     Treba da sadrzi opciju za dodavanje pitanja i odgovora u formi stabla
@@ -214,7 +214,7 @@
 
 - id: REQ-021
   name: Kreiranje dokumenata, Dosijea i Osoba
-  status: Finished
+  status: In Review
   description: >
     Treba da sadrzi formu za kreiranje novih dokumenata, dosijea i osoba u slucaju
     Treba da sadrzi opciju za dodavanje svih relevantnih informacija o dokumentu, dosijeu ili osobi
@@ -225,7 +225,7 @@
 
 - id: REQ-022
   name: Kreiranje vremenske linije
-  status: Finished
+  status: In Review
   description: >
     Treba d asrzi formu gdje kreator sva kreianan dokument ai osobe rasporedjuje duz vremenske linije
     Treba da ima opciju da doda dokument ili osobu na vremensku liniju
@@ -259,7 +259,7 @@
 
 - id: REQ-026
   name: Kviz za kraj slucaja i opis sluccaja
-  status: Finished
+  status: In Review
   description: >
     Opis slucajja i kviz koji ga rijesava takodje kreira kreator slucaja i treba da bude unapred pripremljen od strane kreatora slucaja
     Opis slucaja treba da sadrzi sve relevantne informacije o slucaju, kao sto su naziv, opis, ocjena, broj recenzija i autor
@@ -269,7 +269,7 @@
 
 - id: REQ-027
   name: Objavljivanje slucajja 
-  status: Finished
+  status: In Review
   description: >
     Nakon sto kretor zavrsi uredjivanje slucajja moze da ga objavi i tek tada ce ga ostali korisnici vidjeti i rijesvati
     Takdoej kreator za vrijemme kreiranja slucajja mzoe preci u mod za pregled d avidi kkao ce izgledati u pregledu za korisnika 
